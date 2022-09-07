@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "641185330997",
+    "project_id": "sharaguga-5cd05",
+    "storage_bucket": "sharaguga-5cd05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:641185330997:android:78b76f8222d6051d8b3e7c",
+        "android_client_info": {
+          "package_name": "com.yakushev.sharaguga"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "641185330997-c37a4c1b8hjk6eqt46gr8gdu9uf7r86p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAu_wScwWUkG8CNKRdc3ZFJNr1MN0w36uQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "641185330997-c37a4c1b8hjk6eqt46gr8gdu9uf7r86p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
