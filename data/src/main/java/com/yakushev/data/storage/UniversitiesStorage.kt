@@ -6,5 +6,5 @@ interface UniversitiesStorage {
 
     fun save(university: UniversityDataModel): Boolean
 
-    fun get(): List<UniversityDataModel>
+    suspend fun get(): List<UniversityDataModel>
 }

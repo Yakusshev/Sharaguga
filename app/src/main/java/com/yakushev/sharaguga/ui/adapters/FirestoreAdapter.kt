@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui
+package com.yakushev.sharaguga.ui.adapters
 
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView

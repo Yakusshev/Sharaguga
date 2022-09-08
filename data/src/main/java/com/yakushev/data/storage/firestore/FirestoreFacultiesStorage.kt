@@ -44,7 +44,7 @@ class FirestoreFacultiesStorage : FacultiesStorage {
             .get()
             .addOnSuccessListener { result ->
                 for (document in result) {
-                    faculties.add(document.toObject())
+                    faculties.add(document.toObject(FacultyDataModel::class.java))
                 }
             }
             .addOnFailureListener { error ->

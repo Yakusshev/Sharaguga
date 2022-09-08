@@ -9,29 +9,45 @@ import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.type.TimeOfDay
+import com.yakushev.data.repository.UniversityRepositoryImpl
+import com.yakushev.data.storage.firestore.FirestoreUniversitiesStorage
 import com.yakushev.domain.models.Faculty
 import com.yakushev.domain.models.Group
 import com.yakushev.domain.models.University
 import com.yakushev.domain.models.table.PairsTable
 import com.yakushev.domain.models.table.Subject
 import com.yakushev.domain.models.table.TimeTable
+import com.yakushev.domain.repository.UniversityRepository
+import com.yakushev.domain.usecase.GetUniversitiesUseCase
+import com.yakushev.domain.usecase.SaveUniversityUseCase
 import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     val TAG = "HomeViewModel"
 
-    private val _tableLiveData = MutableLiveData<Resource<PairsTable>>()
-    val tableLiveData: LiveData<Resource<PairsTable>> get() = _tableLiveData
+    private val _tableLiveData = MutableLiveData<Resource<List<University>>>()
+    val tableLiveData: LiveData<Resource<List<University>>> get() = _tableLiveData
 
-    fun getPairsTable() {
+    private val universitiesRepository = UniversityRepositoryImpl(FirestoreUniversitiesStorage())
+    private val getUniversitiesUseCase = GetUniversitiesUseCase(universitiesRepository)
+    private val saveUniversityUseCase = SaveUniversityUseCase(universitiesRepository)
+
+    init {
+        getUniversities()
+    }
+
+    private fun getUniversities() {
         viewModelScope.launch {
             _tableLiveData.postValue(Resource.Loading())
-            //val re
+            _tableLiveData.postValue(Resource.Success(getUniversitiesUseCase.execute()))
+
+            //_tableLiveData.postValue(Resource.)
         }
     }
 
-    fun createExample() : University {
+    /*fun createExample() : University {
+        TODO("delete")
         val subject1 = Subject(
             name = "Производство полетов ВС",
             teacher = "Левюшкин",
@@ -124,5 +140,5 @@ class HomeViewModel : ViewModel() {
             )
         )
         return university
-    }
+    }*/
 }

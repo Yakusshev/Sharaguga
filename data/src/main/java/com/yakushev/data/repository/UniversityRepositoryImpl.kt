@@ -4,6 +4,7 @@ import com.yakushev.data.storage.models.UniversityDataModel
 import com.yakushev.data.storage.UniversitiesStorage
 import com.yakushev.domain.models.University
 import com.yakushev.domain.repository.UniversityRepository
+import java.lang.Exception
 
 class UniversityRepositoryImpl(private val universityStorage: UniversitiesStorage) : UniversityRepository {
 
@@ -28,6 +29,7 @@ class UniversityRepositoryImpl(private val universityStorage: UniversitiesStorag
         for (universityDataModel in this) {
             universities.add(universityDataModel.mapToDomain())
         }
+        if (universities.isEmpty()) throw Exception("list is null")
         return universities
     }
 
