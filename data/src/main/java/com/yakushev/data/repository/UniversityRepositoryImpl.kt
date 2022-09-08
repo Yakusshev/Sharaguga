@@ -20,7 +20,7 @@ class UniversityRepositoryImpl(private val universityStorage: UniversitiesStorag
         )
     }
 
-    override fun getUniversities(): List<University> {
+    override suspend fun getUniversities(): List<University> {
         return universityStorage.get().mapToDomain()
     }
 

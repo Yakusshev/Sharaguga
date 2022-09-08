@@ -11,7 +11,7 @@ class UniversityRecyclerAdapter(private var _universities: MutableList<Universit
     RecyclerView.Adapter<UniversityRecyclerAdapter.UniversityHolder>() {
 
 
-    private val universities get() = _universities!!
+    private val universities get() = _universities
 
     class UniversityHolder(private val itemBinding: RowUniversityBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
@@ -30,11 +30,11 @@ class UniversityRecyclerAdapter(private var _universities: MutableList<Universit
     }
 
     override fun onBindViewHolder(holder: UniversityHolder, position: Int) {
-        holder.bind(universities[position])
+        holder.bind(universities!![position])
     }
 
     override fun getItemCount(): Int {
-        return universities.size
+        return universities?.size ?: 0
     }
 
     fun updateUniversities(universities: MutableList<University>) {

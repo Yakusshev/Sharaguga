@@ -1,13 +1,12 @@
 package com.yakushev.data.storage.firestore
 
 import android.util.Log
-import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.UniversitiesStorage
 import com.yakushev.data.storage.models.UniversityDataModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.tasks.await
 
 class FirestoreUniversitiesStorage : UniversitiesStorage {
 
@@ -19,24 +18,6 @@ class FirestoreUniversitiesStorage : UniversitiesStorage {
     }
 
     private val firestore = Firebase.firestore
-    private val universities = ArrayList<UniversityDataModel>()
-
-    private var ready = false
-
-    init {
-        firestore.collection(COLLECTION_PATH)
-            .get()
-            .addOnSuccessListener { collection ->
-                for (document in collection) {
-                    //universities.add(document.toObject<UniversityDataModel>())
-                    universities.add(document.toUniversityDataModel())
-                    ready = true
-                }
-            }
-            .addOnFailureListener { error ->
-                Log.w(TAG, "Error get universities", error)
-            }
-    }
 
     override fun save(university: UniversityDataModel): Boolean {
         firestore.collection(COLLECTION_PATH)
@@ -51,14 +32,22 @@ class FirestoreUniversitiesStorage : UniversitiesStorage {
     }
 
     override suspend fun get(): List<UniversityDataModel> {
-        while (!ready) {
-            delay(1)
+        val task = firestore.collection(COLLECTION_PATH)
+            .get()
+            .await()
+
+        val universities = ArrayList<UniversityDataModel>()
+
+        for (document in task.documents) {
+            if (document.data != null)
+                universities.add(document.toUniversityDataModel())
         }
+
         return universities
     }
 
-
-    private fun QueryDocumentSnapshot.toUniversityDataModel(): UniversityDataModel {
+    private fun DocumentSnapshot.toUniversityDataModel(): UniversityDataModel {
+        val data = this.data!!
         Log.d(TAG, "id = $id, name = ${data[NAME]}, city = ${data[CITY]}")
         return UniversityDataModel(
             id = id,

@@ -6,6 +6,6 @@ interface UniversityRepository {
 
     fun saveUniversity(university: University): Boolean
 
-    fun getUniversities(): List<University>
+    suspend fun getUniversities(): List<University>
 
 }
