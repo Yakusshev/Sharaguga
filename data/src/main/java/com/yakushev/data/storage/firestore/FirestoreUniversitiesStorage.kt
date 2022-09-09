@@ -1,22 +1,21 @@
 package com.yakushev.data.storage.firestore
 
 import android.util.Log
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.yakushev.data.storage.UniversitiesStorage
 import com.yakushev.data.storage.models.UniversityDataModel
-import kotlinx.coroutines.tasks.await
 
-class FirestoreUniversitiesStorage : UniversitiesStorage {
+class FirestoreUniversitiesStorage : AbstractFirestoreStorage<UniversityDataModel>() {
 
     private val TAG = "FirestoreUniversityStorage"
 
-    private val reference = Firebase.firestore.collection(UNIVERSITIES_COLLECTION_PATH)
+    override val reference = Firebase.firestore.collection(UNIVERSITIES_COLLECTION_PATH)
 
-    override fun save(university: UniversityDataModel): Boolean {
+    override suspend fun save(unit: UniversityDataModel, rootId: String?): Boolean {
         TODO("rewrite")
-        reference.add(university)
+        reference.add(unit)
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
             }
@@ -26,22 +25,7 @@ class FirestoreUniversitiesStorage : UniversitiesStorage {
         return true
     }
 
-    override suspend fun get(): List<UniversityDataModel> {
-        val task = reference
-            .get()
-            .await()
-
-        val universities = ArrayList<UniversityDataModel>()
-
-        for (document in task.documents) {
-            if (document.data != null)
-                universities.add(document.toUniversityDataModel())
-        }
-
-        return universities
-    }
-
-    private fun DocumentSnapshot.toUniversityDataModel(): UniversityDataModel {
+    override fun DocumentSnapshot.toRequiredDataModel(): UniversityDataModel {
         val data = this.data!!
         Log.d(TAG, "id = $id, name = ${data[NAME]}, city = ${data[CITY]}")
         return UniversityDataModel(
@@ -51,4 +35,7 @@ class FirestoreUniversitiesStorage : UniversitiesStorage {
         )
     }
 
+    override fun getReference(rootId: String?): CollectionReference {
+        return reference
+    }
 }

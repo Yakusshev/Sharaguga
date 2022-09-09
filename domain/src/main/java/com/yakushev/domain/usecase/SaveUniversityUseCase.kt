@@ -1,12 +1,12 @@
 package com.yakushev.domain.usecase
 
 import com.yakushev.domain.models.UniverUnit.University
-import com.yakushev.domain.repository.UniversityRepository
+import com.yakushev.domain.repository.UniverUnitRepository
 
-class SaveUniversityUseCase(private val universityRepository: UniversityRepository) {
+class SaveUniversityUseCase(private val universityRepository: UniverUnitRepository<University>) {
 
-    fun execute(university: University) : Boolean {
-        return universityRepository.saveUniversity(university)
+    suspend fun execute(university: University) : Boolean {
+        return universityRepository.save(university, null)
     }
 
 }

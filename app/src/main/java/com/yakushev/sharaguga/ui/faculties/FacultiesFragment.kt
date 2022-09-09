@@ -54,6 +54,7 @@ class FacultiesFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
         val onItemClickListener = View.OnClickListener {
+            TODO("openGroups")
             val facultyId = it.tag as String
             openGroups(facultyId)
         }

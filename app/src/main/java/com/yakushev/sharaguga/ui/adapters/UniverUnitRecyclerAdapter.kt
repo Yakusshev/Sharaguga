@@ -6,10 +6,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.domain.models.UniverUnit
 import com.yakushev.sharaguga.databinding.RowUniverUnitBinding
+import androidx.lifecycle.Observer
 
-class UniverUnitRecyclerAdapter(private var univerUnits: MutableList<UniverUnit>,
+class UniverUnitRecyclerAdapter(var univerUnits: MutableList<UniverUnit>,
                                 private val onItemClickListener: View.OnClickListener) :
     RecyclerView.Adapter<UniverUnitRecyclerAdapter.UniverUnitHolder>() {
+
+    val observer = Observer<List<UniverUnit>> {
+        TODO("Not yet implemented")
+    }
 
     class UniverUnitHolder(
         private val itemBinding: RowUniverUnitBinding,
@@ -38,6 +43,7 @@ class UniverUnitRecyclerAdapter(private var univerUnits: MutableList<UniverUnit>
     }
 
     fun updateList(univerUnits: MutableList<UniverUnit>) {
+        this.univerUnits.clear()
         this.univerUnits = univerUnits
         notifyDataSetChanged()
     }
