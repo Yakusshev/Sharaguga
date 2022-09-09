@@ -10,6 +10,7 @@
         android:name="com.yakushev.sharaguga.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" >
+
         <action
             android:id="@+id/action_navigation_home_to_navigation_faculties"
             app:destination="@id/navigation_faculties"
@@ -17,6 +18,7 @@
             app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
     </fragment>
 
     <fragment
@@ -24,6 +26,16 @@
         android:name="com.yakushev.sharaguga.ui.faculties.FacultiesFragment"
         android:label="@string/title_faculties"
         tools:layout="@layout/fragment_faculties">
+
+        <argument
+            android:name="universityId"
+            app:argType="string"
+            android:defaultValue="null"/>
+
+        <argument
+            android:name="universityName"
+            app:argType="string"
+            android:defaultValue=""/>
 
     </fragment>
 

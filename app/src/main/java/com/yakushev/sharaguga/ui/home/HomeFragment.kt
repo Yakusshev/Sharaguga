@@ -9,9 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.sharaguga.R
+import com.yakushev.domain.models.UniverUnit
 import com.yakushev.sharaguga.databinding.FragmentHomeBinding
-import com.yakushev.sharaguga.ui.adapters.UniversityRecyclerAdapter
+import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
 import com.yakushev.sharaguga.utils.Resource
 
 
@@ -27,23 +27,13 @@ class HomeFragment : Fragment() {
                               savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        val layoutManager = LinearLayoutManager(context)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
-        binding.recyclerView.layoutManager = layoutManager
+        initRecyclerView()
 
-        val callback = object : OpenFragmentCallback {
-            override fun openFaculties(id: String) {
-                openFaculties(id)
-            }
-        }
-
-        binding.recyclerView.adapter = UniversityRecyclerAdapter(ArrayList(), callback)
-
-        viewModel.tableLiveData.observe(viewLifecycleOwner) {
+        viewModel.liveData.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
-                    (binding.recyclerView.adapter as UniversityRecyclerAdapter)
-                        .updateUniversities(it.data!!.toMutableList())
+                    (binding.recyclerView.adapter as UniverUnitRecyclerAdapter)
+                        .updateList(it.data!!.toMutableList())
                 }
                 is Resource.Loading -> Log.d(TAG, "Loading")
                 is Resource.Error -> Log.w(TAG, "Error")
@@ -53,8 +43,24 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    fun openFaculties(universityId: String) {
-        findNavController().navigate(R.id.navigation_faculties)
+    private fun initRecyclerView() {
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+
+        val onItemClickListener = View.OnClickListener {
+            val univerUnit = it.tag as UniverUnit
+            openFaculties(univerUnit)
+        }
+
+        binding.recyclerView.adapter = UniverUnitRecyclerAdapter(ArrayList(), onItemClickListener)
+    }
+
+    private fun openFaculties(univerUnit: UniverUnit) {
+        findNavController().navigate(
+            HomeFragmentDirections.actionNavigationHomeToNavigationFaculties(
+                universityId = univerUnit.id,
+                universityName = univerUnit.name
+            )
+        )
     }
 
     override fun onDestroyView() {

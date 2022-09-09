@@ -2,7 +2,7 @@ package com.yakushev.data.repository
 
 import com.yakushev.data.storage.FacultiesStorage
 import com.yakushev.data.storage.models.FacultyDataModel
-import com.yakushev.domain.models.Faculty
+import com.yakushev.domain.models.UniverUnit.Faculty
 import com.yakushev.domain.repository.FacultyRepository
 
 class FacultyRepositoryImpl(private val facultyStorage: FacultiesStorage) : FacultyRepository {
@@ -18,7 +18,7 @@ class FacultyRepositoryImpl(private val facultyStorage: FacultiesStorage) : Facu
         )
     }
 
-    override fun getFaculties(universityId: String): List<Faculty> {
+    override suspend fun getFaculties(universityId: String): List<Faculty> {
         return facultyStorage.get(universityId).mapToDomain()
     }
 

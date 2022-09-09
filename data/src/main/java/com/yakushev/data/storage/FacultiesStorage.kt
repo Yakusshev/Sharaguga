@@ -6,5 +6,5 @@ interface FacultiesStorage {
 
     fun save(faculty: FacultyDataModel, universityID: String): Boolean
 
-    fun get(universityID: String): List<FacultyDataModel>
+    suspend fun get(universityID: String): List<FacultyDataModel>
 }

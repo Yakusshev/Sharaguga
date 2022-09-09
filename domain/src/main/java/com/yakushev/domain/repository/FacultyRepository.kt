@@ -1,11 +1,10 @@
 package com.yakushev.domain.repository
 
-import com.yakushev.domain.models.Faculty
-import com.yakushev.domain.models.University
+import com.yakushev.domain.models.UniverUnit.Faculty
 
 interface FacultyRepository {
 
-    fun getFaculties(universityId: String): List<Faculty>
+    suspend fun getFaculties(universityId: String): List<Faculty>
 
     fun saveFaculty(faculty: Faculty, universityId: String): Boolean
 }

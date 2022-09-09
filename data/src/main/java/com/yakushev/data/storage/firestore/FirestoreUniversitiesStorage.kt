@@ -10,18 +10,13 @@ import kotlinx.coroutines.tasks.await
 
 class FirestoreUniversitiesStorage : UniversitiesStorage {
 
-    companion object {
-        private const val TAG = "FirestoreUniversityStorage"
-        const val COLLECTION_PATH = "universities"
-        private const val NAME = "name"
-        private const val CITY = "city"
-    }
+    private val TAG = "FirestoreUniversityStorage"
 
-    private val firestore = Firebase.firestore
+    private val reference = Firebase.firestore.collection(UNIVERSITIES_COLLECTION_PATH)
 
     override fun save(university: UniversityDataModel): Boolean {
-        firestore.collection(COLLECTION_PATH)
-            .add(university)
+        TODO("rewrite")
+        reference.add(university)
             .addOnSuccessListener { documentReference ->
                 Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
             }
@@ -32,7 +27,7 @@ class FirestoreUniversitiesStorage : UniversitiesStorage {
     }
 
     override suspend fun get(): List<UniversityDataModel> {
-        val task = firestore.collection(COLLECTION_PATH)
+        val task = reference
             .get()
             .await()
 

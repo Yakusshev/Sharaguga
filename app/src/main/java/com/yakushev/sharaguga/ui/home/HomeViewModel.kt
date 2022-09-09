@@ -1,23 +1,12 @@
 package com.yakushev.sharaguga.ui.home
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.QueryDocumentSnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.google.type.TimeOfDay
 import com.yakushev.data.repository.UniversityRepositoryImpl
 import com.yakushev.data.storage.firestore.FirestoreUniversitiesStorage
-import com.yakushev.domain.models.Faculty
-import com.yakushev.domain.models.Group
-import com.yakushev.domain.models.University
-import com.yakushev.domain.models.table.PairsTable
-import com.yakushev.domain.models.table.Subject
-import com.yakushev.domain.models.table.TimeTable
-import com.yakushev.domain.repository.UniversityRepository
+import com.yakushev.domain.models.UniverUnit.University
 import com.yakushev.domain.usecase.GetUniversitiesUseCase
 import com.yakushev.domain.usecase.SaveUniversityUseCase
 import com.yakushev.sharaguga.utils.Resource
@@ -26,8 +15,8 @@ import kotlinx.coroutines.launch
 class HomeViewModel : ViewModel() {
     val TAG = "HomeViewModel"
 
-    private val _tableLiveData = MutableLiveData<Resource<List<University>>>()
-    val tableLiveData: LiveData<Resource<List<University>>> get() = _tableLiveData
+    private val _liveData = MutableLiveData<Resource<List<University>>>()
+    val liveData: LiveData<Resource<List<University>>> get() = _liveData
 
     private val universitiesRepository = UniversityRepositoryImpl(FirestoreUniversitiesStorage())
     private val getUniversitiesUseCase = GetUniversitiesUseCase(universitiesRepository)
@@ -39,8 +28,8 @@ class HomeViewModel : ViewModel() {
 
     private fun getUniversities() {
         viewModelScope.launch {
-            _tableLiveData.postValue(Resource.Loading())
-            _tableLiveData.postValue(Resource.Success(getUniversitiesUseCase.execute()))
+            _liveData.postValue(Resource.Loading())
+            _liveData.postValue(Resource.Success(getUniversitiesUseCase.execute()))
 
             //_tableLiveData.postValue(Resource.)
         }

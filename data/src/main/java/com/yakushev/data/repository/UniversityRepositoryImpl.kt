@@ -2,7 +2,7 @@ package com.yakushev.data.repository
 
 import com.yakushev.data.storage.models.UniversityDataModel
 import com.yakushev.data.storage.UniversitiesStorage
-import com.yakushev.domain.models.University
+import com.yakushev.domain.models.UniverUnit.University
 import com.yakushev.domain.repository.UniversityRepository
 import java.lang.Exception
 

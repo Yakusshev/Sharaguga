@@ -1,6 +1,6 @@
 package com.yakushev.domain.repository
 
-import com.yakushev.domain.models.University
+import com.yakushev.domain.models.UniverUnit.University
 
 interface UniversityRepository {
 
