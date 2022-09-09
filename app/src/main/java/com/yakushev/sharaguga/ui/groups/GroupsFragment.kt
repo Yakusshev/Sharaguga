@@ -1,32 +1,39 @@
-package com.yakushev.sharaguga.ui.faculties
+package com.yakushev.sharaguga.ui.groups
 
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.domain.models.UniverUnit
 import com.yakushev.sharaguga.MainActivity
+import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentFacultiesBinding
+import com.yakushev.sharaguga.databinding.FragmentGroupsBinding
 import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
+import com.yakushev.sharaguga.ui.faculties.FacultiesFragmentArgs
+import com.yakushev.sharaguga.ui.faculties.FacultiesViewModel
+import com.yakushev.sharaguga.ui.home.HomeFragmentDirections
 import com.yakushev.sharaguga.utils.Resource
 
-class FacultiesFragment : Fragment() {
+class GroupsFragment : Fragment() {
 
-    private var _binding: FragmentFacultiesBinding? = null
+    private var _binding: FragmentGroupsBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: FacultiesViewModel by viewModels()
+    private val viewModel: GroupsViewModel by viewModels()
 
-    val args: FacultiesFragmentArgs by navArgs()
+    val args: GroupsFragmentArgs by navArgs()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
-        _binding = FragmentFacultiesBinding.inflate(
+        _binding = FragmentGroupsBinding.inflate(
             inflater, container, false
         )
 
@@ -36,7 +43,7 @@ class FacultiesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.getFaculties(args.universityId)
+        viewModel.getGroups(args.facultyPath)
 
         setActionBarTitle()
 
@@ -52,24 +59,22 @@ class FacultiesFragment : Fragment() {
 
     private fun setActionBarTitle() {
         val title = (requireActivity() as MainActivity).supportActionBar?.title
-        (requireActivity() as MainActivity).supportActionBar?.title = "$title ${args.universityName}"
+        (requireActivity() as MainActivity).supportActionBar?.title = "$title ${args.facultyName}"
     }
 
     private fun initRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
         val onItemClickListener = View.OnClickListener {
-            val faculty = it.tag as UniverUnit
-            openGroups(faculty.reference.path)
+            TODO("openGroups")
         }
 
         binding.recyclerView.adapter = UniverUnitRecyclerAdapter(ArrayList(), onItemClickListener)
     }
 
-    private fun openGroups(facultyId: String) {
+    private fun openTable(facultyId: String) {
         findNavController().navigate(
-            FacultiesFragmentDirections
-                .actionFacultiesToGroups(facultyId)
+            HomeFragmentDirections.actionNavigationHomeToNavigationFaculties(facultyId)
         )
     }
 

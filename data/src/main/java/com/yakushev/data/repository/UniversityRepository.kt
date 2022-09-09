@@ -4,12 +4,12 @@ import com.yakushev.data.storage.Storage
 import com.yakushev.data.storage.models.UniversityDataModel
 import com.yakushev.domain.models.UniverUnit.University
 
-class UniversityRepositoryImpl(universityStorage: Storage<UniversityDataModel>)
-    : AbstractUniverUnitRepository<UniversityDataModel, University>(storage = universityStorage) {
+class UniversityRepository(storage: Storage<UniversityDataModel>)
+    : AbstractUniverUnitRepository<UniversityDataModel, University>(storage = storage) {
 
     override fun University.mapToStorage(): UniversityDataModel {
         return UniversityDataModel(
-            id = id,
+            reference = reference,
             name = name,
             city = city
         )
@@ -17,7 +17,7 @@ class UniversityRepositoryImpl(universityStorage: Storage<UniversityDataModel>)
 
     override fun UniversityDataModel.mapToDomain() : University {
         return University(
-            id = id,
+            reference = reference,
             name = name,
             city = city,
             ArrayList()

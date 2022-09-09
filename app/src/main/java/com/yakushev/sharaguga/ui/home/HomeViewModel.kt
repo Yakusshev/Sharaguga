@@ -4,11 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yakushev.data.repository.UniversityRepositoryImpl
-import com.yakushev.data.storage.firestore.FirestoreUniversitiesStorage
+import com.yakushev.data.repository.UniversityRepository
+import com.yakushev.data.storage.firestore.UniversitiesFireStorage
 import com.yakushev.domain.models.UniverUnit.University
-import com.yakushev.domain.usecase.GetUniversitiesUseCase
-import com.yakushev.domain.usecase.SaveUniversityUseCase
+import com.yakushev.domain.usecase.UniversitiesUseCase
 import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
 
@@ -18,9 +17,8 @@ class HomeViewModel : ViewModel() {
     private val _liveData = MutableLiveData<Resource<List<University>>>()
     val liveData: LiveData<Resource<List<University>>> get() = _liveData
 
-    private val universitiesRepository = UniversityRepositoryImpl(FirestoreUniversitiesStorage())
-    private val getUniversitiesUseCase = GetUniversitiesUseCase(universitiesRepository)
-    private val saveUniversityUseCase = SaveUniversityUseCase(universitiesRepository)
+    private val universitiesRepository = UniversityRepository(UniversitiesFireStorage())
+    private val getUniversitiesUseCase = UniversitiesUseCase(universitiesRepository)
 
     init {
         getUniversities()
@@ -29,7 +27,7 @@ class HomeViewModel : ViewModel() {
     private fun getUniversities() {
         viewModelScope.launch {
             _liveData.postValue(Resource.Loading())
-            _liveData.postValue(Resource.Success(getUniversitiesUseCase.execute()))
+            _liveData.postValue(Resource.Success(getUniversitiesUseCase.get()))
 
             //_tableLiveData.postValue(Resource.)
         }

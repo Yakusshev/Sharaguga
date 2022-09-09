@@ -57,7 +57,7 @@ class HomeFragment : Fragment() {
     private fun openFaculties(univerUnit: UniverUnit) {
         findNavController().navigate(
             HomeFragmentDirections.actionNavigationHomeToNavigationFaculties(
-                universityId = univerUnit.id,
+                universityId = univerUnit.reference.path,
                 universityName = univerUnit.name
             )
         )

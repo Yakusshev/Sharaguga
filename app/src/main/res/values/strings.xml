@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Sharaguga</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
-    <string name="title_faculties">Faculties</string>
+    <string name="title_home">Вузы</string>
+    <string name="title_dashboard">Расписание</string>
+    <string name="title_notifications">Уведомления</string>
+    <string name="title_faculties">Факультеты</string>
+    <string name="title_groups">Группы</string>
 </resources>

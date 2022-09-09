@@ -1,10 +1,12 @@
 package com.yakushev.data.storage.models
 
+import com.google.firebase.firestore.DocumentReference
+
 data class UniversityDataModel(
-    override val id: String,
+    override val reference: DocumentReference,
     override val name: String,
     val city: String
 ) : UniverUnitDataModel(
-    id = id,
+    reference = reference,
     name = name
 )

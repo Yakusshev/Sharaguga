@@ -6,3 +6,5 @@ internal const val NAME = "name"
 internal const val CITY = "city"
 
 internal const val FACULTIES_COLLECTION_PATH = "faculties"
+
+internal const val GROUPS_COLLECTION_PATH = "groups"

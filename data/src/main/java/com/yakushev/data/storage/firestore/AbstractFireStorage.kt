@@ -1,21 +1,25 @@
 package com.yakushev.data.storage.firestore
 
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.Storage
 import com.yakushev.data.storage.models.UniverUnitDataModel
 import kotlinx.coroutines.tasks.await
 
-abstract class AbstractFirestoreStorage<T : UniverUnitDataModel> : Storage<T> {
+abstract class AbstractFireStorage<T : UniverUnitDataModel> : Storage<T> {
 
-    abstract val reference: CollectionReference
+    val universityReference: CollectionReference =
+        Firebase.firestore.collection(UNIVERSITIES_COLLECTION_PATH)
 
-    override suspend fun save(unit: T, rootId: String?): Boolean {
+    override suspend fun save(unit: T, reference: DocumentReference?): Boolean {
         TODO("Not yet implemented")
     }
 
-    override suspend fun get(rootId: String?): List<T> {
-        val task = getReference(rootId)
+    override suspend fun get(reference: DocumentReference?): List<T> {
+        val task = getReference(reference)
             .get()
             .await()
 
@@ -29,7 +33,7 @@ abstract class AbstractFirestoreStorage<T : UniverUnitDataModel> : Storage<T> {
         return units
     }
 
-    abstract fun getReference(rootId: String?) : CollectionReference
+    abstract fun getReference(reference: DocumentReference?): CollectionReference
 
     abstract fun DocumentSnapshot.toRequiredDataModel(): T
 

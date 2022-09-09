@@ -1,5 +1,6 @@
 package com.yakushev.data.repository
 
+import com.google.firebase.firestore.DocumentReference
 import com.yakushev.data.storage.Storage
 import com.yakushev.data.storage.models.UniverUnitDataModel
 import com.yakushev.domain.models.UniverUnit
@@ -10,14 +11,14 @@ abstract class AbstractUniverUnitRepository
     private val storage: Storage<DataModelGeneric>
 ) : UniverUnitRepository<U> {
 
-    override suspend fun save(unit: U, rootId: String?): Boolean {
-        return storage.save(unit.mapToStorage(), rootId)
+    override suspend fun save(unit: U, reference: DocumentReference?): Boolean {
+        return storage.save(unit.mapToStorage(), reference)
     }
 
     abstract fun U.mapToStorage(): DataModelGeneric
 
-    override suspend fun get(rootId: String?): List<U> {
-        return storage.get(rootId).mapToDomain()
+    override suspend fun get(reference: DocumentReference?): List<U> {
+        return storage.get(reference).mapToDomain()
     }
 
     private fun List<DataModelGeneric>.mapToDomain(): List<U> {
