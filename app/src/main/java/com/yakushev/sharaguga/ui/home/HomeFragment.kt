@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentHomeBinding
 import com.yakushev.sharaguga.ui.adapters.UniversityRecyclerAdapter
 import com.yakushev.sharaguga.utils.Resource
@@ -28,24 +30,31 @@ class HomeFragment : Fragment() {
         val layoutManager = LinearLayoutManager(context)
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.recyclerView.layoutManager = layoutManager
-        binding.recyclerView.adapter = UniversityRecyclerAdapter(null)
 
+        val callback = object : OpenFragmentCallback {
+            override fun openFaculties(id: String) {
+                openFaculties(id)
+            }
+        }
+
+        binding.recyclerView.adapter = UniversityRecyclerAdapter(ArrayList(), callback)
 
         viewModel.tableLiveData.observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
                     (binding.recyclerView.adapter as UniversityRecyclerAdapter)
                         .updateUniversities(it.data!!.toMutableList())
-                    binding.textViewTest.text = it.data[0].name
                 }
                 is Resource.Loading -> Log.d(TAG, "Loading")
                 is Resource.Error -> Log.w(TAG, "Error")
             }
         }
 
-
-
         return binding.root
+    }
+
+    fun openFaculties(universityId: String) {
+        findNavController().navigate(R.id.navigation_faculties)
     }
 
     override fun onDestroyView() {
