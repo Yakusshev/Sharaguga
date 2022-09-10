@@ -10,8 +10,7 @@ sealed class UniverUnit(
     data class University(
         override val reference: DocumentReference,
         override val name: String,
-        val city: String,
-        val faculties: ArrayList<Faculty>
+        val city: String
     ) : UniverUnit(
         reference = reference,
         name = name
@@ -19,8 +18,7 @@ sealed class UniverUnit(
 
     data class Faculty(
         override val reference: DocumentReference,
-        override val name: String,
-        val groups: ArrayList<Group>
+        override val name: String
     ) : UniverUnit(
         reference = reference,
         name = name
@@ -29,7 +27,6 @@ sealed class UniverUnit(
     data class Group(
         override val reference: DocumentReference,
         override val name: String,
-        /*val table: PairsTable,*/
     ) : UniverUnit(
         reference = reference,
         name = name

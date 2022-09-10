@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="16dp"
+    android:background="@drawable/background_subject">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/startTime"
+        style="@style/subject_text_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="16dp"
+        tools:text="09:00" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/endTime"
+        style="@style/subject_text_view"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="16dp"
+        tools:text="10:35" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/name"
+        style="@style/subject_text_view"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/startTime"
+        android:layout_margin="16dp"
+        tools:text="Психология" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/place"
+        style="@style/subject_text_view"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintStart_toStartOf="@id/name"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        tools:text="ауд. 409"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/type"
+        style="@style/subject_text_view"
+        app:layout_constraintTop_toBottomOf="@id/place"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@id/name"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        tools:text="Практика"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

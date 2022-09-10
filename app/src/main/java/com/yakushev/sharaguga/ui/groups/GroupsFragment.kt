@@ -1,23 +1,18 @@
 package com.yakushev.sharaguga.ui.groups
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yakushev.domain.models.UniverUnit
 import com.yakushev.sharaguga.MainActivity
-import com.yakushev.sharaguga.R
-import com.yakushev.sharaguga.databinding.FragmentFacultiesBinding
 import com.yakushev.sharaguga.databinding.FragmentGroupsBinding
 import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
-import com.yakushev.sharaguga.ui.faculties.FacultiesFragmentArgs
-import com.yakushev.sharaguga.ui.faculties.FacultiesViewModel
-import com.yakushev.sharaguga.ui.home.HomeFragmentDirections
 import com.yakushev.sharaguga.utils.Resource
 
 class GroupsFragment : Fragment() {
@@ -26,7 +21,7 @@ class GroupsFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: GroupsViewModel by viewModels()
 
-    val args: GroupsFragmentArgs by navArgs()
+    private val args: GroupsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,7 +61,8 @@ class GroupsFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
         val onItemClickListener = View.OnClickListener {
-            TODO("openGroups")
+            val unit = it.tag as UniverUnit
+            openTable(unit.reference.path)
         }
 
         binding.recyclerView.adapter = UniverUnitRecyclerAdapter(ArrayList(), onItemClickListener)
@@ -74,7 +70,7 @@ class GroupsFragment : Fragment() {
 
     private fun openTable(facultyId: String) {
         findNavController().navigate(
-            HomeFragmentDirections.actionNavigationHomeToNavigationFaculties(facultyId)
+            GroupsFragmentDirections.actionGroupsToSchedule(facultyId)
         )
     }
 

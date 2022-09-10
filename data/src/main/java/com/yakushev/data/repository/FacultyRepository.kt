@@ -17,8 +17,7 @@ class FacultyRepository(storage: Storage<FacultyDataModel>)
     override fun FacultyDataModel.mapToDomain(): Faculty {
         return Faculty(
             reference = reference,
-            name = name,
-            ArrayList()
+            name = name
         )
     }
 

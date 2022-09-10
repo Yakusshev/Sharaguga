@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_schedule">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.yakushev.sharaguga.ui.home.HomeFragment"
+        android:id="@+id/navigation_universities"
+        android:name="com.yakushev.sharaguga.ui.universities.UniversitiesFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" >
+        tools:layout="@layout/fragment_universities" >
 
         <action
-            android:id="@+id/action_navigation_home_to_navigation_faculties"
+            android:id="@+id/action_universities_to_faculties"
             app:destination="@id/navigation_faculties"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim"
@@ -63,13 +63,31 @@
             app:argType="string"
             android:defaultValue=""/>
 
+        <action
+            android:id="@+id/action_groups_to_schedule"
+            app:destination="@id/navigation_schedule"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.yakushev.sharaguga.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_schedule"
+        android:name="com.yakushev.sharaguga.ui.table.ScheduleFragment"
+        tools:layout="@layout/fragment_schedule">
+
+        <argument
+            android:name="groupPath"
+            app:argType="string"
+            android:defaultValue="null"/>
+
+        <argument
+            android:name="groupName"
+            app:argType="string"
+            android:defaultValue=""/>
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_notifications"

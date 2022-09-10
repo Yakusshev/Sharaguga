@@ -19,8 +19,7 @@ class UniversityRepository(storage: Storage<UniversityDataModel>)
         return University(
             reference = reference,
             name = name,
-            city = city,
-            ArrayList()
+            city = city
         )
     }
 }

@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="background_main">#FDFAFE</color>
+    <color name="background_activity_views">#E4E5F1</color>
+    <color name="background_fragment_views">#F3F1F8</color>
+
+    <!-- #DBE0F8 синенький -->
+    <!-- #FED5FE розовенький -->
+    <!--  для  -->
+
+
 </resources>

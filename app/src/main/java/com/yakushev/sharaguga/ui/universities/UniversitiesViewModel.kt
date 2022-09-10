@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.home
+package com.yakushev.sharaguga.ui.universities
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,7 @@ import com.yakushev.domain.usecase.UniversitiesUseCase
 import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class UniversitiesViewModel : ViewModel() {
     val TAG = "HomeViewModel"
 
     private val _liveData = MutableLiveData<Resource<List<University>>>()

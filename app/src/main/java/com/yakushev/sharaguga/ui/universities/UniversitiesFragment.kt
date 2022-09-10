@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.home
+package com.yakushev.sharaguga.ui.universities
 
 import android.os.Bundle
 import android.util.Log
@@ -10,22 +10,22 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.domain.models.UniverUnit
-import com.yakushev.sharaguga.databinding.FragmentHomeBinding
+import com.yakushev.sharaguga.databinding.FragmentUniversitiesBinding
 import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
 import com.yakushev.sharaguga.utils.Resource
 
 
-class HomeFragment : Fragment() {
+class UniversitiesFragment : Fragment() {
 
     private val TAG = "HomeFragmentTag"
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentUniversitiesBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: HomeViewModel by viewModels()
+    private val viewModel: UniversitiesViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentUniversitiesBinding.inflate(inflater, container, false)
 
         initRecyclerView()
 
@@ -56,7 +56,7 @@ class HomeFragment : Fragment() {
 
     private fun openFaculties(univerUnit: UniverUnit) {
         findNavController().navigate(
-            HomeFragmentDirections.actionNavigationHomeToNavigationFaculties(
+            UniversitiesFragmentDirections.actionUniversitiesToFaculties(
                 universityId = univerUnit.reference.path,
                 universityName = univerUnit.name
             )

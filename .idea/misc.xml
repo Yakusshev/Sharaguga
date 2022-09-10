@@ -3,13 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/drawable/background_subject.xml" value="0.1835" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/activity_main.xml" value="0.21782178217821782" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_dashboard.xml" value="0.1" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_day.xml" value="0.23802083333333332" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_faculties.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_groups.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_home.xml" value="0.14266304347826086" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_schedule.xml" value="0.23802083333333332" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_table.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/list_item_university.xml" value="0.264" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/row_univer_unit.xml" value="0.23802083333333332" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/row_university.xml" value="0.23802083333333332" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/view_subject.xml" value="0.23802083333333332" />
       </map>
     </option>
   </component>
