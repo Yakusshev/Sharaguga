@@ -1,8 +1,8 @@
-package com.yakushev.data.storage.models
+package com.yakushev.data.storage.models.univerunits
 
 import com.google.firebase.firestore.DocumentReference
 
-sealed class UniverUnitDataModel (
+sealed class UniverUnitData (
     open val reference: DocumentReference,
     open val name: String
 )

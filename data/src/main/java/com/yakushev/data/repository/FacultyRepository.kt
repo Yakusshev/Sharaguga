@@ -1,20 +1,20 @@
 package com.yakushev.data.repository
 
 import com.yakushev.data.storage.Storage
-import com.yakushev.data.storage.models.FacultyDataModel
+import com.yakushev.data.storage.models.univerunits.FacultyData
 import com.yakushev.domain.models.UniverUnit.Faculty
 
-class FacultyRepository(storage: Storage<FacultyDataModel>)
-    : AbstractRepository<FacultyDataModel, Faculty>(storage = storage) {
+class FacultyRepository(storage: Storage<FacultyData>)
+    : AbstractRepository<FacultyData, Faculty>(storage = storage) {
 
-    override fun Faculty.mapToStorage(): FacultyDataModel {
-        return FacultyDataModel(
+    override fun Faculty.mapToStorage(): FacultyData {
+        return FacultyData(
             reference = reference,
             name = name
         )
     }
 
-    override fun FacultyDataModel.mapToDomain(): Faculty {
+    override fun FacultyData.mapToDomain(): Faculty {
         return Faculty(
             reference = reference,
             name = name

@@ -2,7 +2,6 @@ package com.yakushev.data.repository
 
 import com.google.firebase.firestore.DocumentReference
 import com.yakushev.data.storage.Storage
-import com.yakushev.data.storage.models.UniverUnitDataModel
 import com.yakushev.domain.repository.Repository
 
 abstract class AbstractRepository

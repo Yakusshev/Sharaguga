@@ -1,7 +1,7 @@
-package com.yakushev.data.storage.models
+package com.yakushev.data.storage.models.schedule
 
 import com.google.type.TimeOfDay
 
-data class TimePairDataModel (
+data class TimePairData (
     val startTime: TimeOfDay, val endTime: TimeOfDay
 )

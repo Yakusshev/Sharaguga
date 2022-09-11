@@ -6,10 +6,10 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.Storage
-import com.yakushev.data.storage.models.UniverUnitDataModel
+import com.yakushev.data.storage.models.univerunits.UniverUnitData
 import kotlinx.coroutines.tasks.await
 
-abstract class AbstractFireStorage<T : UniverUnitDataModel> : Storage<T> {
+abstract class AbstractFireStorage<T : UniverUnitData> : Storage<T> {
 
     val universityReference: CollectionReference =
         Firebase.firestore.collection(UNIVERSITIES_COLLECTION_PATH)
