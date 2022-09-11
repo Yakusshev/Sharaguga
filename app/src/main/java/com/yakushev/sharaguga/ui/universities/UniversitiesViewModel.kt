@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yakushev.data.repository.UniversityRepository
-import com.yakushev.data.storage.firestore.UniversitiesFireStorage
+import com.yakushev.data.storage.firestore.UniversitiesStorage
 import com.yakushev.domain.models.UniverUnit.University
 import com.yakushev.domain.usecase.UniversitiesUseCase
 import com.yakushev.sharaguga.utils.Resource
@@ -17,7 +17,7 @@ class UniversitiesViewModel : ViewModel() {
     private val _liveData = MutableLiveData<Resource<List<University>>>()
     val liveData: LiveData<Resource<List<University>>> get() = _liveData
 
-    private val universitiesRepository = UniversityRepository(UniversitiesFireStorage())
+    private val universitiesRepository = UniversityRepository(UniversitiesStorage())
     private val getUniversitiesUseCase = UniversitiesUseCase(universitiesRepository)
 
     init {

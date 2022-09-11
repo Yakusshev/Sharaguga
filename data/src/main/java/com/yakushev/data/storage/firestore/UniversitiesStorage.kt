@@ -6,7 +6,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.yakushev.data.storage.models.UniversityDataModel
 
-class UniversitiesFireStorage : AbstractFireStorage<UniversityDataModel>() {
+class UniversitiesStorage : AbstractFireStorage<UniversityDataModel>() {
 
     private val TAG = "FirestoreUniversityStorage"
 

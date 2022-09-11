@@ -4,5 +4,5 @@ data class Subject(
     val name: String,
     val teacher: String,
     val place: String,
-    val time: SubjectTime
+    val time: TimePair
 )

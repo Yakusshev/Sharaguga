@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.repository.FacultyRepository
-import com.yakushev.data.storage.firestore.FacultiesFireStorage
+import com.yakushev.data.storage.firestore.FacultiesStorage
 import com.yakushev.domain.models.UniverUnit.Faculty
 import com.yakushev.domain.usecase.FacultiesUseCase
 import com.yakushev.sharaguga.utils.Resource
@@ -18,7 +18,7 @@ class FacultiesViewModel : ViewModel() {
     private val _liveData = MutableLiveData<Resource<List<Faculty>>>()
     val liveData: LiveData<Resource<List<Faculty>>> get() = _liveData
 
-    private val facultiesRepository = FacultyRepository(FacultiesFireStorage())
+    private val facultiesRepository = FacultyRepository(FacultiesStorage())
     private val facultiesUseCase = FacultiesUseCase(facultiesRepository)
 
     fun getFaculties(universityId: String) {

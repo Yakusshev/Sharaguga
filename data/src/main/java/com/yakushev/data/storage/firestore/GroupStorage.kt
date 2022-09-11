@@ -5,7 +5,7 @@ import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.yakushev.data.storage.models.GroupDataModel
 
-class GroupFireStorage : AbstractFireStorage<GroupDataModel>() {
+class GroupStorage : AbstractFireStorage<GroupDataModel>() {
 
     override fun DocumentSnapshot.toRequiredDataModel(): GroupDataModel {
         val data = this.data!!

@@ -1,8 +1,7 @@
 package com.yakushev.data.storage.models
 
 import com.google.type.TimeOfDay
-import com.yakushev.domain.models.table.SubjectTime
 
-data class TimeTableDataModel (
+data class TimePairDataModel (
     val startTime: TimeOfDay, val endTime: TimeOfDay
 )

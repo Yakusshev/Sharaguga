@@ -2,7 +2,7 @@ package com.yakushev.domain.models.table
 
 import com.google.type.TimeOfDay
 
-data class SubjectTime(
+data class TimePair(
     val startTime: TimeOfDay, val endTime: TimeOfDay
 ) {
 
@@ -63,7 +63,7 @@ data class SubjectTime(
                 .setMinutes(35)
                 .build()
 
-            val time = SubjectTime(firstSubjectStart, firstSubjectEnd)
+            val time = TimePair(firstSubjectStart, firstSubjectEnd)
 
             val timeFirestore = time.parseToFirestore()
 

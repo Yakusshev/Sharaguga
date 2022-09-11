@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.repository.GroupRepository
-import com.yakushev.data.storage.firestore.GroupFireStorage
+import com.yakushev.data.storage.firestore.GroupStorage
 import com.yakushev.domain.models.UniverUnit.Group
 import com.yakushev.domain.usecase.GroupUseCase
 import com.yakushev.sharaguga.utils.Resource
@@ -19,7 +19,7 @@ class GroupsViewModel : ViewModel() {
     val liveData: LiveData<Resource<List<Group>>> get() = _liveData
 
     private val groupUseCase = GroupUseCase(
-        GroupRepository(GroupFireStorage())
+        GroupRepository(GroupStorage())
     )
 
     fun getGroups(path: String) {

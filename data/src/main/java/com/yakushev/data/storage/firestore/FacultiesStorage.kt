@@ -6,7 +6,7 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.yakushev.data.storage.models.FacultyDataModel
 
 
-class FacultiesFireStorage : AbstractFireStorage<FacultyDataModel>() {
+class FacultiesStorage : AbstractFireStorage<FacultyDataModel>() {
 
     private val TAG = "FirestoreFacultiesStorage"
 
