@@ -5,7 +5,7 @@ import com.yakushev.data.storage.models.GroupDataModel
 import com.yakushev.domain.models.UniverUnit.Group
 
 class GroupRepository(storage: Storage<GroupDataModel>)
-    : AbstractUniverUnitRepository<GroupDataModel, Group>(
+    : AbstractRepository<GroupDataModel, Group>(
     storage = storage
     ) {
 

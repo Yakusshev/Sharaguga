@@ -8,9 +8,10 @@ import com.yakushev.domain.models.UniverUnit
 import com.yakushev.sharaguga.databinding.RowUniverUnitBinding
 import androidx.lifecycle.Observer
 
-class UniverUnitRecyclerAdapter(var univerUnits: MutableList<UniverUnit>,
-                                private val onItemClickListener: View.OnClickListener) :
-    RecyclerView.Adapter<UniverUnitRecyclerAdapter.UniverUnitHolder>() {
+class UniverUnitRecyclerAdapter(
+    var univerUnits: MutableList<UniverUnit>,
+    private val onItemClickListener: View.OnClickListener
+) : RecyclerView.Adapter<UniverUnitRecyclerAdapter.UniverUnitHolder>() {
 
     val observer = Observer<List<UniverUnit>> {
         TODO("Not yet implemented")
@@ -29,7 +30,9 @@ class UniverUnitRecyclerAdapter(var univerUnits: MutableList<UniverUnit>,
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UniverUnitHolder {
-        val binding = RowUniverUnitBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        val binding = RowUniverUnitBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
 
         return UniverUnitHolder(binding, onItemClickListener)
     }

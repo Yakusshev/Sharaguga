@@ -2,9 +2,9 @@ package com.yakushev.domain.usecase
 
 import com.google.firebase.firestore.DocumentReference
 import com.yakushev.domain.models.UniverUnit.Group
-import com.yakushev.domain.repository.UniverUnitRepository
+import com.yakushev.domain.repository.Repository
 
-class GroupUseCase(private val groupsRepository: UniverUnitRepository<Group>) {
+class GroupUseCase(private val groupsRepository: Repository<Group>) {
 
     suspend fun get(reference: DocumentReference): List<Group> {
         return groupsRepository.get(reference)

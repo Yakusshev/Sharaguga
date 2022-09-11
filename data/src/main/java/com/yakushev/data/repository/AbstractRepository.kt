@@ -3,13 +3,12 @@ package com.yakushev.data.repository
 import com.google.firebase.firestore.DocumentReference
 import com.yakushev.data.storage.Storage
 import com.yakushev.data.storage.models.UniverUnitDataModel
-import com.yakushev.domain.models.UniverUnit
-import com.yakushev.domain.repository.UniverUnitRepository
+import com.yakushev.domain.repository.Repository
 
-abstract class AbstractUniverUnitRepository
-    <DataModelGeneric : UniverUnitDataModel, U : UniverUnit>(
+abstract class AbstractRepository
+    <DataModelGeneric, U>(
     private val storage: Storage<DataModelGeneric>
-) : UniverUnitRepository<U> {
+) : Repository<U> {
 
     override suspend fun save(unit: U, reference: DocumentReference?): Boolean {
         return storage.save(unit.mapToStorage(), reference)

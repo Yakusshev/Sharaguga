@@ -5,7 +5,7 @@ import com.yakushev.data.storage.models.FacultyDataModel
 import com.yakushev.domain.models.UniverUnit.Faculty
 
 class FacultyRepository(storage: Storage<FacultyDataModel>)
-    : AbstractUniverUnitRepository<FacultyDataModel, Faculty>(storage = storage) {
+    : AbstractRepository<FacultyDataModel, Faculty>(storage = storage) {
 
     override fun Faculty.mapToStorage(): FacultyDataModel {
         return FacultyDataModel(
@@ -20,5 +20,4 @@ class FacultyRepository(storage: Storage<FacultyDataModel>)
             name = name
         )
     }
-
 }

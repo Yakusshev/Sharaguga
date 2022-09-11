@@ -5,16 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.lifecycle.lifecycleScope
-import com.google.type.TimeOfDay
-import com.yakushev.domain.models.table.TimeTable
-import com.yakushev.domain.usecase.GetTableUseCase
+import android.widget.AdapterView
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.yakushev.domain.models.UniverUnit
+import com.yakushev.domain.models.table.Subject
 import com.yakushev.sharaguga.MainActivity
-import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentDayBinding
-import com.yakushev.sharaguga.databinding.FragmentFacultiesBinding
-import kotlinx.coroutines.launch
+import com.yakushev.sharaguga.ui.adapters.ScheduleRecyclerAdapter
+import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
+import com.yakushev.sharaguga.utils.Resource
 
 const val ARG_OBJECT = "object"
 
@@ -22,6 +22,7 @@ class DayFragment : Fragment() {
 
     private var _binding: FragmentDayBinding? = null
     private val binding get() = _binding!!
+    private val viewModel: ScheduleViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +38,41 @@ class DayFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        initRecyclerView()
 
+        startObserving()
+
+        viewModel.getTable("")
+    }
+
+    private fun initRecyclerView() {
+        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+
+        //val onItemClickListener = AdapterView.OnItemClickListener
+
+        binding.recyclerView.adapter = ScheduleRecyclerAdapter(ArrayList())
+    }
+
+    private fun startObserving() {
+        viewModel.liveData.observe(viewLifecycleOwner) {
+            if (it is Resource.Success) {
+                val timeList = it.data!!.toMutableList()
+                val subjects = ArrayList<Subject>()
+                for (time in timeList) {
+                    subjects.add(
+                        Subject(
+                            name = "",
+                            teacher = "",
+                            place = "",
+                            time = time
+                        )
+                    )
+                }
+                (binding.recyclerView.adapter as ScheduleRecyclerAdapter)
+                    .updateList(subjects)
+            }
+
+        }
     }
 
     override fun onResume() {

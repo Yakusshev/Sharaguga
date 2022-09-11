@@ -2,7 +2,7 @@ package com.yakushev.domain.models.table
 
 import com.google.type.TimeOfDay
 
-data class TimeTable(
+data class SubjectTime(
     val startTime: TimeOfDay, val endTime: TimeOfDay
 ) {
 
@@ -63,37 +63,13 @@ data class TimeTable(
                 .setMinutes(35)
                 .build()
 
-            val time = TimeTable(firstSubjectStart, firstSubjectEnd)
+            val time = SubjectTime(firstSubjectStart, firstSubjectEnd)
 
             val timeFirestore = time.parseToFirestore()
 
-            val parsed = TimeTable.parseFromFireStore(timeFirestore)
+            //val parsed = SubjectTime.parseFromFireStore(timeFirestore)
 
-            print(parsed.getStartTime() + " " + parsed.getEndTime())
-        }
-
-        fun parseFromFireStore(data: String) : TimeTable {
-            //0900 1035
-
-            val start = TimeOfDay.newBuilder()
-                .setHours(
-                    (data[0].toString() + data[1].toString()).toInt()
-                )
-                .setMinutes(
-                    (data[2].toString() + data[3].toString()).toInt()
-                )
-                .build()
-
-            val end = TimeOfDay.newBuilder()
-                .setHours(
-                    (data[4].toString() + data[5].toString()).toInt()
-                )
-                .setMinutes(
-                    (data[6].toString() + data[7].toString()).toInt()
-                )
-                .build()
-
-            return TimeTable(start, end)
+            //print(parsed.getStartTime() + " " + parsed.getEndTime())
         }
     }
 

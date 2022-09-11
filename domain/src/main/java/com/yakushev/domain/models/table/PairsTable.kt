@@ -2,7 +2,7 @@ package com.yakushev.domain.models.table
 
 data class PairsTable(
     val subjectMap: HashMap<Day, HashMap<Int, Subject>>,
-    val timeTable: Map<Int, TimeTable>,
+    val timeTable: Map<Int, SubjectTime>,
     val repeat: Repeat,
     val weekType: WeekType,
     val pairsPerDay: Int

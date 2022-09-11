@@ -44,11 +44,7 @@ class GroupsFragment : Fragment() {
 
         initRecyclerView()
 
-        viewModel.liveData.observe(viewLifecycleOwner) {
-            if (it is Resource.Success)
-                    (binding.recyclerView.adapter as UniverUnitRecyclerAdapter)
-                        .updateList(it.data!!.toMutableList())
-        }
+        startObserving()
 
     }
 
@@ -68,10 +64,18 @@ class GroupsFragment : Fragment() {
         binding.recyclerView.adapter = UniverUnitRecyclerAdapter(ArrayList(), onItemClickListener)
     }
 
-    private fun openTable(facultyId: String) {
+    private fun openTable(groupPath: String) {
         findNavController().navigate(
-            GroupsFragmentDirections.actionGroupsToSchedule(facultyId)
+            GroupsFragmentDirections.actionGroupsToSchedule(groupPath)
         )
+    }
+
+    private fun startObserving() {
+        viewModel.liveData.observe(viewLifecycleOwner) {
+            if (it is Resource.Success)
+                (binding.recyclerView.adapter as UniverUnitRecyclerAdapter)
+                    .updateList(it.data!!.toMutableList())
+        }
     }
 
     override fun onDestroyView() {

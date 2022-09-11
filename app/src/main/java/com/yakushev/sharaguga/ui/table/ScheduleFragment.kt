@@ -7,21 +7,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentScheduleBinding
 import com.yakushev.sharaguga.ui.adapters.SchedulePagerAdapter
-import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
-import com.yakushev.sharaguga.utils.Resource
 
 class ScheduleFragment : Fragment() {
 
     private var _binding: FragmentScheduleBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TableViewModel by viewModels()
+    private val viewModel: ScheduleViewModel by viewModels()
 
     private val args: ScheduleFragmentArgs by navArgs()
 
