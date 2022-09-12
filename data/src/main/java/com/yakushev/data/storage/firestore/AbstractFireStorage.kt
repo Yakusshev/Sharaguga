@@ -12,7 +12,7 @@ import kotlinx.coroutines.tasks.await
 abstract class AbstractFireStorage<T : UniverUnitData> : Storage<T> {
 
     val universityReference: CollectionReference =
-        Firebase.firestore.collection(UNIVERSITIES_COLLECTION_PATH)
+        Firebase.firestore.collection(UNIVERSITIES_COLLECTION_NAME)
 
     override suspend fun save(unit: T, reference: DocumentReference?): Boolean {
         TODO("Not yet implemented")

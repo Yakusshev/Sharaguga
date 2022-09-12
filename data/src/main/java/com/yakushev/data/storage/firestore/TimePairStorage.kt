@@ -16,7 +16,7 @@ class TimePairStorage : Storage<TimePairData> {
         val list = reference!!
             .get()
             .await()
-            .data!![TIME_TABLE] as ArrayList<*>
+            .data!![TIME_TABLE_COLLECTION_NAME] as ArrayList<*>
 
         val subjects = ArrayList<TimePairData>()
 

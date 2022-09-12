@@ -11,7 +11,7 @@ class FacultiesStorage : AbstractFireStorage<FacultyData>() {
     private val TAG = "FirestoreFacultiesStorage"
 
     override fun getReference(reference: DocumentReference?): CollectionReference {
-        return reference!!.collection(FACULTIES_COLLECTION_PATH)
+        return reference!!.collection(FACULTIES_COLLECTION_NAME)
     }
 
     override fun DocumentSnapshot.toRequiredDataModel(): FacultyData {

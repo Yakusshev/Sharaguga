@@ -16,6 +16,6 @@ class GroupStorage : AbstractFireStorage<GroupData>() {
     }
 
     override fun getReference(reference: DocumentReference?): CollectionReference {
-        return reference!!.collection(GROUPS_COLLECTION_PATH)
+        return reference!!.collection(GROUPS_COLLECTION_NAME)
     }
 }
