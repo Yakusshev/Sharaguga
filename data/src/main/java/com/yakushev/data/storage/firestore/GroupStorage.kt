@@ -3,13 +3,13 @@ package com.yakushev.data.storage.firestore
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.yakushev.data.storage.models.univerunits.GroupData
+import com.yakushev.domain.models.UniverUnit.Group
 
-class GroupStorage : AbstractFireStorage<GroupData>() {
+class GroupStorage : AbstractFireStorage<Group>() {
 
-    override fun DocumentSnapshot.toRequiredDataModel(): GroupData {
+    override fun DocumentSnapshot.toRequiredDataModel(): Group {
         val data = this.data!!
-        return GroupData(
+        return Group(
             reference = reference,
             name = data[NAME].toString()
         )

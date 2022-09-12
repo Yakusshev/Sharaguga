@@ -1,24 +1,31 @@
 package com.yakushev.sharaguga.ui.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.domain.models.table.Subject
+import com.yakushev.domain.models.schedule.SubjectPair
+import com.yakushev.domain.models.schedule.PairsArrayList
+import com.yakushev.domain.models.schedule.TimePair
 import com.yakushev.sharaguga.databinding.SubjectBinding
 
 class ScheduleRecyclerAdapter(
-    var subjects: MutableList<Subject>
+    var subjects: PairsArrayList,
+    var timeList: ArrayList<TimePair>
 ) : RecyclerView.Adapter<ScheduleRecyclerAdapter.SubjectHolder>() {
 
     class SubjectHolder(
         private val itemBinding: SubjectBinding
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
-        fun bind(subject: Subject) {
-            itemBinding.startTime.text = subject.time.getStartTime()
-            itemBinding.endTime.text = subject.time.getEndTime()
+        fun bind(pair: SubjectPair?, timePair: TimePair?) {
+            itemBinding.apply {
+                startTime.text = timePair?.getStartTime()
+                endTime.text = timePair?.getEndTime()
+
+                subject.text = pair?.subject
+                place.text = pair?.place
+                teacher.text = pair?.teacher?.family
+            }
 
             //itemBinding.root.setOnClickListener(onItemClickListener)
         }
@@ -35,21 +42,30 @@ class ScheduleRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: SubjectHolder, position: Int) {
-        holder.bind(subjects[position])
+        var subjectPair: SubjectPair? = null
+        var timePair: TimePair? = null
+        if (subjects.size != 0) subjectPair = subjects[position]
+        if (timeList.size != 0) timePair = timeList[position]
+        holder.bind(subjectPair, timePair)
     }
+
+    //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
 
     override fun getItemCount(): Int {
-        return subjects.size
+        return if (subjects.size > timeList.size) subjects.size
+            else timeList.size
     }
 
-    fun updateList(subjects: MutableList<Subject>) {
+    fun updatePairsList(subjects: PairsArrayList) {
         this.subjects.clear()
         this.subjects = subjects
-        notifyDataSetChanged()
+        notifyItemRangeChanged(0, this.subjects.lastIndex)
     }
 
-
-
-
+    fun updateTimeList(timeList: ArrayList<TimePair>) {
+        this.timeList.clear()
+        this.timeList = timeList
+        notifyItemRangeChanged(0, this.timeList.lastIndex)
+    }
 
 }

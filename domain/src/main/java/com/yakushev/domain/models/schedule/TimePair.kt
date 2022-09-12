@@ -1,4 +1,4 @@
-package com.yakushev.domain.models.table
+package com.yakushev.domain.models.schedule
 
 import com.google.type.TimeOfDay
 
@@ -62,14 +62,6 @@ data class TimePair(
                 .setHours(10)
                 .setMinutes(35)
                 .build()
-
-            val time = TimePair(firstSubjectStart, firstSubjectEnd)
-
-            val timeFirestore = time.parseToFirestore()
-
-            //val parsed = SubjectTime.parseFromFireStore(timeFirestore)
-
-            //print(parsed.getStartTime() + " " + parsed.getEndTime())
         }
     }
 

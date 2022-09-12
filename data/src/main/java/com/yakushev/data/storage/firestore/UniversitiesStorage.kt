@@ -4,13 +4,13 @@ import android.util.Log
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.yakushev.data.storage.models.univerunits.UniversityData
+import com.yakushev.domain.models.UniverUnit.University
 
-class UniversitiesStorage : AbstractFireStorage<UniversityData>() {
+class UniversitiesStorage : AbstractFireStorage<University>() {
 
     private val TAG = "FirestoreUniversityStorage"
 
-    override suspend fun save(unit: UniversityData, reference: DocumentReference?): Boolean {
+    override suspend fun save(unit: University, reference: DocumentReference?): Boolean {
         TODO("rewrite")
         universityReference.add(unit)
             .addOnSuccessListener { documentReference ->
@@ -22,10 +22,10 @@ class UniversitiesStorage : AbstractFireStorage<UniversityData>() {
         return true
     }
 
-    override fun DocumentSnapshot.toRequiredDataModel(): UniversityData {
+    override fun DocumentSnapshot.toRequiredDataModel(): University {
         val data = this.data!!
         Log.d(TAG, "id = $id, name = ${data[NAME]}, city = ${data[CITY]}")
-        return UniversityData(
+        return University(
             reference = reference,
             name = data[NAME].toString(),
             city = data[CITY].toString()

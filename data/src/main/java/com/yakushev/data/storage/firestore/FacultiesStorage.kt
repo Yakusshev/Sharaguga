@@ -3,10 +3,10 @@ package com.yakushev.data.storage.firestore
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.yakushev.data.storage.models.univerunits.FacultyData
+import com.yakushev.domain.models.UniverUnit.Faculty
 
 
-class FacultiesStorage : AbstractFireStorage<FacultyData>() {
+class FacultiesStorage : AbstractFireStorage<Faculty>() {
 
     private val TAG = "FirestoreFacultiesStorage"
 
@@ -14,9 +14,9 @@ class FacultiesStorage : AbstractFireStorage<FacultyData>() {
         return reference!!.collection(FACULTIES_COLLECTION_NAME)
     }
 
-    override fun DocumentSnapshot.toRequiredDataModel(): FacultyData {
+    override fun DocumentSnapshot.toRequiredDataModel(): Faculty {
         val data = this.data!!
-        return FacultyData(
+        return Faculty(
             reference = reference,
             name = data[NAME].toString()
         )

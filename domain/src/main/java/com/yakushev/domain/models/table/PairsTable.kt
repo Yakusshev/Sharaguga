@@ -1,7 +1,9 @@
 package com.yakushev.domain.models.table
 
+import com.yakushev.domain.models.schedule.TimePair
+
 data class PairsTable(
-    val subjectMap: HashMap<Day, HashMap<Int, Subject>>,
+    val subjectMap: HashMap<Day, HashMap<Int, SubjectExample>>,
     val timeTable: Map<Int, TimePair>,
     val repeat: Repeat,
     val weekType: WeekType,

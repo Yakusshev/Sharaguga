@@ -5,15 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.domain.models.UniverUnit
-import com.yakushev.domain.models.table.Subject
+import com.yakushev.domain.models.schedule.PairsArrayList
+import com.yakushev.domain.models.schedule.TimePair
+import com.yakushev.domain.models.schedule.WeeksArrayList
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.databinding.FragmentDayBinding
 import com.yakushev.sharaguga.ui.adapters.ScheduleRecyclerAdapter
-import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
 import com.yakushev.sharaguga.utils.Resource
 
 const val ARG_OBJECT = "object"
@@ -50,28 +49,26 @@ class DayFragment : Fragment() {
 
         //val onItemClickListener = AdapterView.OnItemClickListener
 
-        binding.recyclerView.adapter = ScheduleRecyclerAdapter(ArrayList())
+        binding.recyclerView.adapter = ScheduleRecyclerAdapter(PairsArrayList(), ArrayList())
     }
 
     private fun startObserving() {
-        viewModel.liveData.observe(viewLifecycleOwner) {
+        val adapter = (binding.recyclerView.adapter as ScheduleRecyclerAdapter)
+        //var timeList: List<TimePair>
+        viewModel.timeScheduleLiveData.observe(viewLifecycleOwner) {
             if (it is Resource.Success) {
-                val timeList = it.data!!.toMutableList()
-                val subjects = ArrayList<Subject>()
-                for (time in timeList) {
-                    subjects.add(
-                        Subject(
-                            name = "",
-                            teacher = "",
-                            place = "",
-                            time = time
-                        )
-                    )
-                }
-                (binding.recyclerView.adapter as ScheduleRecyclerAdapter)
-                    .updateList(subjects)
+                val timeList = it.data!!.toMutableList() as ArrayList
+                adapter.updateTimeList(timeList)
             }
+        }
 
+
+        viewModel.subjectScheduleLiveData.observe(viewLifecycleOwner) {
+            if (it is Resource.Success) {
+                val pairsList = it.data!![0]?.get(0)
+                if (pairsList != null)
+                    adapter.updatePairsList(pairsList)
+            }
         }
     }
 

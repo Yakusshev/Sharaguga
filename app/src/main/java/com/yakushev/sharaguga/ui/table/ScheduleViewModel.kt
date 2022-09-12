@@ -7,54 +7,61 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.yakushev.data.repository.ScheduleRepositoryImpl
 import com.yakushev.data.repository.TimePairRepository
-import com.yakushev.data.storage.firestore.ScheduleStorage
+import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
-import com.yakushev.data.storage.models.schedule.PairData
-import com.yakushev.data.storage.models.schedule.TeacherData
-import com.yakushev.domain.models.table.TimePair
-import com.yakushev.domain.usecase.GetTableUseCase
+import com.yakushev.domain.models.schedule.TimePair
+import com.yakushev.domain.models.schedule.WeeksArrayList
+import com.yakushev.domain.models.schedule.WeeksList
+import com.yakushev.domain.usecase.SubjectScheduleUseCase
+import com.yakushev.domain.usecase.TimeScheduleUseCase
 import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.supervisorScope
 
 class ScheduleViewModel : ViewModel() {
 
-    private val _liveData = MutableLiveData<Resource<List<TimePair>>>()
-    val liveData: LiveData<Resource<List<TimePair>>> get() = _liveData
+    private val _subjectScheduleLiveData = MutableLiveData<Resource<WeeksArrayList>>()
+    val subjectScheduleLiveData: LiveData<Resource<WeeksArrayList>> get() = _subjectScheduleLiveData
 
-    private val path: String = "/universities/SPGUGA/faculties/FLE/groups/103"
-    //TODO write class
+    private val _timeScheduleLiveData = MutableLiveData<Resource<List<TimePair>>>()
+    val timeScheduleLiveData: LiveData<Resource<List<TimePair>>> get() = _timeScheduleLiveData
 
-    private val getTableUseCase = GetTableUseCase(
+    private val testPathTime = "/universities/SPGUGA/faculties/FLE/groups/103"
+    private val testPathSubject = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V"
+    //TODO remove testPaths
+
+    private val timeScheduleUseCase = TimeScheduleUseCase(
         TimePairRepository(TimePairStorage())
+    )
+
+    private val subjectScheduleUseCase = SubjectScheduleUseCase(
+        ScheduleRepositoryImpl(ScheduleStorageImpl())
     )
 
     fun getTable(path: String) {
         // TODO("remove pathTest")
-        val pathTest = this.path
         viewModelScope.launch {
-            _liveData.postValue(Resource.Loading())
-            _liveData.postValue(
-                Resource.Success(getTableUseCase.execute(
-                    pathTest
+            _timeScheduleLiveData.postValue(Resource.Loading())
+            _subjectScheduleLiveData.postValue(Resource.Loading())
+
+            _timeScheduleLiveData.postValue(
+                Resource.Success(timeScheduleUseCase.get(
+                    testPathTime
+                ))
+            )
+
+            _subjectScheduleLiveData.postValue(
+                Resource.Success(subjectScheduleUseCase.execute(
+                    testPathSubject
             )))
-        }
-    }
-
-    private val testPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V"
-
-    init {
-        viewModelScope.launch {
-            test()
         }
     }
 
     private suspend fun test() {
 
         viewModelScope.launch {
-            val weeks = ScheduleStorage().get(Firebase.firestore.document(testPath))
+            val weeks = ScheduleStorageImpl().get(Firebase.firestore.document(testPathSubject))
             val days = weeks[0]
             val pairs = days!![0]
 
