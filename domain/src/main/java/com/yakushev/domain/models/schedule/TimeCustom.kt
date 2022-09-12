@@ -1,8 +1,17 @@
 package com.yakushev.domain.models.schedule
 
+import android.util.Log
 import com.google.type.TimeOfDay
 
-data class TimePair(
+fun List<TimeCustom>.printLog(tag: String) {
+    for (time in this) {
+        Log.d(tag, "${time.getStartTime()}, " +
+                time.getEndTime()
+        )
+    }
+}
+
+data class TimeCustom(
     val startTime: TimeOfDay, val endTime: TimeOfDay
 ) {
 
@@ -64,7 +73,5 @@ data class TimePair(
                 .build()
         }
     }
-
-
 }
 

@@ -3,7 +3,7 @@ package com.yakushev.data.repository
 import com.google.firebase.firestore.DocumentReference
 import com.yakushev.data.storage.Storage
 import com.yakushev.domain.models.UniverUnit.*
-import com.yakushev.domain.models.schedule.TimePair
+import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.domain.repository.Repository
 
 abstract class AbstractRepository<M>(
@@ -25,8 +25,8 @@ class FacultyRepository(storage: Storage<Faculty>)
 class GroupRepository(storage: Storage<Group>)
     : AbstractRepository<Group>(storage = storage)
 
-class TimePairRepository(storage: Storage<TimePair>)
-    : AbstractRepository<TimePair>(storage = storage)
+class TimePairRepository(storage: Storage<TimeCustom>)
+    : AbstractRepository<TimeCustom>(storage = storage)
 
 class UniversityRepository(storage: Storage<University>)
     : AbstractRepository<University>(storage = storage)

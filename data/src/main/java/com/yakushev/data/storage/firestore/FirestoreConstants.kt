@@ -9,7 +9,7 @@ internal const val FACULTIES_COLLECTION_NAME = "faculties"
 
 internal const val GROUPS_COLLECTION_NAME = "groups"
 
-internal const val TIME_TABLE_COLLECTION_NAME = "timeTable"
+internal const val TIME_TABLE = "timeTable"
 
 //ScheduleStorage Constants
 internal const val WEEKS_COLLECTION_NAME = "weeks"

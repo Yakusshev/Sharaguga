@@ -1,7 +1,6 @@
 package com.yakushev.domain.models
 
 import com.google.firebase.firestore.DocumentReference
-import com.yakushev.domain.models.table.PairsTable
 
 sealed class UniverUnit (
     open val reference: DocumentReference,

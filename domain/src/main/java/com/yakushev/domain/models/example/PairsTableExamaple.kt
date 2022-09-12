@@ -1,10 +1,10 @@
-package com.yakushev.domain.models.table
+package com.yakushev.domain.models.example
 
-import com.yakushev.domain.models.schedule.TimePair
+import com.yakushev.domain.models.schedule.TimeCustom
 
-data class PairsTable(
+data class PairsTableExamaple(
     val subjectMap: HashMap<Day, HashMap<Int, SubjectExample>>,
-    val timeTable: Map<Int, TimePair>,
+    val timeTable: Map<Int, TimeCustom>,
     val repeat: Repeat,
     val weekType: WeekType,
     val pairsPerDay: Int

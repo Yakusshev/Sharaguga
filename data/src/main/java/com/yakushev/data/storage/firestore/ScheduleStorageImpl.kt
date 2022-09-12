@@ -1,13 +1,17 @@
 package com.yakushev.data.storage.firestore
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.yakushev.data.storage.ScheduleStorage
 import com.yakushev.domain.models.schedule.*
 import kotlinx.coroutines.tasks.await
 
-class ScheduleStorageImpl : ScheduleStorage<WeeksArrayList> {
+class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<WeeksArrayList> {
+
+    //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
 
     override suspend fun save(weeksList: WeeksArrayList, semesterReference: DocumentReference): Boolean {
         semesterReference.collection(".../day").document(PAIRS[0])
@@ -23,7 +27,7 @@ class ScheduleStorageImpl : ScheduleStorage<WeeksArrayList> {
      * return list of week (list of days (list of pairs))
      */
 
-   override suspend fun get(semesterReference: DocumentReference): WeeksArrayList {
+    override suspend fun get(semesterReference: DocumentReference): WeeksArrayList {
 
         val weeks = WeeksArrayList()
 
@@ -34,11 +38,9 @@ class ScheduleStorageImpl : ScheduleStorage<WeeksArrayList> {
             val days = DaysArrayList()
 
             for (dayId in DAYS_DOCUMENTS) {
-                val dayDocument = scheduleRef.document(dayId)
-                    .get()
-                    .await()
+                val dayDocument = scheduleRef.document(dayId).getWithoutErrors(true)
 
-                val pairs = PairsArrayList()
+                val pairs = SubjectArrayList()
                 if (dayDocument.data != null) {
                     for (pairId in PAIRS) {
                         pairs.add(getPairData(dayDocument, pairId))
@@ -48,29 +50,24 @@ class ScheduleStorageImpl : ScheduleStorage<WeeksArrayList> {
             }
             weeks.add(days)
         }
-        weeks.printLog()
+        weeks.printLog("ScheduleStorageImpl")
 
         return weeks
-    }
+   }
 
-    private fun WeeksArrayList.printLog() {
-        Log.d("ScheduleStorageImpl", "WeeksArrayList.printLog()")
-        Log.d("ScheduleStorageImpl", "${this.size}")
-        for (week in this) {
-            if (week != null) {
-                Log.d("ScheduleStorageImpl", "${week.size}")
-                for (day in week) {
-                    if (day != null) {
-                        Log.d("ScheduleStorageImpl", "${day.size}")
-                        for (pair in day) {
-                            pair?.apply {
-                                Log.d("ScheduleStorageImpl", "$subject, $place, ${teacher.family}")
-                            }
-                        }
-                    }
-                }
+    private suspend fun DocumentReference.getWithoutErrors(showToast: Boolean): DocumentSnapshot {
+        return get()
+            .addOnSuccessListener {
+                //if (context != null && showToast)
+                    //Toast.makeText(context, "Успех", Toast.LENGTH_SHORT).show()
             }
-        }
+            .addOnFailureListener {
+                if (context != null)
+                    Toast.makeText(context, "Ошибка загрузки данных", Toast.LENGTH_LONG)
+                    .show()
+            }
+            .await()
+
     }
 
     /**
@@ -78,7 +75,7 @@ class ScheduleStorageImpl : ScheduleStorage<WeeksArrayList> {
      *  There is mustn't be any uncheckable casts.
      */
 
-    private suspend fun getPairData(day: DocumentSnapshot, pairId: String) : SubjectPair? {
+    private suspend fun getPairData(day: DocumentSnapshot, pairId: String) : Subject? {
         if (day.data == null) return null
 
         @Suppress("UNCHECKED_CAST")
@@ -88,15 +85,15 @@ class ScheduleStorageImpl : ScheduleStorage<WeeksArrayList> {
         else null
     }
 
-    private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): SubjectPair {
-        return SubjectPair(
-            subject = this[SUBJECT]!!.get().await().data!![NAME].toString(),
+    private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Subject {
+        return Subject(
+            subject = this[SUBJECT]!!.getWithoutErrors(false).data!![NAME].toString(),
             teacher = Teacher(
                 name = "",
-                family = this[TEACHER]!!.get().await().data!![FAMILY].toString(),
+                family = this[TEACHER]!!.getWithoutErrors(false).data!![FAMILY].toString(),
                 patronymic = ""
             ),
-            place = this[PLACE]!!.get().await().data!![NAME].toString()
+            place = this[PLACE]!!.getWithoutErrors(false).data!![NAME].toString()
         )
     }
 

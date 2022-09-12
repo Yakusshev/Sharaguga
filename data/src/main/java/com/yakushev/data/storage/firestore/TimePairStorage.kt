@@ -1,35 +1,39 @@
 package com.yakushev.data.storage.firestore
 
+import android.util.Log
 import com.google.firebase.firestore.DocumentReference
 import com.google.type.TimeOfDay
 import com.yakushev.data.storage.Storage
-import com.yakushev.domain.models.schedule.TimePair
+import com.yakushev.domain.models.schedule.TimeCustom
+import com.yakushev.domain.models.schedule.printLog
 import kotlinx.coroutines.tasks.await
 
-class TimePairStorage : Storage<TimePair> {
+class TimePairStorage : Storage<TimeCustom> {
 
-    override suspend fun save(unit: TimePair, reference: DocumentReference?): Boolean {
+    override suspend fun save(unit: TimeCustom, reference: DocumentReference?): Boolean {
         TODO("Not yet implemented")
     }
 
-    override suspend fun get(reference: DocumentReference?): List<TimePair> {
+    override suspend fun get(reference: DocumentReference?): List<TimeCustom> {
         val documentSnapshot = reference!!
             .get()
             .await()
-            .data!![TIME_TABLE_COLLECTION_NAME] ?: return listOf()
+            .data!![TIME_TABLE] ?: return listOf()
 
         val list = documentSnapshot as ArrayList<*>
 
-        val subjects = ArrayList<TimePair>()
+        val timeList = ArrayList<TimeCustom>()
 
-        for (subject in list) {
-            subjects.add(parseFromFireStore(subject as String))
+        for (time in list) {
+            timeList.add(parseFromFireStore(time as String))
         }
 
-        return subjects
+        timeList.printLog("TimePairStorage")
+
+        return timeList
     }
 
-    private fun parseFromFireStore(data: String) : TimePair {
+    private fun parseFromFireStore(data: String) : TimeCustom {
         //0900 1035
 
         val start = TimeOfDay.newBuilder()
@@ -50,7 +54,7 @@ class TimePairStorage : Storage<TimePair> {
             )
             .build()
 
-        return TimePair(start, end)
+        return TimeCustom(start, end)
     }
 
 

@@ -1,23 +1,30 @@
 package com.yakushev.sharaguga.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.domain.models.schedule.SubjectPair
-import com.yakushev.domain.models.schedule.PairsArrayList
-import com.yakushev.domain.models.schedule.TimePair
+import com.yakushev.domain.models.schedule.Subject
+import com.yakushev.domain.models.schedule.SubjectArrayList
+import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.databinding.SubjectBinding
 
 class ScheduleRecyclerAdapter(
-    var subjects: PairsArrayList,
-    var timeList: ArrayList<TimePair>
+    var timeList: ArrayList<TimeCustom>,
+    var subjects: SubjectArrayList
 ) : RecyclerView.Adapter<ScheduleRecyclerAdapter.SubjectHolder>() {
+
+    init {
+        Log.d("Adapter", "init")
+    }
+
 
     class SubjectHolder(
         private val itemBinding: SubjectBinding
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
-        fun bind(pair: SubjectPair?, timePair: TimePair?) {
+        fun bind(pair: Subject?, timePair: TimeCustom?) {
+            Log.d("Adapter", "bind $adapterPosition")
             itemBinding.apply {
                 startTime.text = timePair?.getStartTime()
                 endTime.text = timePair?.getEndTime()
@@ -42,30 +49,35 @@ class ScheduleRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holder: SubjectHolder, position: Int) {
-        var subjectPair: SubjectPair? = null
-        var timePair: TimePair? = null
+        Log.d("Adapter", "onBindViewHolder $position")
+        var subjectPair: Subject? = null
+        var timePair: TimeCustom? = null
         if (subjects.size != 0) subjectPair = subjects[position]
         if (timeList.size != 0) timePair = timeList[position]
         holder.bind(subjectPair, timePair)
     }
 
-    //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
-
     override fun getItemCount(): Int {
-        return if (subjects.size > timeList.size) subjects.size
-            else timeList.size
+        /*return if (subjects.size > timeList.size) subjects.size
+            else timeList.size*/
+        return timeList.size
     }
 
-    fun updatePairsList(subjects: PairsArrayList) {
+    fun updateData(timeList: ArrayList<TimeCustom>, subjects: SubjectArrayList) {
         this.subjects.clear()
         this.subjects = subjects
-        notifyItemRangeChanged(0, this.subjects.lastIndex)
-    }
-
-    fun updateTimeList(timeList: ArrayList<TimePair>) {
         this.timeList.clear()
         this.timeList = timeList
-        notifyItemRangeChanged(0, this.timeList.lastIndex)
+
+        val last = if (subjects.size < timeList.size) subjects.size
+                   else timeList.size
+
+        //notifyItemRangeChanged(0, last)
+        notifyDataSetChanged()
+
+        Log.d("Adapter", "updateList")
+
+
     }
 
 }
