@@ -17,4 +17,8 @@
     <string name="tab_layout_text_saturday">С</string>
     <string name="tab_layout_text_sunday">В</string>
 
+    <string name="loading">Загрузка…</string>
+    <string name="no_data">Нет данных</string>
+    <string name="chill">Чилл</string>
+
 </resources>

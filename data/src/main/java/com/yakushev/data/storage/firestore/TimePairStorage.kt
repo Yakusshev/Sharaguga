@@ -1,7 +1,9 @@
 package com.yakushev.data.storage.firestore
 
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.type.TimeOfDay
 import com.yakushev.data.storage.Storage
 import com.yakushev.domain.models.schedule.TimeCustom
@@ -16,8 +18,7 @@ class TimePairStorage : Storage<TimeCustom> {
 
     override suspend fun get(reference: DocumentReference?): List<TimeCustom> {
         val documentSnapshot = reference!!
-            .get()
-            .await()
+            .getWithoutErrors()
             .data!![TIME_TABLE] ?: return listOf()
 
         val list = documentSnapshot as ArrayList<*>
@@ -31,6 +32,18 @@ class TimePairStorage : Storage<TimeCustom> {
         timeList.printLog("TimePairStorage")
 
         return timeList
+    }
+
+    private suspend fun DocumentReference.getWithoutErrors(): DocumentSnapshot {
+        return get()
+            .addOnSuccessListener {
+            }
+            .addOnFailureListener {
+                /*if (context != null)
+                    Toast.makeText(context, "Ошибка загрузки данных", Toast.LENGTH_LONG)
+                        .show()*/
+            }
+            .await()
     }
 
     private fun parseFromFireStore(data: String) : TimeCustom {

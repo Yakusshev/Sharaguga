@@ -45,8 +45,7 @@ class ScheduleViewModel : ViewModel() {
         )
 
         viewModelScope.launch {
-            //_scheduleLiveData.postValue(Resource.Loading())
-
+            _scheduleLiveData.postValue(Resource.Loading())
             loadSchedule(subjectScheduleUseCase)
         }
     }
@@ -61,15 +60,12 @@ class ScheduleViewModel : ViewModel() {
 
         job.join()
         updateLiveDataValue()
-        Log.d(TAG, "liveDataValue Updated")
     }
 
-    fun updateLiveDataValue() {
+    private fun updateLiveDataValue() {
         val pair = Pair(timeList!!, weeksList!!)
         _scheduleLiveData.postValue(Resource.Success(pair))
-
-        if (timeList != null && weeksList != null) {
-        }
+        Log.d(TAG, "liveDataValue Updated")
     }
 
     private suspend fun test() {

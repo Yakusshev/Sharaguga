@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yakushev.sharaguga.MainActivity
@@ -18,7 +18,7 @@ class ScheduleFragment : Fragment() {
     private var _binding: FragmentScheduleBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ScheduleViewModel by viewModels()
+    private val viewModel: ScheduleViewModel by activityViewModels()
 
     private val args: ScheduleFragmentArgs by navArgs()
 
@@ -42,8 +42,6 @@ class ScheduleFragment : Fragment() {
 
         setActionBarTitle()
 
-        //initRecyclerView()
-
         binding.viewPager.adapter = SchedulePagerAdapter(this)
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -58,29 +56,7 @@ class ScheduleFragment : Fragment() {
             }
         }.attach()
 
-        //observe()
-
     }
-
-    /*
-    private fun observe() {
-        viewModel.liveData.observe(viewLifecycleOwner) {
-            if (it is Resource.Success)
-                (binding.recyclerView.adapter as UniverUnitRecyclerAdapter)
-                    .updateList(it.data!!.toMutableList())
-        }
-    }
-    */
-/*
-    private fun initRecyclerView() {
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-
-        val onItemClickListener = View.OnClickListener {
-        }
-
-        binding.recyclerView.adapter = UniverUnitRecyclerAdapter(ArrayList(), onItemClickListener)
-    }
-*/
 
     private fun setActionBarTitle() {
         val title = (requireActivity() as MainActivity).supportActionBar?.title

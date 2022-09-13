@@ -2,7 +2,6 @@ package com.yakushev.data.storage.firestore
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.yakushev.data.storage.ScheduleStorage
@@ -12,6 +11,8 @@ import kotlinx.coroutines.tasks.await
 class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<WeeksArrayList> {
 
     //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
+
+    private companion object { const val TAG = "ScheduleStorageImpl" }
 
     override suspend fun save(weeksList: WeeksArrayList, semesterReference: DocumentReference): Boolean {
         semesterReference.collection(".../day").document(PAIRS[0])
@@ -40,24 +41,25 @@ class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<Weeks
             for (dayId in DAYS_DOCUMENTS) {
                 val dayDocument = scheduleRef.document(dayId).getWithoutErrors(true)
 
-                val pairs = SubjectArrayList()
+                Log.d(TAG, "$dayId ${dayDocument.data != null}")
+                val subjectList = SubjectArrayList()
                 if (dayDocument.data != null) {
                     for (pairId in PAIRS) {
-                        pairs.add(getPairData(dayDocument, pairId))
+                        subjectList.add(getPairData(dayDocument, pairId))
                     }
-                    days.add(pairs)
+                    days.add(subjectList)
                 } else days.add(null)
             }
             weeks.add(days)
         }
-        weeks.printLog("ScheduleStorageImpl")
+        weeks.printLog(TAG)
 
         return weeks
    }
 
     private suspend fun DocumentReference.getWithoutErrors(showToast: Boolean): DocumentSnapshot {
         return get()
-            .addOnSuccessListener {
+            /*.addOnSuccessListener {
                 //if (context != null && showToast)
                     //Toast.makeText(context, "Успех", Toast.LENGTH_SHORT).show()
             }
@@ -65,7 +67,7 @@ class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<Weeks
                 if (context != null)
                     Toast.makeText(context, "Ошибка загрузки данных", Toast.LENGTH_LONG)
                     .show()
-            }
+            }*/
             .await()
 
     }
@@ -76,11 +78,11 @@ class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<Weeks
      */
 
     private suspend fun getPairData(day: DocumentSnapshot, pairId: String) : Subject? {
-        if (day.data == null) return null
-
+        val data = day.data!!
+        Log.d(TAG, "$pairId ${data[pairId] != null}")
         @Suppress("UNCHECKED_CAST")
-        return if (day.data!![pairId] != null)
-            (day.data!![pairId] as HashMap<String, DocumentReference>)
+        return if (data[pairId] != null)
+            (data[pairId] as HashMap<String, DocumentReference>)
                 .parseFromFirestore()
         else null
     }

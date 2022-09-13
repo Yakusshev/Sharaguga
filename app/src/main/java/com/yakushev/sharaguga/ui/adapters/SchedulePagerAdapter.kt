@@ -3,7 +3,7 @@ package com.yakushev.sharaguga.ui.adapters
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.yakushev.sharaguga.ui.table.ARG_OBJECT
+import com.yakushev.sharaguga.ui.table.DAY_FRAGMENT_INDEX
 import com.yakushev.sharaguga.ui.table.DayFragment
 
 class SchedulePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
@@ -15,7 +15,7 @@ class SchedulePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) 
         val fragment = DayFragment()
         fragment.arguments = Bundle().apply {
             // Our object is just an integer :-P
-            putInt(ARG_OBJECT, position + 1)
+            putInt(DAY_FRAGMENT_INDEX, position + 1)
         }
         return fragment
     }

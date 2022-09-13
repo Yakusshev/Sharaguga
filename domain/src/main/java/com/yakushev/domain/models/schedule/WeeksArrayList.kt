@@ -10,10 +10,10 @@ class SubjectArrayList : ArrayList<Subject?> ()
 
 fun WeeksArrayList.printLog(tag: String) {
     Log.d(tag, "WeeksArrayList.printLog()")
-    Log.d(tag, "${this.size}")
+    Log.d(tag, "Недель ${this.size}")
     for (week in this) {
         if (week != null) {
-            Log.d(tag, "${week.size}")
+            Log.d(tag, "Дней ${week.size}")
             week.printLog(tag)
         }
     }
@@ -22,7 +22,7 @@ fun WeeksArrayList.printLog(tag: String) {
 fun DaysArrayList.printLog(tag: String) {
     for (day in this) {
         if (day != null) {
-            Log.d(tag, "${day.size}")
+            Log.d(tag, "Пар ${day.size}")
             day.printLog(tag)
         }
     }

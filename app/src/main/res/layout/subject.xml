@@ -30,20 +30,25 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subject"
         style="@style/subject_text_view"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/startTime"
         android:layout_margin="16dp"
+        android:layout_marginTop="16dp"
+        android:maxWidth="280dp"
+        android:lines="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/startTime"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Психология" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/teacher"
+        android:id="@+id/type"
         style="@style/subject_text_view"
         app:layout_constraintBaseline_toBaselineOf="@id/subject"
         app:layout_constraintStart_toEndOf="@id/subject"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        tools:text="Байгулов"/>
+        tools:text="Практика"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/place"
@@ -55,14 +60,14 @@
         tools:text="ауд. 409"/>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/type"
+        android:id="@+id/teacher"
         style="@style/subject_text_view"
         app:layout_constraintTop_toBottomOf="@id/place"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/subject"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        tools:text="Практика"/>
+        tools:text="Байгулов"/>
 
 
 
