@@ -1,18 +1,10 @@
 package com.yakushev.domain.models.schedule
 
-import android.util.Log
 import com.google.type.TimeOfDay
 
-fun List<TimeCustom>.printLog(tag: String) {
-    for (time in this) {
-        Log.d(tag, "${time.getStartTime()}, " +
-                time.getEndTime()
-        )
-    }
-}
-
 data class TimeCustom(
-    val startTime: TimeOfDay, val endTime: TimeOfDay
+    val startTime: TimeOfDay,
+    val endTime: TimeOfDay
 ) {
 
     fun getStartTime(): String {
@@ -57,21 +49,6 @@ data class TimeCustom(
         else
             output += minutes
         return output
-    }
-
-    companion object {
-
-        @JvmStatic
-        fun main(args: Array<String>) {
-            val firstSubjectStart = TimeOfDay.newBuilder()
-                .setHours(9)
-                .setMinutes(0)
-                .build()
-            val firstSubjectEnd = TimeOfDay.newBuilder()
-                .setHours(10)
-                .setMinutes(35)
-                .build()
-        }
     }
 }
 

@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.groups
+package com.yakushev.sharaguga.ui.groupchoose.groups
 
 import android.os.Bundle
 import android.view.LayoutInflater

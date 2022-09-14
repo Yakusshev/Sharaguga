@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.domain.models.schedule.SubjectArrayList
-import com.yakushev.domain.models.schedule.printLog
+import com.yakushev.domain.models.schedule.PeriodsArrayList
+import com.yakushev.domain.models.printLog
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentDayBinding
@@ -52,58 +50,41 @@ class DayFragment : Fragment() {
         initRecyclerView()
 
         startObserving()
+
     }
 
     private fun initRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         //val onItemClickListener = AdapterView.OnItemClickListener TODO remove or implement
-        adapter = ScheduleRecyclerAdapter(ArrayList(), SubjectArrayList())
+        adapter = ScheduleRecyclerAdapter(ArrayList(), PeriodsArrayList())
         binding.recyclerView.adapter = adapter
     }
 
     private fun startObserving() {
-        Log.d(TAG, "startObserving")
         viewModel.scheduleLiveData.observe(viewLifecycleOwner) {
-            Log.d(TAG, "observe")
             when (it) {
                 is Resource.Loading -> {
+                    binding.recyclerView.visibility = View.INVISIBLE
                     binding.noDataView.visibility = View.VISIBLE
                     binding.noDataView.text = getString(R.string.loading)
                 }
                 is Resource.Error -> {
+                    binding.recyclerView.visibility = View.INVISIBLE
                     binding.noDataView.visibility = View.VISIBLE
                     binding.noDataView.text = getString(R.string.no_data)
                 }
                 is Resource.Success -> {
                     binding.noDataView.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
 
-                    Log.d(TAG, "observe success")
                     val data = it.data!!
-                    val timeList = data.first.toMutableList() as ArrayList
-                    val weekList = data.second
+                    val timeList = data.first
+                    val periodsList = data.second
 
-                    if (index - 1 < 6) {
-                        val subjectsList = weekList[0]?.get(index - 1)
-
-                        if (subjectsList != null) {
-                            if (adapter == null)
-                                adapter = ScheduleRecyclerAdapter(timeList, subjectsList)
-                            else
-                                adapter!!.updateData(timeList, subjectsList)
-
-                            weekList.printLog(TAG)
-
-                            for (subj in subjectsList) {
-                                if (subj != null) Log.d(TAG, subj.subject)
-                            }
-                        } else {
-                            binding.noDataView.visibility = View.VISIBLE
-                            binding.noDataView.text = getString(R.string.no_data)
-                        }
-                    } else {
-                        binding.noDataView.visibility = View.VISIBLE
-                        binding.noDataView.text = getString(R.string.chill)
-                    }
+                    if (adapter == null)
+                        adapter = ScheduleRecyclerAdapter(timeList, periodsList)
+                    else
+                        adapter!!.updateData(timeList, periodsList)
                 }
             }
         }
@@ -112,13 +93,16 @@ class DayFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setActionBarTitle(index)
-        /*arguments?.takeIf { it.containsKey(DAY_FRAGMENT_INDEX) }?.apply {
-            setActionBarTitle(getInt(DAY_FRAGMENT_INDEX))
-        }*/
+
+        if (index - 1 < 6) {
+            viewModel.updateLiveDataValue(index)
+        } else {
+            binding.noDataView.visibility = View.VISIBLE
+            binding.noDataView.text = getString(R.string.chill)
+        }
     }
 
     private fun setActionBarTitle(int: Int) {
-        //val title = (requireActivity() as MainActivity).supportActionBar?.title
         (requireActivity() as MainActivity).supportActionBar?.title = "День $int"
     }
 

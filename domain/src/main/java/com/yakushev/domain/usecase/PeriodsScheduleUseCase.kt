@@ -5,7 +5,7 @@ import com.google.firebase.ktx.Firebase
 import com.yakushev.domain.models.schedule.WeeksArrayList
 import com.yakushev.domain.repository.ScheduleRepository
 
-class SubjectScheduleUseCase(private val repository: ScheduleRepository<WeeksArrayList>) {
+class PeriodsScheduleUseCase(private val repository: ScheduleRepository<WeeksArrayList>) {
 
     suspend fun get(semesterPath: String) : WeeksArrayList {
         val semesterReference = Firebase.firestore.document(semesterPath)

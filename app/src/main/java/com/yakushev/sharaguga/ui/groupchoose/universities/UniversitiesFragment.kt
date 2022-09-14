@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.universities
+package com.yakushev.sharaguga.ui.groupchoose.universities
 
 import android.os.Bundle
 import android.util.Log

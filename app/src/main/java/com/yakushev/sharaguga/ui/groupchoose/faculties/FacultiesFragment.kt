@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.faculties
+package com.yakushev.sharaguga.ui.groupchoose.faculties
 
 import android.os.Bundle
 import android.view.LayoutInflater

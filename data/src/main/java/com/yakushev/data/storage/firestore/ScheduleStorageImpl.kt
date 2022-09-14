@@ -2,13 +2,15 @@ package com.yakushev.data.storage.firestore
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.yakushev.data.storage.ScheduleStorage
+import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
 import kotlinx.coroutines.tasks.await
 
-class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<WeeksArrayList> {
+class ScheduleStorageImpl() : ScheduleStorage<WeeksArrayList> {
 
     //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
 
@@ -42,7 +44,7 @@ class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<Weeks
                 val dayDocument = scheduleRef.document(dayId).getWithoutErrors(true)
 
                 Log.d(TAG, "$dayId ${dayDocument.data != null}")
-                val subjectList = SubjectArrayList()
+                val subjectList = PeriodsArrayList()
                 if (dayDocument.data != null) {
                     for (pairId in PAIRS) {
                         subjectList.add(getPairData(dayDocument, pairId))
@@ -59,15 +61,13 @@ class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<Weeks
 
     private suspend fun DocumentReference.getWithoutErrors(showToast: Boolean): DocumentSnapshot {
         return get()
-            /*.addOnSuccessListener {
-                //if (context != null && showToast)
-                    //Toast.makeText(context, "Успех", Toast.LENGTH_SHORT).show()
+            .addOnSuccessListener {
             }
-            .addOnFailureListener {
+            .addOnFailureListener {/*
                 if (context != null)
                     Toast.makeText(context, "Ошибка загрузки данных", Toast.LENGTH_LONG)
-                    .show()
-            }*/
+                    .show()*/
+            }
             .await()
 
     }
@@ -77,9 +77,10 @@ class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<Weeks
      *  There is mustn't be any uncheckable casts.
      */
 
-    private suspend fun getPairData(day: DocumentSnapshot, pairId: String) : Subject? {
+    private suspend fun getPairData(day: DocumentSnapshot, pairId: String) : Period? {
         val data = day.data!!
         Log.d(TAG, "$pairId ${data[pairId] != null}")
+
         @Suppress("UNCHECKED_CAST")
         return if (data[pairId] != null)
             (data[pairId] as HashMap<String, DocumentReference>)
@@ -87,8 +88,8 @@ class ScheduleStorageImpl(private val context: Context?) : ScheduleStorage<Weeks
         else null
     }
 
-    private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Subject {
-        return Subject(
+    private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Period {
+        return Period(
             subject = this[SUBJECT]!!.getWithoutErrors(false).data!![NAME].toString(),
             teacher = Teacher(
                 name = "",

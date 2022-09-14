@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.universities
+package com.yakushev.sharaguga.ui.groupchoose.universities
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

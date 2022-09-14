@@ -1,13 +1,11 @@
 package com.yakushev.data.storage.firestore
 
-import android.util.Log
-import android.widget.Toast
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.type.TimeOfDay
 import com.yakushev.data.storage.Storage
 import com.yakushev.domain.models.schedule.TimeCustom
-import com.yakushev.domain.models.schedule.printLog
+import com.yakushev.domain.models.printLog
 import kotlinx.coroutines.tasks.await
 
 class TimePairStorage : Storage<TimeCustom> {

@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.notifications
+package com.yakushev.sharaguga.ui.groupchoose.notifications
 
 import android.os.Bundle
 import android.view.LayoutInflater

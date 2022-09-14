@@ -14,18 +14,23 @@ import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.domain.models.schedule.WeeksArrayList
-import com.yakushev.domain.models.schedule.printLog
-import com.yakushev.domain.usecase.SubjectScheduleUseCase
+import com.yakushev.domain.models.printLog
+import com.yakushev.domain.models.schedule.PeriodsArrayList
+import com.yakushev.domain.models.schedule.copy
+import com.yakushev.domain.usecase.PeriodsScheduleUseCase
 import com.yakushev.domain.usecase.TimeScheduleUseCase
+import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.utils.Resource
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.TestOnly
 
 class ScheduleViewModel : ViewModel() {
 
     private val TAG = "ScheduleViewModel"
 
-    private val _scheduleLiveData = MutableLiveData<Resource<Pair<List<TimeCustom>, WeeksArrayList>>>()
-    val scheduleLiveData: LiveData<Resource<Pair<List<TimeCustom>, WeeksArrayList>>> get() = _scheduleLiveData
+    private val _scheduleLiveData = MutableLiveData<Resource<Pair<ArrayList<TimeCustom>, PeriodsArrayList>>>()
+    val scheduleLiveData: LiveData<Resource<Pair<ArrayList<TimeCustom>, PeriodsArrayList>>> get() = _scheduleLiveData
 
     //TODO remove testPaths
     private val testPathTime = "/universities/SPGUGA"
@@ -38,40 +43,47 @@ class ScheduleViewModel : ViewModel() {
         TimePairRepository(TimePairStorage())
     )
 
-    fun getTable(path: String, context: Context) {
+    private var subjectScheduleUseCase = PeriodsScheduleUseCase(
+        ScheduleRepositoryImpl(ScheduleStorageImpl())
+    )
 
-        val subjectScheduleUseCase = SubjectScheduleUseCase(
-            ScheduleRepositoryImpl(ScheduleStorageImpl(context))
-        )
+    private var loadingJob = viewModelScope.launch {
+        timeList = timeScheduleUseCase.get(testPathTime)
+        timeList!!.printLog(TAG)
+        weeksList = subjectScheduleUseCase.get(testPathSubject)
+        weeksList!!.printLog(TAG)
+    }
 
+    init {
+        _scheduleLiveData.postValue(Resource.Loading())
+    }
+
+    fun updateLiveDataValue(index: Int) {
         viewModelScope.launch {
-            _scheduleLiveData.postValue(Resource.Loading())
-            loadSchedule(subjectScheduleUseCase)
+            loadingJob.join()
+
+            val timeList = timeList!!.toMutableList() as ArrayList
+
+            val periodsList = weeksList!![0]?.get(index - 1) //TODO replace 0 with actual week
+
+            if (periodsList != null) {
+                val pair = Pair(timeList, periodsList.copy())
+
+                _scheduleLiveData.postValue(Resource.Success(pair))
+            } else {
+                _scheduleLiveData.postValue(Resource.Error(null))
+            }
+
+            Log.d(TAG, "liveDataValue Updated")
         }
     }
 
-    private suspend fun loadSchedule(subjectScheduleUseCase: SubjectScheduleUseCase) {
-        val job = viewModelScope.launch {
-            timeList = timeScheduleUseCase.get(testPathTime)
-            timeList!!.printLog(TAG)
-            weeksList = subjectScheduleUseCase.get(testPathSubject)
-            weeksList!!.printLog(TAG)
-        }
 
-        job.join()
-        updateLiveDataValue()
-    }
 
-    private fun updateLiveDataValue() {
-        val pair = Pair(timeList!!, weeksList!!)
-        _scheduleLiveData.postValue(Resource.Success(pair))
-        Log.d(TAG, "liveDataValue Updated")
-    }
-
+    @TestOnly
     private suspend fun test() {
-
         viewModelScope.launch {
-            val weeks = ScheduleStorageImpl(null).get(Firebase.firestore.document(testPathSubject))
+            val weeks = ScheduleStorageImpl().get(Firebase.firestore.document(testPathSubject))
             val days = weeks[0]
             val pairs = days!![0]
 
@@ -80,7 +92,6 @@ class ScheduleViewModel : ViewModel() {
                     Log.d("ScheduleStorage", "$subject, ${teacher.family}, $place")
                 }
             }
-        }.join()
-
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.groups
+package com.yakushev.sharaguga.ui.groupchoose.groups
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
