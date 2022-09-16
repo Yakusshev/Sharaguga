@@ -87,7 +87,23 @@
             android:name="groupName"
             app:argType="string"
             android:defaultValue=""/>
+
+        <action
+            android:id="@+id/action_schedule_to_add_fragment"
+            app:destination="@id/navigation_add_period"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
     </fragment>
+
+    <dialog
+        android:id="@+id/navigation_add_period"
+        android:name="com.yakushev.sharaguga.ui.AddPeriodFragment"
+        tools:layout="@layout/fragment_add_period">
+
+    </dialog>
 
     <fragment
         android:id="@+id/navigation_notifications"

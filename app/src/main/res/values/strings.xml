@@ -20,5 +20,11 @@
     <string name="loading">Загрузка…</string>
     <string name="no_data">Нет данных</string>
     <string name="chill">Чилл</string>
+    <string name="subject">Предмет</string>
+    <string name="teacher">Преподаватель</string>
+    <string name="place">Аудитория</string>
+    <string name="lecture">Лекция</string>
+    <string name="fab_content_description">добавить пару</string>
+    <string name="add_period">Добавить пару</string>
 
 </resources>

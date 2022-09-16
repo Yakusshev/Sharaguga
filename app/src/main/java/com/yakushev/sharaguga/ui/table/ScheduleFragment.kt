@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yakushev.sharaguga.MainActivity
@@ -21,6 +22,8 @@ class ScheduleFragment : Fragment() {
     private val viewModel: ScheduleViewModel by activityViewModels()
 
     private val args: ScheduleFragmentArgs by navArgs()
+
+    private var position = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -43,6 +46,7 @@ class ScheduleFragment : Fragment() {
         binding.viewPager.adapter = SchedulePagerAdapter(this)
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            this.position = position
             when (position + 1) {
                 1 -> tab.text = getString(R.string.tab_layout_text_monday)
                 2 -> tab.text = getString(R.string.tab_layout_text_tuesday)
@@ -53,6 +57,11 @@ class ScheduleFragment : Fragment() {
                 7 -> tab.text = getString(R.string.tab_layout_text_sunday)
             }
         }.attach()
+
+        binding.floatingActionButton.setOnClickListener {
+            findNavController().navigate(R.id.action_schedule_to_add_fragment)
+        }
+
 
     }
 
