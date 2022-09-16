@@ -26,5 +26,6 @@
     <string name="lecture">Лекция</string>
     <string name="fab_content_description">добавить пару</string>
     <string name="add_period">Добавить пару</string>
+    <string name="window">Окно</string>
 
 </resources>

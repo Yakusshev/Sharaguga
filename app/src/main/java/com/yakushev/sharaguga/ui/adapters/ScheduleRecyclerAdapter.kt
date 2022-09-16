@@ -11,7 +11,7 @@ import com.yakushev.sharaguga.databinding.SubjectBinding
 
 class ScheduleRecyclerAdapter(
     var timeList: ArrayList<TimeCustom>,
-    var subjects: PeriodsArrayList
+    var periods: PeriodsArrayList
 ) : RecyclerView.Adapter<ScheduleRecyclerAdapter.SubjectHolder>() {
 
     init {
@@ -52,7 +52,7 @@ class ScheduleRecyclerAdapter(
         Log.d("Adapter", "onBindViewHolder $position")
         var subjectPair: Period? = null
         var timePair: TimeCustom? = null
-        if (subjects.size != 0) subjectPair = subjects[position]
+        if (periods.size != 0) subjectPair = periods[position]
         if (timeList.size != 0) timePair = timeList[position]
         holder.bind(subjectPair, timePair)
     }
@@ -63,21 +63,15 @@ class ScheduleRecyclerAdapter(
         return timeList.size
     }
 
-    fun updateData(timeList: ArrayList<TimeCustom>, subjects: PeriodsArrayList) {
-        this.subjects.clear()
-        this.subjects = subjects
-        this.timeList.clear()
-        this.timeList = timeList
+    fun updatePeriods(periods: PeriodsArrayList) {
+        if (this.periods.isEmpty()) this.periods = periods
 
-        val last = if (subjects.size < timeList.size) subjects.size
-                   else timeList.size
+        notifyItemRangeChanged(0, periods.size)
+    }
 
-        notifyItemRangeChanged(0, last)
-        //notifyDataSetChanged()
-
-        Log.d("Adapter", "updateList")
-
-
+    fun updateTimeList(timeList: ArrayList<TimeCustom>) {
+        if (this.timeList.isEmpty()) this.timeList = timeList
+        if (!this.periods.isEmpty()) notifyItemRangeChanged(0, timeList.size)
     }
 
 }

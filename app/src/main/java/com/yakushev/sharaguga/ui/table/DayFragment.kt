@@ -59,7 +59,7 @@ class DayFragment : Fragment() {
     }
 
     private fun startObserving() {
-        viewModel.scheduleLiveData.observe(viewLifecycleOwner) {
+        viewModel.listLiveData[index - 1].observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Loading -> {
                     binding.recyclerView.visibility = View.INVISIBLE
@@ -76,14 +76,16 @@ class DayFragment : Fragment() {
                     binding.recyclerView.visibility = View.VISIBLE
 
                     val data = it.data!!
-                    val timeList = data.first
-                    val periodsList = data.second
 
-                    if (adapter == null)
-                        adapter = ScheduleRecyclerAdapter(timeList, periodsList)
-                    else
-                        adapter!!.updateData(timeList, periodsList)
+                    adapter!!.updatePeriods(data)
                 }
+            }
+        }
+        viewModel.timeLiveData.observe(viewLifecycleOwner) {
+            if (it is Resource.Success) {
+                val data = it.data!!
+
+                adapter!!.updateTimeList(data)
             }
         }
     }
@@ -91,13 +93,6 @@ class DayFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setActionBarTitle(index)
-
-        if (index - 1 < 6) {
-            viewModel.updateLiveDataValue(index)
-        } else {
-            binding.noDataView.visibility = View.VISIBLE
-            binding.noDataView.text = getString(R.string.chill)
-        }
     }
 
     private fun setActionBarTitle(int: Int) {

@@ -13,6 +13,7 @@ import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentScheduleBinding
 import com.yakushev.sharaguga.ui.adapters.SchedulePagerAdapter
+import java.time.LocalDate
 
 class ScheduleFragment : Fragment() {
 
@@ -35,6 +36,10 @@ class ScheduleFragment : Fragment() {
             inflater, container, false
         )
 
+        //TODO implement
+//        val day = LocalDate.now().dayOfWeek
+//        day.value // Monday = 1, Tuesday = 2, etc
+
         return binding.root
     }
 
@@ -43,7 +48,8 @@ class ScheduleFragment : Fragment() {
 
         setActionBarTitle()
 
-        binding.viewPager.adapter = SchedulePagerAdapter(this)
+        val adapter = SchedulePagerAdapter(this)
+        binding.viewPager.adapter = adapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             this.position = position
@@ -61,8 +67,6 @@ class ScheduleFragment : Fragment() {
         binding.floatingActionButton.setOnClickListener {
             findNavController().navigate(R.id.action_schedule_to_add_fragment)
         }
-
-
     }
 
     private fun setActionBarTitle() {
