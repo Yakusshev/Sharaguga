@@ -103,6 +103,11 @@
         android:name="com.yakushev.sharaguga.ui.AddPeriodFragment"
         tools:layout="@layout/fragment_add_period">
 
+        <argument
+            android:name="position"
+            app:argType="integer"
+            android:defaultValue="0"/>
+
     </dialog>
 
     <fragment

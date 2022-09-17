@@ -24,8 +24,16 @@
     <string name="teacher">Преподаватель</string>
     <string name="place">Аудитория</string>
     <string name="lecture">Лекция</string>
+
     <string name="fab_content_description">добавить пару</string>
     <string name="add_period">Добавить пару</string>
     <string name="window">Окно</string>
+
+    <string-array name="add_period_spinner">
+        <item>Первая пара</item>
+        <item>Вторая пара</item>
+        <item>Третья пара</item>
+        <item>Четвертая пара</item>
+    </string-array>
 
 </resources>

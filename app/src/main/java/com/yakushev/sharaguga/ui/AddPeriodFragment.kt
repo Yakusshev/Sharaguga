@@ -6,14 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.fragment.navArgs
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentAddPeriodBinding
 import com.yakushev.sharaguga.databinding.FragmentDayBinding
+import com.yakushev.sharaguga.ui.groupchoose.groups.GroupsFragmentArgs
 
 class AddPeriodFragment : DialogFragment() {
 
     private var _binding: FragmentAddPeriodBinding? = null
     private val binding get() = _binding!!
+
+    private val args: AddPeriodFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,6 +33,8 @@ class AddPeriodFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.spinner.setSelection(args.position)
 
         binding.window.setOnCheckedChangeListener { _, b ->
             binding.apply {

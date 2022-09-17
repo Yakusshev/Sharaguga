@@ -11,70 +11,18 @@ import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.databinding.ItemSubjectBinding
 import com.yakushev.sharaguga.databinding.ItemSubjectEmptyBinding
 import com.yakushev.sharaguga.databinding.ItemSubjectWindowBinding
-
-sealed class ItemType {
-    object Subject {
-        const val value = 0
-    }
-    object Empty {
-        const val value = 1
-    }
-    object Window {
-        const val value = 2
-    }
-}
-
-private const val SUBJECT = 0
-private const val EMPTY = 1
-private const val WINDOW = 2
+import com.yakushev.sharaguga.ui.adapters.schedule.*
+import com.yakushev.sharaguga.ui.adapters.schedule.EmptySubjectHolder
+import com.yakushev.sharaguga.ui.adapters.schedule.SubjectHolder
 
 class ScheduleRecyclerAdapter(
     var timeList: ArrayList<TimeCustom>,
-    var periods: PeriodsArrayList
-) : RecyclerView.Adapter<ScheduleRecyclerAdapter.AbstractSubjectHolder>() {
+    var periods: PeriodsArrayList,
+    val onItemClickListener: OnItemClickListener
+) : RecyclerView.Adapter<AbstractSubjectHolder>() {
 
     init {
         Log.d("Adapter", "init")
-    }
-
-    abstract class AbstractSubjectHolder(
-        itemBinding: ViewBinding
-    ) : RecyclerView.ViewHolder(itemBinding.root)
-
-    class SubjectHolder(
-        private val itemBinding: ItemSubjectBinding
-    ) : AbstractSubjectHolder(itemBinding) {
-
-        fun bind(period: Period?, timePair: TimeCustom?) {
-            itemBinding.apply {
-                startTime.text = timePair?.getStartTime()
-                endTime.text = timePair?.getEndTime()
-
-                subject.text = period?.subject
-                place.text = period?.place
-                teacher.text = period?.teacher?.family
-            }
-        }
-    }
-
-    class EmptySubjectHolder(
-        private val itemBinding: ItemSubjectEmptyBinding
-    ) : AbstractSubjectHolder(itemBinding) {
-        fun bind() {
-            itemBinding.root.setOnClickListener {
-
-            }
-        }
-    }
-
-    class WindowSubjectHolder(
-        private val itemBinding: ItemSubjectWindowBinding
-    ) : AbstractSubjectHolder(itemBinding) {
-        fun bind() {
-            itemBinding.root.setOnClickListener {
-
-            }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AbstractSubjectHolder {
@@ -112,13 +60,26 @@ class ScheduleRecyclerAdapter(
     override fun onBindViewHolder(holder: AbstractSubjectHolder, position: Int) {
         when (getItemViewType(position)) {
             SUBJECT -> {
-                (holder as SubjectHolder).bind(periods[position], timeList[position])
+                (holder as SubjectHolder).apply {
+                    bind(periods[position], timeList[position])
+                    itemView.setOnClickListener {
+                        onItemClickListener.onClick(SUBJECT, adapterPosition)
+                    }
+                }
             }
             EMPTY -> {
-                (holder as EmptySubjectHolder).bind()
+                (holder as EmptySubjectHolder).apply {
+                    itemView.setOnClickListener {
+                        onItemClickListener.onClick(EMPTY, adapterPosition)
+                    }
+                }
             }
             else -> {
-                (holder as WindowSubjectHolder).bind()
+                (holder as WindowSubjectHolder).apply {
+                    itemView.setOnClickListener {
+                        onItemClickListener.onClick(WINDOW, adapterPosition)
+                    }
+                }
             }
         }
     }
