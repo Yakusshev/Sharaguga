@@ -2,7 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.Sharaguga" parent="Theme.Material3.DynamicColors.Dark">
 
-        <item name="android:statusBarColor">@color/material_dynamic_neutral10</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">false</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

@@ -15,7 +15,8 @@
                 <item name="colorOnBackground">@android:color/system_neutral1_900</item>
         -->
 
-        <item name="android:statusBarColor">@color/material_dynamic_neutral10</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:windowLightStatusBar">true</item>
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
