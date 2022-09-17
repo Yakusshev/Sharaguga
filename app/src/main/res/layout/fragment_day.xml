@@ -31,8 +31,9 @@
 
     </androidx.core.widget.NestedScrollView>
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/noDataView"
+        style="@style/text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"

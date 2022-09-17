@@ -32,10 +32,6 @@ class ScheduleViewModel : ViewModel() {
 
     private val TAG = "ScheduleViewModel"
 
-    //TODO remove
-    private val _scheduleLiveData = MutableLiveData<Resource<Pair<ArrayList<TimeCustom>, PeriodsArrayList>>>()
-    val scheduleLiveData: LiveData<Resource<Pair<ArrayList<TimeCustom>, PeriodsArrayList>>> get() = _scheduleLiveData
-
     private val _listLiveData = ArrayList<MutableLiveData<Resource<PeriodsArrayList>>>()
     val listLiveData: List<LiveData<Resource<PeriodsArrayList>>> get() = _listLiveData
 
@@ -72,30 +68,9 @@ class ScheduleViewModel : ViewModel() {
             }
         }
         updateLiveDataValue()
-        //_scheduleLiveData.postValue(Resource.Loading())
     }
 
-/*    fun updateLiveDataValue(index: Int) {
-        viewModelScope.launch {
-            loadingJob.join()
-
-            val timeList = timeList!!.toMutableList() as ArrayList
-
-            val periodsList = weeksList!![0]?.get(index - 1) //TODO replace 0 with actual week
-
-            if (periodsList != null) {
-                val pair = Pair(timeList, periodsList.copy())
-
-                _scheduleLiveData.postValue(Resource.Success(pair))
-            } else {
-                _scheduleLiveData.postValue(Resource.Error(null))
-            }
-
-            Log.d(TAG, "liveDataValue Updated")
-        }
-    }*/
-
-    fun updateLiveDataValue() {
+    private fun updateLiveDataValue() {
         viewModelScope.launch {
             loadingJob.join()
 

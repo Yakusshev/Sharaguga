@@ -69,6 +69,4 @@
         android:layout_marginBottom="16dp"
         tools:text="Байгулов"/>
 
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

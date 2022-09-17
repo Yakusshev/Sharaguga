@@ -48,7 +48,7 @@ internal class SubjectHolder(
     }
 }
 
-internal class EmptySubjectHolder(
+internal class EmptyHolder(
     private val itemBinding: ItemSubjectEmptyBinding
 ) : AbstractSubjectHolder(itemBinding) {
     fun bind() {
@@ -59,7 +59,7 @@ internal class EmptySubjectHolder(
     }
 }
 
-internal class WindowSubjectHolder(
+internal class WindowHolder(
     private val itemBinding: ItemSubjectWindowBinding
 ) : AbstractSubjectHolder(itemBinding) {
     fun bind() {

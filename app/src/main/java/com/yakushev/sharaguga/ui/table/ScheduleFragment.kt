@@ -1,5 +1,6 @@
 package com.yakushev.sharaguga.ui.table
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -51,6 +52,8 @@ class ScheduleFragment : Fragment() {
         val adapter = SchedulePagerAdapter(this)
         binding.viewPager.adapter = adapter
 
+        //binding.viewPager.currentItem = 1
+
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             this.position = position
             when (position + 1) {
@@ -63,6 +66,11 @@ class ScheduleFragment : Fragment() {
                 7 -> tab.text = getString(R.string.tab_layout_text_sunday)
             }
         }.attach()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val day = LocalDate.now().dayOfWeek.value
+            binding.viewPager.currentItem = day - 1
+        }
 
         binding.floatingActionButton.setOnClickListener {
             findNavController().navigate(R.id.action_schedule_to_add_fragment)

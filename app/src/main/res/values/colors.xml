@@ -12,6 +12,14 @@
     <color name="background_activity_views">#E4E5F1</color>
     <color name="background_fragment_views">#F3F1F8</color>
 
+    <color name="toolbar_text"></color>
+    <color name="toolbar_arrow"></color>
+
+    <color name="digit_button_text">#D4E8D0</color>
+    <color name="command_button_text">#D4E8D0</color>
+    <color name="answer_text">#C1C9BD</color>
+    <color name="term_text">#E2E3DD</color>
+
     <!-- #DBE0F8 синенький -->
     <!-- #FED5FE розовенький -->
     <!--  для  -->

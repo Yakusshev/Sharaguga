@@ -1,25 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Sharaguga" parent="Theme.MaterialComponents.DayNight">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/background_activity_views</item>
+    <style name="Theme.Sharaguga" parent="Theme.Material3.DynamicColors.Dark">
 
-        <item name="actionBarItemBackground">@color/background_activity_views</item> <!-- background -->
-        <item name="android:windowBackground">?attr/colorPrimaryVariant</item> <!-- Loading App Screen color -->
-        <item name="android:colorBackground">@color/purple_200</item> <!-- no changes -->
+        <item name="android:statusBarColor">@color/material_dynamic_neutral10</item>
 
-        <item name="tabBackground">@color/background_activity_views</item>
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
 
-        <item name="bottomNavigationStyle">@style/BottomNavigation</item>
+        <item name="bottomNavigationStyle">@style/Widget.MaterialComponents.BottomNavigationView</item>
     </style>
 </resources>

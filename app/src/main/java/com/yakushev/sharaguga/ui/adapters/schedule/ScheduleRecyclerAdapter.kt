@@ -4,22 +4,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.PeriodsArrayList
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.databinding.ItemSubjectBinding
 import com.yakushev.sharaguga.databinding.ItemSubjectEmptyBinding
 import com.yakushev.sharaguga.databinding.ItemSubjectWindowBinding
 import com.yakushev.sharaguga.ui.adapters.schedule.*
-import com.yakushev.sharaguga.ui.adapters.schedule.EmptySubjectHolder
+import com.yakushev.sharaguga.ui.adapters.schedule.EmptyHolder
 import com.yakushev.sharaguga.ui.adapters.schedule.SubjectHolder
 
 class ScheduleRecyclerAdapter(
-    var timeList: ArrayList<TimeCustom>,
-    var periods: PeriodsArrayList,
-    val onItemClickListener: OnItemClickListener
+    private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<AbstractSubjectHolder>() {
+
+    private var timeList: ArrayList<TimeCustom> = ArrayList()
+    private var periods: PeriodsArrayList = PeriodsArrayList()
 
     init {
         Log.d("Adapter", "init")
@@ -27,32 +26,50 @@ class ScheduleRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AbstractSubjectHolder {
         return when (viewType) {
-            SUBJECT -> {
-                SubjectHolder(
-                    itemBinding = ItemSubjectBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                    )
-                )
+            SUBJECT -> createSubjectHolder(parent)
+            EMPTY -> createEmptyHolder(parent)
+            else -> createWindowHolder(parent)
+        }
+    }
+
+    private fun createSubjectHolder(parent: ViewGroup) : SubjectHolder {
+        return SubjectHolder(
+            itemBinding = ItemSubjectBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
+            itemView.setOnClickListener {
+                onItemClickListener.onClick(SUBJECT, adapterPosition)
             }
-            EMPTY -> {
-                EmptySubjectHolder(
-                    itemBinding = ItemSubjectEmptyBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                    )
-                )
+        }
+    }
+
+    private fun createEmptyHolder(parent: ViewGroup) : EmptyHolder {
+        return EmptyHolder(
+            itemBinding = ItemSubjectEmptyBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
+            itemView.setOnClickListener {
+                onItemClickListener.onClick(EMPTY, adapterPosition)
             }
-            else -> {
-                WindowSubjectHolder(
-                    itemBinding = ItemSubjectWindowBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent,
-                        false
-                    )
-                )
+        }
+    }
+
+    private fun createWindowHolder(parent: ViewGroup) : WindowHolder {
+        return WindowHolder(
+            itemBinding = ItemSubjectWindowBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        ).apply {
+            itemView.setOnClickListener {
+                onItemClickListener.onClick(WINDOW, adapterPosition)
             }
         }
     }
@@ -60,32 +77,18 @@ class ScheduleRecyclerAdapter(
     override fun onBindViewHolder(holder: AbstractSubjectHolder, position: Int) {
         when (getItemViewType(position)) {
             SUBJECT -> {
-                (holder as SubjectHolder).apply {
-                    bind(periods[position], timeList[position])
-                    itemView.setOnClickListener {
-                        onItemClickListener.onClick(SUBJECT, adapterPosition)
-                    }
-                }
+                val subjectHolder = holder as SubjectHolder
+                subjectHolder.bind(periods[position], timeList[position])
             }
             EMPTY -> {
-                (holder as EmptySubjectHolder).apply {
-                    itemView.setOnClickListener {
-                        onItemClickListener.onClick(EMPTY, adapterPosition)
-                    }
-                }
             }
             else -> {
-                (holder as WindowSubjectHolder).apply {
-                    itemView.setOnClickListener {
-                        onItemClickListener.onClick(WINDOW, adapterPosition)
-                    }
-                }
             }
         }
     }
 
     override fun getItemCount(): Int {
-        return timeList.size
+        return 4 //TODO rewrite if necessary
     }
 
     override fun getItemViewType(position: Int): Int {

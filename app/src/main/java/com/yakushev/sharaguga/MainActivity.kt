@@ -1,6 +1,8 @@
 package com.yakushev.sharaguga
 
 import android.os.Bundle
+import android.view.animation.AnimationUtils
+import android.widget.Toolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -24,17 +26,26 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_universities, R.id.navigation_schedule, R.id.navigation_notifications
             )
         )
+
+        setSupportActionBar(binding.appBar)
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         actionBar?.setHomeButtonEnabled(true)
         actionBar?.setDisplayHomeAsUpEnabled(true)
         navView.setupWithNavController(navController)
+
+        binding.forward.setOnClickListener {
+            it.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in))
+        }
+
+        binding.back.setOnClickListener {
+            it.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in))
+        }
     }
 
 

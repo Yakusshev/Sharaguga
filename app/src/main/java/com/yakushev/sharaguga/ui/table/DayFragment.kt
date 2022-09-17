@@ -12,13 +12,12 @@ import com.yakushev.domain.models.schedule.PeriodsArrayList
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentDayBinding
+import com.yakushev.sharaguga.ui.adapters.SchedulePagerAdapter.Companion.DAY_FRAGMENT_INDEX
 import com.yakushev.sharaguga.ui.adapters.ScheduleRecyclerAdapter
 import com.yakushev.sharaguga.ui.adapters.schedule.EMPTY
 import com.yakushev.sharaguga.ui.adapters.schedule.OnItemClickListener
 import com.yakushev.sharaguga.ui.adapters.schedule.SUBJECT
 import com.yakushev.sharaguga.utils.Resource
-
-const val DAY_FRAGMENT_INDEX = "object"
 
 class DayFragment : Fragment() {
 
@@ -73,13 +72,8 @@ class DayFragment : Fragment() {
             }
         }
 
-        adapter = ScheduleRecyclerAdapter(ArrayList(), PeriodsArrayList(), onItemClickListener)
+        adapter = ScheduleRecyclerAdapter(onItemClickListener)
         binding.recyclerView.adapter = adapter
-
-
-
-
-        //binding.recyclerView.click
     }
 
     private fun startObserving() {
@@ -91,9 +85,8 @@ class DayFragment : Fragment() {
                     binding.noDataView.text = getString(R.string.loading)
                 }
                 is Resource.Error -> {
-                    //binding.recyclerView.visibility = View.INVISIBLE
-                    //binding.noDataView.visibility = View.VISIBLE
-                    //binding.noDataView.text = getString(R.string.no_data)
+                    binding.noDataView.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
                 }
                 is Resource.Success -> {
                     binding.noDataView.visibility = View.GONE
