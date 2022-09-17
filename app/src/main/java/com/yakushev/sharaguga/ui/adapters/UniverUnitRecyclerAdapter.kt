@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.domain.models.UniverUnit
-import com.yakushev.sharaguga.databinding.RowUniverUnitBinding
+import com.yakushev.sharaguga.databinding.ItemUniverUnitBinding
 import androidx.lifecycle.Observer
 
 class UniverUnitRecyclerAdapter(
@@ -18,7 +18,7 @@ class UniverUnitRecyclerAdapter(
     }
 
     class UniverUnitHolder(
-        private val itemBinding: RowUniverUnitBinding,
+        private val itemBinding: ItemUniverUnitBinding,
         private val onItemClickListener: View.OnClickListener
     ) : RecyclerView.ViewHolder(itemBinding.root) {
 
@@ -30,7 +30,7 @@ class UniverUnitRecyclerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UniverUnitHolder {
-        val binding = RowUniverUnitBinding.inflate(
+        val binding = ItemUniverUnitBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
 

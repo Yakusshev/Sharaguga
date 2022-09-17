@@ -30,7 +30,7 @@ class AddPeriodFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.window.setOnCheckedChangeListener { compoundButton, b ->
+        binding.window.setOnCheckedChangeListener { _, b ->
             binding.apply {
                 if (b) {
                     subject.visibility = View.GONE
