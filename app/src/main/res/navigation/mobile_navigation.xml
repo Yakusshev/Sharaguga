@@ -104,7 +104,12 @@
         tools:layout="@layout/fragment_add_period">
 
         <argument
-            android:name="position"
+            android:name="pairPosition"
+            app:argType="integer"
+            android:defaultValue="0"/>
+
+        <argument
+            android:name="dayPosition"
             app:argType="integer"
             android:defaultValue="0"/>
 

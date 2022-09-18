@@ -1,5 +1,7 @@
 package com.yakushev.data.storage.firestore
 
+internal const val SAVING_ERROR_MASSAGE = "Error during saving"
+
 
 internal const val UNIVERSITIES_COLLECTION_NAME = "universities"
 internal const val NAME = "name" //this constants is used in different documents
@@ -20,24 +22,9 @@ internal const val TEACHER = "teacher"
 internal const val PLACE = "place"
 internal const val FAMILY = "family"
 
-internal val WEEKS_DOCUMENTS = arrayOf(
-    "FirstWeek",
-    "SecondWeek"
-)
+internal const val PLACES_COLLECTION_PATH = "/universities/SPGUGA/places"
+internal const val SUBJECTS_COLLECTION_PATH = "/universities/SPGUGA/subjects"
+internal const val TEACHERS_COLLECTION_PATH = "/universities/SPGUGA/teachers"
 
-internal val DAYS_DOCUMENTS = arrayOf(
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-)
 
-internal val PAIRS = arrayOf(
-    "pair1",
-    "pair2",
-    "pair3",
-    "pair4",
-    "pair5"
-)
+

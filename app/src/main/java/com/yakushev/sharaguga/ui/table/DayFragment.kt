@@ -57,7 +57,7 @@ class DayFragment : Fragment() {
     private fun initRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val onItemClickListener = OnItemClickListener { viewType, position ->
+        val onItemClickListener = OnItemClickListener { viewType, pairPosition ->
             when (viewType) {
                 SUBJECT -> {
 
@@ -65,7 +65,8 @@ class DayFragment : Fragment() {
                 EMPTY -> {
                     findNavController().navigate(
                         ScheduleFragmentDirections.actionScheduleToAddFragment(
-                            position = position
+                            pairPosition = pairPosition,
+                            dayPosition = index
                         )
                     )
                 }

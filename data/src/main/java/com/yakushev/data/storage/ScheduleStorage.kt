@@ -1,11 +1,11 @@
 package com.yakushev.data.storage
 
 import com.google.firebase.firestore.DocumentReference
-import com.yakushev.domain.models.schedule.WeeksArrayList
+import com.yakushev.domain.models.schedule.*
 
-interface ScheduleStorage<D : WeeksArrayList> {
+interface ScheduleStorage {
 
-    suspend fun save(weeksList: D, semesterReference: DocumentReference) : Boolean
+    suspend fun save(period: Period, periodIndex: PeriodIndex, day: Day, week: Week) : Boolean
 
-    suspend fun get(semesterReference: DocumentReference): D
+    suspend fun get(semesterReference: DocumentReference): WeeksArrayList
 }

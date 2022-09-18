@@ -1,8 +1,6 @@
 package com.yakushev.sharaguga.ui.table
 
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,17 +12,12 @@ import com.yakushev.data.repository.TimePairRepository
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
 import com.yakushev.domain.models.printLog
-import com.yakushev.domain.models.schedule.PeriodsArrayList
-import com.yakushev.domain.models.schedule.TimeCustom
-import com.yakushev.domain.models.schedule.WeeksArrayList
-import com.yakushev.domain.models.schedule.copy
+import com.yakushev.domain.models.schedule.*
 import com.yakushev.domain.usecase.PeriodsScheduleUseCase
 import com.yakushev.domain.usecase.TimeScheduleUseCase
 import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.TestOnly
-import java.time.DayOfWeek
-import java.time.LocalDate
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -99,8 +92,42 @@ class ScheduleViewModel : ViewModel() {
         }
     }
 
+    fun savePeriod(period: Period, pairPosition: PeriodIndex, day: Day, week: Week) {
+        viewModelScope.launch {
+            ScheduleStorageImpl().save(period, pairPosition, day, week)
+            //subjectScheduleUseCase.savePeriod(period, pairPosition, dayPath)
+        }
+    }
+
     @TestOnly
-    private suspend fun test() {
+    private fun testSave() {
+        val period = Period(
+            subject = "Аэродинамика",
+            teacher = Teacher(
+                family = "Пуминов",
+                name = "",
+                patronymic = ""
+            ),
+            place = "301",
+            null, null, null
+        )
+
+        val position = PeriodIndex.pair1
+
+        val dayPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/FirstWeek/schedule/Wednesday"
+
+        viewModelScope.launch {
+            /*
+            ScheduleStorageImpl().save(
+                period = period,
+                periodIndex = position,
+            )
+            */
+        }
+    }
+
+    @TestOnly
+    private suspend fun testLoad() {
         viewModelScope.launch {
             val weeks = ScheduleStorageImpl().get(Firebase.firestore.document(testPathSubject))
             val days = weeks[0]
