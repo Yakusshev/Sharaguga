@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.ScheduleStorage
@@ -19,6 +20,10 @@ class ScheduleStorageImpl : ScheduleStorage {
     private companion object { const val TAG = "ScheduleStorageImpl" }
 
     private val subjectsReference = Firebase.firestore.collection(SUBJECTS_COLLECTION_PATH)
+    private val teachersReference = Firebase.firestore.collection(TEACHERS_COLLECTION_PATH)
+    private val placesReference = Firebase.firestore.collection(PLACES_COLLECTION_PATH)
+
+
 
     override suspend fun save(period: Period, periodIndex: PeriodIndex, day: Day, week: Week): Boolean {
 
@@ -47,7 +52,7 @@ class ScheduleStorageImpl : ScheduleStorage {
         var result = false
         Firebase.firestore.collection(weeksPath).document(week.name)
             .collection(SCHEDULE_COLLECTION_NAME).document(day.name)
-            .set(pairData)
+            .set(pairData, SetOptions.merge())
             .addOnSuccessListener {
                 result = true
                 Log.d(TAG, "save success")
@@ -58,8 +63,49 @@ class ScheduleStorageImpl : ScheduleStorage {
             .await()
         return result
     }
-    /*
+
+    private suspend fun saveSubject(period: Period): String? {
+
+        val data = hashMapOf(
+            NAME to period.subject
+        )
+
+        return savePeriodData(
+            field = NAME,
+            periodData = period.subject,
+            dataPath = period.subjectPath,
+            collectionReference = subjectsReference
+        )
+    }
+
+    private suspend fun saveTeacher(period: Period): String? {
+        val data = hashMapOf(
+            FAMILY to period.teacher.family
+        )
+
+        return savePeriodData(
+            field = FAMILY,
+            periodData = period.teacher.family,
+            dataPath = period.teacherPath,
+            collectionReference = teachersReference
+        )
+    }
+
+    private suspend fun savePlace(period: Period): String? {
+        val data = hashMapOf(
+            NAME to period.place
+        )
+
+        return savePeriodData(
+            field = NAME,
+            periodData = period.place,
+            dataPath = period.placePath,
+            collectionReference = placesReference
+        )
+    }
+
     private suspend fun savePeriodData(field: String, periodData: String, dataPath: String?, collectionReference: CollectionReference) : String? {
+        Log.d(TAG, "save ${collectionReference.path}")
 
         val data = hashMapOf(
             field to periodData
@@ -68,22 +114,23 @@ class ScheduleStorageImpl : ScheduleStorage {
         var resultPath: String? = null
         val task: Task<out Any>?
 
-        val doc = checkSubject(period)
-
         if (dataPath != null) {
             task = Firebase.firestore.document(dataPath)
                 .set(data)
                 .addOnSuccessListener {
                     resultPath = dataPath
                 }
-        } else if (doc != null) {
-            return doc.reference.path
         } else {
-            task = collectionReference
-                .add(data)
-                .addOnSuccessListener {
-                    resultPath = it.path
-                }
+            val doc = checkData(field, periodData, collectionReference)
+            if (doc != null) {
+                return doc.reference.path
+            } else {
+                task = collectionReference
+                    .add(data)
+                    .addOnSuccessListener {
+                        resultPath = it.path
+                    }
+            }
         }
 
         task.await()
@@ -91,105 +138,26 @@ class ScheduleStorageImpl : ScheduleStorage {
         return resultPath
 
     }
-*/
-    //TODO make abstract fun save
-    private suspend fun saveSubject(period: Period): String? {
 
-        val data = hashMapOf(
-            NAME to period.subject
-        )
+    private suspend fun checkData(field: String, data: String, collectionReference: CollectionReference): DocumentSnapshot? {
+        Log.d(TAG, "save ${collectionReference.path}")
 
-        var path: String? = null
-        val task: Task<out Any>?
-
-        val doc = checkSubject(period)
-
-        if (period.subjectPath != null) {
-            task = Firebase.firestore.document(period.subjectPath!!)
-                .set(data)
-                .addOnSuccessListener {
-                    path = period.subjectPath!!
-                }
-        } else if (doc != null) {
-            return doc.reference.path
-        } else {
-            task = Firebase.firestore.collection(SUBJECTS_COLLECTION_PATH)
-                .add(data)
-                .addOnSuccessListener {
-                    path = it.path
-                }
-        }
-
-        task.await()
-
-        return path
-    }
-
-    private suspend fun checkSubject(period: Period): DocumentSnapshot? {
-
-        val query = subjectsReference.whereEqualTo(NAME, period.subject)
+        val query = collectionReference.whereEqualTo(field, data)
 
         var document: DocumentSnapshot? = null
 
         query.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                for (i in task.result.documents.indices) {
-                    if (i == 0) document = task.result.documents[i]
-                    else subjectsReference.document(task.result.documents[i].reference.path).delete()
+                task.result.documents.also {
+                    for (i in it.indices) {
+                        if (i == 0) document = it[i]
+                        else it[i].reference.delete()
+                    }
                 }
             }
         }.await()
 
         return document
-    }
-
-    private suspend fun saveTeacher(period: Period): String? {
-        val data = hashMapOf(
-            FAMILY to period.teacher.family
-        )
-
-        var path: String? = null
-        val task = if (period.subjectPath != null) {
-            Firebase.firestore.document(period.teacherPath!!)
-                .set(data)
-                .addOnSuccessListener {
-                    path = period.teacherPath!!
-                }
-        } else {
-            Firebase.firestore.collection(TEACHERS_COLLECTION_PATH)
-                .add(data)
-                .addOnSuccessListener {
-                    path = it.path
-                }
-        }
-
-        task.await()
-        return path
-    }
-
-    private suspend fun savePlace(period: Period): String? {
-        val data = hashMapOf(
-            NAME to period.place
-        )
-
-        var path: String? = null
-        val task = if (period.placePath != null) {
-            Firebase.firestore.document(period.placePath!!)
-                .set(data)
-                .addOnSuccessListener {
-                    path = period.placePath!!
-                }
-        } else {
-            Firebase.firestore.collection(PLACES_COLLECTION_PATH)
-                .add(data)
-                .addOnSuccessListener {
-                    path = it.path
-                }
-        }
-
-        task.await()
-
-        return path
     }
 
     /**
@@ -233,7 +201,6 @@ class ScheduleStorageImpl : ScheduleStorage {
             .addOnFailureListener {
             }
             .await()
-
     }
 
     /**

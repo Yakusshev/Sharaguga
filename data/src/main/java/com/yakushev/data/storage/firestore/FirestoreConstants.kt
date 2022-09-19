@@ -22,9 +22,9 @@ internal const val TEACHER = "teacher"
 internal const val PLACE = "place"
 internal const val FAMILY = "family"
 
-internal const val PLACES_COLLECTION_PATH = "/universities/SPGUGA/places"
-internal const val SUBJECTS_COLLECTION_PATH = "/universities/SPGUGA/subjects"
-internal const val TEACHERS_COLLECTION_PATH = "/universities/SPGUGA/teachers"
+internal const val PLACES_COLLECTION_PATH = "universities/SPGUGA/places"
+internal const val SUBJECTS_COLLECTION_PATH = "universities/SPGUGA/subjects"
+internal const val TEACHERS_COLLECTION_PATH = "universities/SPGUGA/teachers"
 
 
 
