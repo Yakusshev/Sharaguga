@@ -1,6 +1,8 @@
 package com.yakushev.data.storage.firestore
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -16,10 +18,7 @@ class ScheduleStorageImpl : ScheduleStorage {
 
     private companion object { const val TAG = "ScheduleStorageImpl" }
 
-//TODO("save pairs with customID.
-//    "Use constant PAIRS_ID_ARRAY. Code above is example" +
-//    "There might be problems because of type that this function returns" +
-//    "It may be fixed by refuse of implementing storage interface")
+    private val subjectsReference = Firebase.firestore.collection(SUBJECTS_COLLECTION_PATH)
 
     override suspend fun save(period: Period, periodIndex: PeriodIndex, day: Day, week: Week): Boolean {
 
@@ -59,22 +58,62 @@ class ScheduleStorageImpl : ScheduleStorage {
             .await()
         return result
     }
+    /*
+    private suspend fun savePeriodData(field: String, periodData: String, dataPath: String?, collectionReference: CollectionReference) : String? {
 
+        val data = hashMapOf(
+            field to periodData
+        ) // TODO вынести в базовый метод
+
+        var resultPath: String? = null
+        val task: Task<out Any>?
+
+        val doc = checkSubject(period)
+
+        if (dataPath != null) {
+            task = Firebase.firestore.document(dataPath)
+                .set(data)
+                .addOnSuccessListener {
+                    resultPath = dataPath
+                }
+        } else if (doc != null) {
+            return doc.reference.path
+        } else {
+            task = collectionReference
+                .add(data)
+                .addOnSuccessListener {
+                    resultPath = it.path
+                }
+        }
+
+        task.await()
+
+        return resultPath
+
+    }
+*/
     //TODO make abstract fun save
     private suspend fun saveSubject(period: Period): String? {
+
         val data = hashMapOf(
             NAME to period.subject
         )
 
         var path: String? = null
-        val task = if (period.subjectPath != null) {
-            Firebase.firestore.document(period.subjectPath!!)
+        val task: Task<out Any>?
+
+        val doc = checkSubject(period)
+
+        if (period.subjectPath != null) {
+            task = Firebase.firestore.document(period.subjectPath!!)
                 .set(data)
                 .addOnSuccessListener {
                     path = period.subjectPath!!
                 }
+        } else if (doc != null) {
+            return doc.reference.path
         } else {
-            Firebase.firestore.collection(SUBJECTS_COLLECTION_PATH)
+            task = Firebase.firestore.collection(SUBJECTS_COLLECTION_PATH)
                 .add(data)
                 .addOnSuccessListener {
                     path = it.path
@@ -84,6 +123,24 @@ class ScheduleStorageImpl : ScheduleStorage {
         task.await()
 
         return path
+    }
+
+    private suspend fun checkSubject(period: Period): DocumentSnapshot? {
+
+        val query = subjectsReference.whereEqualTo(NAME, period.subject)
+
+        var document: DocumentSnapshot? = null
+
+        query.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                for (i in task.result.documents.indices) {
+                    if (i == 0) document = task.result.documents[i]
+                    else subjectsReference.document(task.result.documents[i].reference.path).delete()
+                }
+            }
+        }.await()
+
+        return document
     }
 
     private suspend fun saveTeacher(period: Period): String? {
@@ -197,13 +254,13 @@ class ScheduleStorageImpl : ScheduleStorage {
 
     private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Period {
         return Period(
-            subject = this[SUBJECT]!!.getWithoutErrors(false).data!![NAME].toString(),
+            subject = this[SUBJECT]!!.getWithoutErrors(false).data?.get(NAME).toString(),
             teacher = Teacher(
                 name = "",
-                family = this[TEACHER]!!.getWithoutErrors(false).data!![FAMILY].toString(),
+                family = this[TEACHER]!!.getWithoutErrors(false).data?.get(FAMILY).toString(),
                 patronymic = ""
             ),
-            place = this[PLACE]!!.getWithoutErrors(false).data!![NAME].toString(),
+            place = this[PLACE]!!.getWithoutErrors(false).data?.get(NAME).toString(),
             subjectPath = this[SUBJECT]!!.path,
             teacherPath = this[TEACHER]!!.path,
             placePath = this[PLACE]!!.path
