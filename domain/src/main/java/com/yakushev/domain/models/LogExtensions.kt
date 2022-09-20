@@ -2,10 +2,10 @@ package com.yakushev.domain.models
 
 import android.util.Log
 import com.google.type.TimeOfDay
-import com.yakushev.domain.models.schedule.DaysArrayList
-import com.yakushev.domain.models.schedule.PeriodsArrayList
+import com.yakushev.domain.models.schedule.Week
+import com.yakushev.domain.models.schedule.Day
 import com.yakushev.domain.models.schedule.TimeCustom
-import com.yakushev.domain.models.schedule.WeeksArrayList
+import com.yakushev.domain.models.schedule.Schedule
 
 fun List<TimeCustom>.printLog(tag: String) {
     for (time in this) {
@@ -16,7 +16,7 @@ fun List<TimeCustom>.printLog(tag: String) {
     }
 }
 
-fun WeeksArrayList.printLog(tag: String) {
+fun Schedule.printLog(tag: String) {
     Log.d(tag, "WeeksArrayList.printLog()")
     Log.d(tag, "Недель ${this.size}")
     for (week in this) {
@@ -27,7 +27,7 @@ fun WeeksArrayList.printLog(tag: String) {
     }
 }
 
-fun DaysArrayList.printLog(tag: String) {
+fun Week.printLog(tag: String) {
     for (day in this) {
         if (day != null) {
             Log.d(tag, "Пар ${day.size}")
@@ -36,7 +36,7 @@ fun DaysArrayList.printLog(tag: String) {
     }
 }
 
-fun PeriodsArrayList.printLog(tag: String) {
+fun Day.printLog(tag: String) {
     for (pair in this) {
         pair?.apply {
             Log.d(tag, "$subject, $place, ${teacher.family}")

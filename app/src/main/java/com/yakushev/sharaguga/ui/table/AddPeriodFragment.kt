@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui
+package com.yakushev.sharaguga.ui.table
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.yakushev.domain.models.schedule.*
 import com.yakushev.sharaguga.databinding.FragmentAddPeriodBinding
-import com.yakushev.sharaguga.ui.table.ScheduleViewModel
 
 class AddPeriodFragment : DialogFragment() {
 
@@ -74,17 +73,16 @@ class AddPeriodFragment : DialogFragment() {
                     null, null, null
                 )
 
-                val pairPosition = PeriodIndex.values()[spinner.selectedItemPosition]
+                val pairPosition = PeriodEnum.values()[spinner.selectedItemPosition]
 
-                val day = Day.values()[args.dayPosition - 1]
+                val dayPosition = DayEnum.values()[args.dayPosition]
 
-                val week = Week.FirstWeek //TODO resolve
+
 
                 viewModel.savePeriod(
                     period = period,
                     pairPosition = pairPosition,
-                    day = day,
-                    week = week
+                    dayPath = args.dayPath,
                 )
                 dismiss()
             }

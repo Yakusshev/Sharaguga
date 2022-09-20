@@ -8,11 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.domain.models.schedule.PeriodsArrayList
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentDayBinding
-import com.yakushev.sharaguga.ui.adapters.SchedulePagerAdapter.Companion.DAY_FRAGMENT_INDEX
+import com.yakushev.sharaguga.ui.adapters.schedule.SchedulePagerAdapter.Companion.DAY_FRAGMENT_INDEX
 import com.yakushev.sharaguga.ui.adapters.ScheduleRecyclerAdapter
 import com.yakushev.sharaguga.ui.adapters.schedule.EMPTY
 import com.yakushev.sharaguga.ui.adapters.schedule.OnItemClickListener
@@ -57,7 +56,7 @@ class DayFragment : Fragment() {
     private fun initRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val onItemClickListener = OnItemClickListener { viewType, pairPosition ->
+        val onItemClickListener = OnItemClickListener { viewType, pairPosition, dayPath ->
             when (viewType) {
                 SUBJECT -> {
 
@@ -66,7 +65,7 @@ class DayFragment : Fragment() {
                     findNavController().navigate(
                         ScheduleFragmentDirections.actionScheduleToAddFragment(
                             pairPosition = pairPosition,
-                            dayPosition = index
+                            dayPath = dayPath
                         )
                     )
                 }
@@ -78,7 +77,7 @@ class DayFragment : Fragment() {
     }
 
     private fun startObserving() {
-        viewModel.listLiveData[index - 1].observe(viewLifecycleOwner) {
+        viewModel.listLiveData[index].observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Loading -> {
                     binding.recyclerView.visibility = View.INVISIBLE
@@ -110,7 +109,6 @@ class DayFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setActionBarTitle(index)
     }
 
     private fun setActionBarTitle(int: Int) {

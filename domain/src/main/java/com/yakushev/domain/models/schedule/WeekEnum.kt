@@ -1,6 +1,6 @@
 package com.yakushev.domain.models.schedule
 
-enum class Week {
+enum class WeekEnum {
     FirstWeek,
     SecondWeek
 }

@@ -1,6 +1,6 @@
 package com.yakushev.domain.models.schedule
 
-enum class Day {
+enum class DayEnum {
     Monday,
     Tuesday,
     Wednesday,

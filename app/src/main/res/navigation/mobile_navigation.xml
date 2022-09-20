@@ -100,7 +100,7 @@
 
     <dialog
         android:id="@+id/navigation_add_period"
-        android:name="com.yakushev.sharaguga.ui.AddPeriodFragment"
+        android:name="com.yakushev.sharaguga.ui.table.AddPeriodFragment"
         tools:layout="@layout/fragment_add_period">
 
         <argument
@@ -112,6 +112,11 @@
             android:name="dayPosition"
             app:argType="integer"
             android:defaultValue="0"/>
+
+        <argument
+            android:name="dayPath"
+            app:argType="string"
+            android:defaultValue="null"/>
 
     </dialog>
 

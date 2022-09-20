@@ -11,7 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.domain.models.UniverUnit
 import com.yakushev.sharaguga.databinding.FragmentUniversitiesBinding
-import com.yakushev.sharaguga.ui.adapters.UniverUnitRecyclerAdapter
+import com.yakushev.sharaguga.ui.adapters.other.UniverUnitRecyclerAdapter
 import com.yakushev.sharaguga.utils.Resource
 
 

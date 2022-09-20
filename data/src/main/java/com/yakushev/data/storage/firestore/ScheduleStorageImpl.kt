@@ -2,6 +2,7 @@ package com.yakushev.data.storage.firestore
 
 import android.util.Log
 import com.google.android.gms.tasks.Task
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -25,7 +26,7 @@ class ScheduleStorageImpl : ScheduleStorage {
 
 
 
-    override suspend fun save(period: Period, periodIndex: PeriodIndex, day: Day, week: Week): Boolean {
+    override suspend fun save(period: Period, periodIndex: PeriodEnum, dayPath: String): Boolean {
 
         val weeksPath = "universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks" //TODO remove
 
@@ -50,8 +51,8 @@ class ScheduleStorageImpl : ScheduleStorage {
         )
 
         var result = false
-        Firebase.firestore.collection(weeksPath).document(week.name)
-            .collection(SCHEDULE_COLLECTION_NAME).document(day.name)
+        Log.d(TAG, "save: dayPath = $dayPath")
+        Firebase.firestore.document(dayPath)
             .set(pairData, SetOptions.merge())
             .addOnSuccessListener {
                 result = true
@@ -125,10 +126,10 @@ class ScheduleStorageImpl : ScheduleStorage {
             if (doc != null) {
                 return doc.reference.path
             } else {
-                task = collectionReference
-                    .add(data)
+                task = collectionReference.document(periodData)
+                    .set(data)
                     .addOnSuccessListener {
-                        resultPath = it.path
+                        resultPath = collectionReference.document(periodData).path
                     }
             }
         }
@@ -165,33 +166,44 @@ class ScheduleStorageImpl : ScheduleStorage {
      * return list of week (list of days (list of pairs))
      */
 
-    override suspend fun get(semesterReference: DocumentReference): WeeksArrayList {
+    //TODO remove
+    private val firstWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/FirstWeek"
+    private val secondWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/SecondWeek"
 
-        val weeks = WeeksArrayList()
+    override suspend fun get(semesterReference: DocumentReference): Schedule {
 
-        for (week in Week.values()) {
+        val schedule = Schedule()
+
+        val firstWeek = Firebase.firestore.document(firstWeekPath)
+            .get()
+            .await()
+
+        val start = firstWeek.data!![FIRST_DAY] as Timestamp
+        val end = firstWeek.data!![LAST_DAY] as Timestamp
+
+        for (weekEnum in WeekEnum.values()) {
             val scheduleRef = semesterReference.collection(WEEKS_COLLECTION_NAME)
-                .document(week.name).collection(SCHEDULE_COLLECTION_NAME)
+                .document(weekEnum.name).collection(SCHEDULE_COLLECTION_NAME)
 
-            val days = DaysArrayList()
+            val week = Week(start, end)
 
-            for (day in Day.values()) {
-                val dayDocument = scheduleRef.document(day.name).getWithoutErrors(true)
+            for (dayEnum in DayEnum.values()) {
+                val dayDocument = scheduleRef.document(dayEnum.name).getWithoutErrors(true)
 
-                Log.d(TAG, "$day ${dayDocument.data != null}")
-                val subjectList = PeriodsArrayList()
+                Log.d(TAG, "$dayEnum ${dayDocument.data != null}")
+                val day = Day(dayDocument.reference.path)
                 if (dayDocument.data != null) {
-                    for (pair in PeriodIndex.values()) {
-                        subjectList.add(getPairData(dayDocument, pair.name))
+                    for (pair in PeriodEnum.values()) {
+                        day.add(getPairData(dayDocument, pair.name))
                     }
-                    days.add(subjectList)
-                } else days.add(null)
+                }
+                week.add(day)
             }
-            weeks.add(days)
+            schedule.add(week)
         }
-        weeks.printLog(TAG)
+        schedule.printLog(TAG)
 
-        return weeks
+        return schedule
    }
 
     private suspend fun DocumentReference.getWithoutErrors(showToast: Boolean): DocumentSnapshot {
@@ -233,5 +245,4 @@ class ScheduleStorageImpl : ScheduleStorage {
             placePath = this[PLACE]!!.path
         )
     }
-
 }

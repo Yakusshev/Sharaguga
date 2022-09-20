@@ -1,14 +1,14 @@
 package com.yakushev.domain.repository
 
 import com.google.firebase.firestore.DocumentReference
-import com.yakushev.domain.models.schedule.PeriodIndex
+import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.domain.models.schedule.Period
-import com.yakushev.domain.models.schedule.WeeksArrayList
+import com.yakushev.domain.models.schedule.Schedule
 
 interface ScheduleRepository {
 
-    suspend fun save(period: Period, pairPosition: PeriodIndex, dayPath: String) : Boolean
+    suspend fun save(period: Period, pairPosition: PeriodEnum, dayPath: String) : Boolean
 
-    suspend fun get(semesterReference: DocumentReference) : WeeksArrayList
+    suspend fun get(semesterReference: DocumentReference) : Schedule
 
 }

@@ -1,23 +1,14 @@
 package com.yakushev.domain.models.schedule
 
-class WeeksArrayList : ArrayList<DaysArrayList?>()
+import com.google.firebase.Timestamp
 
-class DaysArrayList : ArrayList<PeriodsArrayList?>()
+class Schedule : ArrayList<Week?>()
 
-class PeriodsArrayList : ArrayList<Period?>()
+class Week(
+    val start: Timestamp,
+    val end: Timestamp
+) : ArrayList<Day?>()
 
-fun PeriodsArrayList.copy() : PeriodsArrayList {
-    val newList = PeriodsArrayList()
-
-    for (period in this) {
-        newList.add(period)
-    }
-
-    return newList
-}
-
-interface WeeksList : List<DaysArrayList?>
-
-interface DaysList : List<PeriodsArrayList?>
-
-interface PairsList : List<Period?>
+class Day(
+    val path: String
+) : ArrayList<Period?>()

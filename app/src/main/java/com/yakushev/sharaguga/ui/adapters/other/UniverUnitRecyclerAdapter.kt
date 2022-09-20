@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.adapters
+package com.yakushev.sharaguga.ui.adapters.other
 
 import android.view.LayoutInflater
 import android.view.View

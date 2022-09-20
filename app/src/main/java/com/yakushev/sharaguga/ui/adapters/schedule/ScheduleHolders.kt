@@ -26,7 +26,7 @@ const val EMPTY = 1
 const val WINDOW = 2
 
 fun interface OnItemClickListener {
-    fun onClick(viewType: Int, position: Int)
+    fun onClick(viewType: Int, position: Int, dayPath: String)
 }
 
 abstract class AbstractSubjectHolder(

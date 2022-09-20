@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.ui.adapters
+package com.yakushev.sharaguga.ui.adapters.schedule
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,7 +7,7 @@ import com.yakushev.sharaguga.ui.table.DayFragment
 
 class SchedulePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    override fun getItemCount(): Int = 7
+    override fun getItemCount(): Int = 14
 
     companion object {
         const val DAY_FRAGMENT_INDEX = "object"
@@ -19,7 +19,7 @@ class SchedulePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) 
         fragment.arguments = Bundle().apply {
             // Our object is just an integer :-P
             //putArray
-            putInt(DAY_FRAGMENT_INDEX, position + 1)
+            putInt(DAY_FRAGMENT_INDEX, position)
         }
         return fragment
     }

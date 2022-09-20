@@ -4,7 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.domain.models.schedule.PeriodsArrayList
+import com.yakushev.domain.models.schedule.Day
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.databinding.ItemSubjectBinding
 import com.yakushev.sharaguga.databinding.ItemSubjectEmptyBinding
@@ -18,7 +18,7 @@ class ScheduleRecyclerAdapter(
 ) : RecyclerView.Adapter<AbstractSubjectHolder>() {
 
     private var timeList: ArrayList<TimeCustom> = ArrayList()
-    private var periods: PeriodsArrayList = PeriodsArrayList()
+    private var periods: Day = Day("null")
 
     init {
         Log.d("Adapter", "init")
@@ -41,7 +41,7 @@ class ScheduleRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(SUBJECT, adapterPosition)
+                onItemClickListener.onClick(SUBJECT, adapterPosition, periods.path)
             }
         }
     }
@@ -55,7 +55,7 @@ class ScheduleRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(EMPTY, adapterPosition)
+                onItemClickListener.onClick(EMPTY, adapterPosition, periods.path)
             }
         }
     }
@@ -69,7 +69,7 @@ class ScheduleRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(WINDOW, adapterPosition)
+                onItemClickListener.onClick(WINDOW, adapterPosition, periods.path)
             }
         }
     }
@@ -99,7 +99,7 @@ class ScheduleRecyclerAdapter(
         }
     }
 
-    fun updatePeriods(periods: PeriodsArrayList) {
+    fun updatePeriods(periods: Day) {
         if (this.periods.isEmpty()) this.periods = periods
 
         notifyItemRangeChanged(0, periods.size)

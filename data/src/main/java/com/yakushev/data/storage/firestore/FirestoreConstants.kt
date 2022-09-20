@@ -15,6 +15,9 @@ internal const val TIME_TABLE = "timeTable"
 
 //ScheduleStorage Constants
 internal const val WEEKS_COLLECTION_NAME = "weeks"
+internal const val FIRST_DAY = "firstDay"
+internal const val LAST_DAY = "lastDay"
+
 internal const val SCHEDULE_COLLECTION_NAME = "schedule"
 
 internal const val SUBJECT = "subject"
@@ -25,6 +28,7 @@ internal const val FAMILY = "family"
 internal const val PLACES_COLLECTION_PATH = "universities/SPGUGA/places"
 internal const val SUBJECTS_COLLECTION_PATH = "universities/SPGUGA/subjects"
 internal const val TEACHERS_COLLECTION_PATH = "universities/SPGUGA/teachers"
+
 
 
 
