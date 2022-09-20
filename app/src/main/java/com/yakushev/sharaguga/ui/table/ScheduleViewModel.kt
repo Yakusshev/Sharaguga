@@ -9,14 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.yakushev.data.repository.ScheduleRepositoryImpl
 import com.yakushev.data.repository.TimePairRepository
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
-import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
-import com.yakushev.domain.usecase.PeriodsScheduleUseCase
 import com.yakushev.domain.usecase.TimeScheduleUseCase
 import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
@@ -47,14 +44,16 @@ class ScheduleViewModel : ViewModel() {
         TimePairRepository(TimePairStorage())
     )
 
-    private var subjectScheduleUseCase = PeriodsScheduleUseCase(
+    /*private var subjectScheduleUseCase = PeriodsScheduleUseCase(
         ScheduleRepositoryImpl(ScheduleStorageImpl())
-    )
+    )*/
+
+    private val scheduleStorage = ScheduleStorageImpl()
 
     private var loadingJob = viewModelScope.launch {
         timeList = timeScheduleUseCase.get(testPathTime)
         timeList!!.printLog(TAG)
-        weeksList = subjectScheduleUseCase.get(testPathSubject)
+        weeksList = scheduleStorage.get(testPathSubject)
         weeksList!!.printLog(TAG)
     }
 
@@ -114,11 +113,30 @@ class ScheduleViewModel : ViewModel() {
 
     fun savePeriod(period: Period, pairPosition: PeriodEnum, dayPath: String) {
         viewModelScope.launch {
-            ScheduleStorageImpl().save(period, pairPosition, dayPath)
+            launch {
+                scheduleStorage.save(period, pairPosition, dayPath)
+            }.join()
+
+            val day = scheduleStorage.getDay(dayPath)
+
+            val list = dayPath.split("/")
+
+            Log.d(TAG, list.toString())
+
+            val dayEnum = DayEnum.valueOf(list[11])
+            val weekEnum = WeekEnum.valueOf(list[9])
+
+            val dayNumb = dayEnum.ordinal
+            val weekNumb = weekEnum.ordinal
+
+            weeksList!![weekNumb]!![dayNumb] = day
+
+            updateLiveDataValue()
+
         }
+
+
     }
-
-
 
     @TestOnly
     private fun testSave() {
@@ -150,7 +168,7 @@ class ScheduleViewModel : ViewModel() {
     @TestOnly
     private suspend fun testLoad() {
         viewModelScope.launch {
-            val weeks = ScheduleStorageImpl().get(Firebase.firestore.document(testPathSubject))
+            val weeks = ScheduleStorageImpl().get(testPathSubject)
             val days = weeks[0]
             val pairs = days!![0]
 

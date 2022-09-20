@@ -100,7 +100,7 @@ class ScheduleRecyclerAdapter(
     }
 
     fun updatePeriods(periods: Day) {
-        if (this.periods.isEmpty()) this.periods = periods
+        this.periods = periods
 
         notifyItemRangeChanged(0, periods.size)
     }

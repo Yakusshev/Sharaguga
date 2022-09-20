@@ -161,6 +161,24 @@ class ScheduleStorageImpl : ScheduleStorage {
         return document
     }
 
+
+
+    suspend fun getDay(dayPath: String): Day {
+        val dayDocument = Firebase.firestore.document(dayPath)
+            .getWithoutErrors(false)
+
+        dayDocument.data
+
+        val day = Day(dayPath)
+
+        for (pair in PeriodEnum.values()) {
+            day.add(getPairData(dayDocument, pair.name))
+        }
+
+        return day
+
+    }
+
     /**
      * function get takes a reference to a semester
      * return list of week (list of days (list of pairs))
@@ -170,7 +188,7 @@ class ScheduleStorageImpl : ScheduleStorage {
     private val firstWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/FirstWeek"
     private val secondWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/SecondWeek"
 
-    override suspend fun get(semesterReference: DocumentReference): Schedule {
+    override suspend fun get(semesterPath: String): Schedule {
 
         val schedule = Schedule()
 
@@ -182,7 +200,7 @@ class ScheduleStorageImpl : ScheduleStorage {
         val end = firstWeek.data!![LAST_DAY] as Timestamp
 
         for (weekEnum in WeekEnum.values()) {
-            val scheduleRef = semesterReference.collection(WEEKS_COLLECTION_NAME)
+            val scheduleRef = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
                 .document(weekEnum.name).collection(SCHEDULE_COLLECTION_NAME)
 
             val week = Week(start, end)
