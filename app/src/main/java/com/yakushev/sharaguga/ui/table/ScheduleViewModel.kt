@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.yakushev.data.repository.TimePairRepository
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
@@ -17,8 +15,6 @@ import com.yakushev.domain.models.schedule.*
 import com.yakushev.domain.usecase.TimeScheduleUseCase
 import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
-import org.jetbrains.annotations.TestOnly
-import kotlin.collections.ArrayList
 
 class ScheduleViewModel : ViewModel() {
 
@@ -121,8 +117,6 @@ class ScheduleViewModel : ViewModel() {
 
             val list = dayPath.split("/")
 
-            Log.d(TAG, list.toString())
-
             val dayEnum = DayEnum.valueOf(list[11])
             val weekEnum = WeekEnum.valueOf(list[9])
 
@@ -132,51 +126,6 @@ class ScheduleViewModel : ViewModel() {
             weeksList!![weekNumb]!![dayNumb] = day
 
             updateLiveDataValue()
-
-        }
-
-
-    }
-
-    @TestOnly
-    private fun testSave() {
-        val period = Period(
-            subject = "Аэродинамика",
-            teacher = Teacher(
-                family = "Пуминов",
-                name = "",
-                patronymic = ""
-            ),
-            place = "301",
-            null, null, null
-        )
-
-        val position = PeriodEnum.pair1
-
-        val dayPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/FirstWeek/schedule/Wednesday"
-
-        viewModelScope.launch {
-            /*
-            ScheduleStorageImpl().save(
-                period = period,
-                periodIndex = position,
-            )
-            */
-        }
-    }
-
-    @TestOnly
-    private suspend fun testLoad() {
-        viewModelScope.launch {
-            val weeks = ScheduleStorageImpl().get(testPathSubject)
-            val days = weeks[0]
-            val pairs = days!![0]
-
-            for (pair in pairs!!) {
-                pair?.apply {
-                    Log.d("ScheduleStorage", "$subject, ${teacher.family}, $place")
-                }
-            }
         }
     }
 }
