@@ -1,11 +1,14 @@
 package com.yakushev.sharaguga.ui.table
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,9 +20,12 @@ import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.FragmentScheduleBinding
 import com.yakushev.sharaguga.ui.adapters.schedule.SchedulePagerAdapter
+import com.yakushev.sharaguga.utils.Message
 import java.util.*
 
 class ScheduleFragment : Fragment() {
+
+    companion object { private const val TAG = "ScheduleFragment" }
 
     private var _binding: FragmentScheduleBinding? = null
     private val binding get() = _binding!!
@@ -53,6 +59,9 @@ class ScheduleFragment : Fragment() {
         binding.viewPager.currentItem = day - 1
 
         attachTabLayoutMediator()
+
+        observeToastLiveData(view.context)
+
     }
 
     private fun attachTabLayoutMediator() {
@@ -108,6 +117,20 @@ class ScheduleFragment : Fragment() {
             calendar.add(Calendar.DAY_OF_YEAR, 1)
         }
         return array
+    }
+
+    private fun observeToastLiveData(context: Context) {
+        viewModel.toastLiveData.observe(viewLifecycleOwner) {
+            when (it) {
+                Message.SaveSuccess -> Toast.makeText(context, getString(R.string.period_save_success), Toast.LENGTH_SHORT).show()
+                Message.SaveError -> Toast.makeText(context, getString(R.string.period_save_error), Toast.LENGTH_LONG).show()
+                Message.DeleteSuccess -> Toast.makeText(context, getString(R.string.period_delete_success), Toast.LENGTH_SHORT).show()
+                Message.DeleteError -> Toast.makeText(context, getString(R.string.period_delete_error), Toast.LENGTH_LONG).show()
+                null -> Log.d(TAG, "Message is null")
+            }
+
+
+        }
     }
 
     private fun setActionBarTitle() {

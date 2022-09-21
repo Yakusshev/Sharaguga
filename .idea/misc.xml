@@ -12,9 +12,12 @@
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/drawable/ic_baseline_arrow_forward_ios_24.xml" value="0.1915" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.1915" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/activity_main.xml" value="0.21782178217821782" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/dialog_add.xml" value="0.23802083333333332" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/dialog_edit.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_add_period.xml" value="0.264" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_dashboard.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_day.xml" value="0.264" />
+        <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_edit_period.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_faculties.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_groups.xml" value="0.1" />
         <entry key="..\:/Users/11vit/Sharaguga/app/src/main/res/layout/fragment_home.xml" value="0.14266304347826086" />

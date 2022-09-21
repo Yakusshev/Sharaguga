@@ -96,27 +96,43 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
 
+        <action
+            android:id="@+id/action_schedule_to_edit_fragment"
+            app:destination="@id/navigation_edit_period"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
     </fragment>
 
     <dialog
         android:id="@+id/navigation_add_period"
-        android:name="com.yakushev.sharaguga.ui.table.AddPeriodFragment"
-        tools:layout="@layout/fragment_add_period">
+        android:name="com.yakushev.sharaguga.ui.table.AddDialog"
+        tools:layout="@layout/dialog_add">
 
         <argument
             android:name="pairPosition"
-            app:argType="integer"
-            android:defaultValue="0"/>
-
-        <argument
-            android:name="dayPosition"
-            app:argType="integer"
-            android:defaultValue="0"/>
+            app:argType="integer"/>
 
         <argument
             android:name="dayPath"
-            app:argType="string"
-            android:defaultValue="null"/>
+            app:argType="string"/>
+
+    </dialog>
+
+    <dialog
+        android:id="@+id/navigation_edit_period"
+        android:name="com.yakushev.sharaguga.ui.table.EditDialog"
+        tools:layout="@layout/dialog_edit">
+
+        <argument
+            android:name="pairPosition"
+            app:argType="integer"/>
+
+        <argument
+            android:name="dayPath"
+            app:argType="string"/>
 
     </dialog>
 

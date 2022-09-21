@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minWidth="324dp"
     android:orientation="vertical"
-    tools:context=".ui.table.AddPeriodFragment">
+    tools:context=".ui.table.AddDialog">
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/spinner"
@@ -40,7 +40,7 @@
         android:hint="@string/lecture" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/window"
+        android:id="@+id/switch_window"
         style="@style/editText"
         android:layout_width="wrap_content"
         android:layout_gravity="center"

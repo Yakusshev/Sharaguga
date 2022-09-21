@@ -5,7 +5,8 @@ import com.yakushev.domain.models.schedule.*
 
 interface ScheduleStorage {
 
-    suspend fun save(period: Period, periodIndex: PeriodEnum, dayPath: String) : Boolean
+    suspend fun save(period: Period, periodEnum: PeriodEnum, dayPath: String) : Boolean
 
     suspend fun get(semesterPath: String): Schedule
+
 }

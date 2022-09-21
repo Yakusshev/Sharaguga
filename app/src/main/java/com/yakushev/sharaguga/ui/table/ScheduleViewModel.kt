@@ -10,10 +10,12 @@ import com.google.firebase.Timestamp
 import com.yakushev.data.repository.TimePairRepository
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
+import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
 import com.yakushev.domain.usecase.TimeScheduleUseCase
 import com.yakushev.sharaguga.utils.Resource
+import com.yakushev.sharaguga.utils.Message
 import kotlinx.coroutines.launch
 
 class ScheduleViewModel : ViewModel() {
@@ -25,6 +27,9 @@ class ScheduleViewModel : ViewModel() {
 
     private val _timeLiveData = MutableLiveData<Resource<ArrayList<TimeCustom>>>()
     val timeLiveData get(): LiveData<Resource<ArrayList<TimeCustom>>> = _timeLiveData
+
+    private val _toastLiveData = MutableLiveData<Message>()
+    val toastLiveData get(): LiveData<Message> = _toastLiveData
 
     //TODO remove testPaths
     private val testPathTime = "/universities/SPGUGA"
@@ -109,23 +114,70 @@ class ScheduleViewModel : ViewModel() {
 
     fun savePeriod(period: Period, pairPosition: PeriodEnum, dayPath: String) {
         viewModelScope.launch {
+            var success = false
             launch {
-                scheduleStorage.save(period, pairPosition, dayPath)
+                success = scheduleStorage.save(period, pairPosition, dayPath)
             }.join()
 
-            val day = scheduleStorage.getDay(dayPath)
+            if (success) {
+                _toastLiveData.postValue(Message.SaveSuccess)
 
-            val list = dayPath.split("/")
+                val day = scheduleStorage.getDay(dayPath)
 
-            val dayEnum = DayEnum.valueOf(list[11])
-            val weekEnum = WeekEnum.valueOf(list[9])
+                val list = dayPath.split("/")
 
-            val dayNumb = dayEnum.ordinal
-            val weekNumb = weekEnum.ordinal
+                val dayEnum = DayEnum.valueOf(list[11])
+                val weekEnum = WeekEnum.valueOf(list[9])
 
-            weeksList!![weekNumb]!![dayNumb] = day
+                val dayNumb = dayEnum.ordinal
+                val weekNumb = weekEnum.ordinal
 
-            updateLiveDataValue()
+                weeksList!![weekNumb]!![dayNumb] = day
+
+                updateLiveDataValue()
+            }
+            else _toastLiveData.postValue(Message.SaveError)
+        }
+    }
+
+    fun getDayIndex(dayPath: String): Int {
+        val list = dayPath.split("/")
+        Log.d(TAG, dayPath)
+
+        val dayEnum = DayEnum.valueOf(list[11])
+        val weekEnum = WeekEnum.valueOf(list[9])
+        Log.d(TAG, dayEnum.name)
+        Log.d(TAG, weekEnum.name)
+
+        val dayNumb = dayEnum.ordinal
+
+        Log.d(TAG, (weekEnum == WeekEnum.FirstWeek).toString())
+
+        return if (weekEnum == WeekEnum.FirstWeek) {
+            dayNumb + DaysPerWeek
+        } else {
+            dayNumb
+        }
+    }
+
+    fun deletePeriod(periodEnum: PeriodEnum, dayPath: String) {
+        viewModelScope.launch {
+            if (scheduleStorage.deletePeriod(periodEnum, dayPath)) {
+                _toastLiveData.postValue(Message.DeleteSuccess)
+
+                val list = dayPath.split("/")
+
+                val dayEnum = DayEnum.valueOf(list[11])
+                val weekEnum = WeekEnum.valueOf(list[9])
+
+                val dayNumb = dayEnum.ordinal
+                val weekNumb = weekEnum.ordinal
+
+                weeksList!![weekNumb]!![dayNumb]!![periodEnum.ordinal] = null
+
+                updateLiveDataValue()
+            }
+            else _toastLiveData.postValue(Message.DeleteError)
         }
     }
 }

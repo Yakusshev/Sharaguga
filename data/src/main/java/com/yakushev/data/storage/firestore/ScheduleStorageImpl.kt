@@ -3,10 +3,7 @@ package com.yakushev.data.storage.firestore
 import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.ScheduleStorage
@@ -26,7 +23,7 @@ class ScheduleStorageImpl : ScheduleStorage {
 
 
 
-    override suspend fun save(period: Period, periodIndex: PeriodEnum, dayPath: String): Boolean {
+    override suspend fun save(period: Period, periodEnum: PeriodEnum, dayPath: String): Boolean {
 
         val weeksPath = "universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks" //TODO remove
 
@@ -47,7 +44,7 @@ class ScheduleStorageImpl : ScheduleStorage {
         )
 
         val pairData = hashMapOf(
-            periodIndex.name to docData
+            periodEnum.name to docData
         )
 
         var result = false
@@ -159,6 +156,24 @@ class ScheduleStorageImpl : ScheduleStorage {
         }.await()
 
         return document
+    }
+
+    suspend fun deletePeriod(periodEnum: PeriodEnum, dayPath: String): Boolean {
+        var result = false
+        val update = hashMapOf<String, Any>(
+            periodEnum.name to FieldValue.delete()
+        )
+        Firebase.firestore.document(dayPath)
+            .update(update)
+            .addOnSuccessListener {
+                result = true
+                Log.d(TAG, "delete success")
+            }
+            .addOnFailureListener {
+                Log.d(TAG, "delete error")
+            }
+            .await()
+        return result
     }
 
 

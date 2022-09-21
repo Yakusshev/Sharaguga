@@ -2,6 +2,7 @@ package com.yakushev.sharaguga.ui.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.domain.models.schedule.Day
@@ -40,8 +41,9 @@ class ScheduleRecyclerAdapter(
                 false
             )
         ).apply {
-            itemView.setOnClickListener {
+            itemView.setOnLongClickListener {
                 onItemClickListener.onClick(SUBJECT, adapterPosition, periods.path)
+                true
             }
         }
     }

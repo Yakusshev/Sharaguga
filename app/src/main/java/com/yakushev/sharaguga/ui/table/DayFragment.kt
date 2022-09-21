@@ -59,7 +59,12 @@ class DayFragment : Fragment() {
         val onItemClickListener = OnItemClickListener { viewType, pairPosition, dayPath ->
             when (viewType) {
                 SUBJECT -> {
-
+                    findNavController().navigate(
+                        ScheduleFragmentDirections.actionScheduleToEditFragment(
+                            pairPosition = pairPosition,
+                            dayPath = dayPath
+                        )
+                    )
                 }
                 EMPTY -> {
                     findNavController().navigate(

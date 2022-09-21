@@ -8,22 +8,22 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.yakushev.domain.models.schedule.*
-import com.yakushev.sharaguga.databinding.FragmentAddPeriodBinding
+import com.yakushev.sharaguga.databinding.DialogAddBinding
 
-class AddPeriodFragment : DialogFragment() {
+class AddDialog : DialogFragment() {
 
-    private var _binding: FragmentAddPeriodBinding? = null
+    private var _binding: DialogAddBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ScheduleViewModel by activityViewModels()
 
-    private val args: AddPeriodFragmentArgs by navArgs()
+    private val args: AddDialogArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentAddPeriodBinding.inflate(
+        _binding = DialogAddBinding.inflate(
             inflater, container, false
         )
 
@@ -35,14 +35,13 @@ class AddPeriodFragment : DialogFragment() {
 
         binding.spinner.setSelection(args.pairPosition)
 
-        setSpinnerListener()
+        setSwitchListener()
 
         setSaveButtonListener()
-
     }
 
-    private fun setSpinnerListener() {
-        binding.window.setOnCheckedChangeListener { _, b ->
+    private fun setSwitchListener() {
+        binding.switchWindow.setOnCheckedChangeListener { _, b ->
             binding.apply {
                 if (b) {
                     subject.visibility = View.GONE
@@ -74,10 +73,6 @@ class AddPeriodFragment : DialogFragment() {
                 )
 
                 val pairPosition = PeriodEnum.values()[spinner.selectedItemPosition]
-
-                val dayPosition = DayEnum.values()[args.dayPosition]
-
-
 
                 viewModel.savePeriod(
                     period = period,
