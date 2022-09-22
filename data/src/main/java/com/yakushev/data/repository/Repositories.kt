@@ -2,7 +2,7 @@ package com.yakushev.data.repository
 
 import com.google.firebase.firestore.DocumentReference
 import com.yakushev.data.storage.Storage
-import com.yakushev.domain.models.UniverUnit.*
+import com.yakushev.domain.models.choice.UniverUnit.*
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.domain.repository.Repository
 

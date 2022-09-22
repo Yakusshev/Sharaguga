@@ -32,8 +32,14 @@
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_arrow_back_24"/>
 
+            <View
+                android:id="@+id/appBarMargin"
+                android:visibility="gone"
+                android:layout_width="16dp"
+                android:layout_height="match_parent"/>
+
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/title"
+                android:id="@+id/appBarTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.yakushev.domain.models.UniverUnit.University
+import com.yakushev.domain.models.choice.UniverUnit.University
 
 class UniversitiesStorage : AbstractFireStorage<University>() {
 

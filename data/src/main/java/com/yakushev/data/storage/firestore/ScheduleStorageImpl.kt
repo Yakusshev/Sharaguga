@@ -7,6 +7,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.ScheduleStorage
+import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
 import kotlinx.coroutines.tasks.await
@@ -270,7 +271,8 @@ class ScheduleStorageImpl : ScheduleStorage {
             teacher = Teacher(
                 name = "",
                 family = this[TEACHER]!!.getWithoutErrors(false).data?.get(FAMILY).toString(),
-                patronymic = ""
+                patronymic = "",
+                path = null
             ),
             place = this[PLACE]!!.getWithoutErrors(false).data?.get(NAME).toString(),
             subjectPath = this[SUBJECT]!!.path,

@@ -3,7 +3,7 @@ package com.yakushev.data.storage.firestore
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.yakushev.domain.models.UniverUnit.Faculty
+import com.yakushev.domain.models.choice.UniverUnit.Faculty
 
 
 class FacultiesStorage : AbstractFireStorage<Faculty>() {

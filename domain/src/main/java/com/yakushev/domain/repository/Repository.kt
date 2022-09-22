@@ -1,7 +1,6 @@
 package com.yakushev.domain.repository
 
 import com.google.firebase.firestore.DocumentReference
-import com.yakushev.domain.models.UniverUnit
 
 interface Repository<U> {
 

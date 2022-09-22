@@ -1,8 +1,8 @@
 package com.yakushev.sharaguga
 
 import android.os.Bundle
+import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.Toolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_universities, R.id.navigation_schedule, R.id.navigation_notifications
+                R.id.navigation_universities, R.id.navigation_schedule, R.id.navigation_data
             )
         )
 
@@ -48,7 +48,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    fun setActionBarTitle(title: String) {
+        binding.apply {
+            back.visibility = View.GONE
+            forward.visibility = View.GONE
+            appBarTitle.text = title
+            appBarMargin.visibility = View.VISIBLE
+        }
+    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_activity_main) as NavHostFragment

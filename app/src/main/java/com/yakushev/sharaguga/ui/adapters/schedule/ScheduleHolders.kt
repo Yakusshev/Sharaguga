@@ -1,41 +1,31 @@
 package com.yakushev.sharaguga.ui.adapters.schedule
 
-import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.TimeCustom
-import com.yakushev.sharaguga.databinding.ItemSubjectBinding
-import com.yakushev.sharaguga.databinding.ItemSubjectEmptyBinding
-import com.yakushev.sharaguga.databinding.ItemSubjectWindowBinding
+import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
+import com.yakushev.sharaguga.databinding.ScheduleItemSubjectEmptyBinding
+import com.yakushev.sharaguga.databinding.ScheduleItemSubjectWindowBinding
 
-sealed class ItemType {
-    object Subject {
-        const val value = 0
-    }
-    object Empty {
-        const val value = 1
-    }
-    object Window {
-        const val value = 2
-    }
+enum class ItemEnum {
+    Subject,
+    Empty,
+    Window
 }
 
-const val SUBJECT = 0
-const val EMPTY = 1
-const val WINDOW = 2
-
 fun interface OnItemClickListener {
-    fun onClick(viewType: Int, position: Int, dayPath: String)
+    fun onClick(viewType: ItemEnum, position: Int, dayPath: String)
 }
 
 abstract class AbstractSubjectHolder(
     itemBinding: ViewBinding
 ) : RecyclerView.ViewHolder(itemBinding.root)
 
-internal class SubjectHolder(
-    private val itemBinding: ItemSubjectBinding
+internal class PeriodHolder(
+    private val itemBinding: ScheduleItemSubjectBinding
 ) : AbstractSubjectHolder(itemBinding) {
+
     fun bind(period: Period?, timePair: TimeCustom?) {
         itemBinding.apply {
             startTime.text = timePair?.getStartTime()
@@ -49,22 +39,16 @@ internal class SubjectHolder(
 }
 
 internal class EmptyHolder(
-    private val itemBinding: ItemSubjectEmptyBinding
+    private val itemBinding: ScheduleItemSubjectEmptyBinding
 ) : AbstractSubjectHolder(itemBinding) {
-    fun bind() {
-        itemBinding.root.apply {
-            tag = Pair(EMPTY, adapterPosition)
 
-        }
-    }
 }
 
 internal class WindowHolder(
-    private val itemBinding: ItemSubjectWindowBinding
+    private val itemBinding: ScheduleItemSubjectWindowBinding
 ) : AbstractSubjectHolder(itemBinding) {
-    fun bind() {
-        itemBinding.root.setOnClickListener {
 
-        }
+    fun bind() {
+
     }
 }

@@ -1,18 +1,14 @@
-package com.yakushev.sharaguga.ui.adapters
+package com.yakushev.sharaguga.ui.adapters.schedule
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.domain.models.schedule.Day
 import com.yakushev.domain.models.schedule.TimeCustom
-import com.yakushev.sharaguga.databinding.ItemSubjectBinding
-import com.yakushev.sharaguga.databinding.ItemSubjectEmptyBinding
-import com.yakushev.sharaguga.databinding.ItemSubjectWindowBinding
-import com.yakushev.sharaguga.ui.adapters.schedule.*
-import com.yakushev.sharaguga.ui.adapters.schedule.EmptyHolder
-import com.yakushev.sharaguga.ui.adapters.schedule.SubjectHolder
+import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
+import com.yakushev.sharaguga.databinding.ScheduleItemSubjectEmptyBinding
+import com.yakushev.sharaguga.databinding.ScheduleItemSubjectWindowBinding
 
 class ScheduleRecyclerAdapter(
     private val onItemClickListener: OnItemClickListener
@@ -27,22 +23,22 @@ class ScheduleRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AbstractSubjectHolder {
         return when (viewType) {
-            SUBJECT -> createSubjectHolder(parent)
-            EMPTY -> createEmptyHolder(parent)
+            ItemEnum.Subject.ordinal -> createSubjectHolder(parent)
+            ItemEnum.Empty.ordinal -> createEmptyHolder(parent)
             else -> createWindowHolder(parent)
         }
     }
 
-    private fun createSubjectHolder(parent: ViewGroup) : SubjectHolder {
-        return SubjectHolder(
-            itemBinding = ItemSubjectBinding.inflate(
+    private fun createSubjectHolder(parent: ViewGroup) : PeriodHolder {
+        return PeriodHolder(
+            itemBinding = ScheduleItemSubjectBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
         ).apply {
             itemView.setOnLongClickListener {
-                onItemClickListener.onClick(SUBJECT, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Subject, adapterPosition, periods.path)
                 true
             }
         }
@@ -50,39 +46,39 @@ class ScheduleRecyclerAdapter(
 
     private fun createEmptyHolder(parent: ViewGroup) : EmptyHolder {
         return EmptyHolder(
-            itemBinding = ItemSubjectEmptyBinding.inflate(
+            itemBinding = ScheduleItemSubjectEmptyBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(EMPTY, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Empty, adapterPosition, periods.path)
             }
         }
     }
 
     private fun createWindowHolder(parent: ViewGroup) : WindowHolder {
         return WindowHolder(
-            itemBinding = ItemSubjectWindowBinding.inflate(
+            itemBinding = ScheduleItemSubjectWindowBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(WINDOW, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Window, adapterPosition, periods.path)
             }
         }
     }
 
     override fun onBindViewHolder(holder: AbstractSubjectHolder, position: Int) {
         when (getItemViewType(position)) {
-            SUBJECT -> {
-                val subjectHolder = holder as SubjectHolder
+            ItemEnum.Subject.ordinal -> {
+                val subjectHolder = holder as PeriodHolder
                 subjectHolder.bind(periods[position], timeList[position])
             }
-            EMPTY -> {
+            ItemEnum.Empty.ordinal -> {
             }
             else -> {
             }
@@ -94,10 +90,10 @@ class ScheduleRecyclerAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (periods.isEmpty()) return EMPTY
+        if (periods.isEmpty()) return ItemEnum.Empty.ordinal
         when (periods[position]) {
-            null -> return EMPTY
-            else -> return SUBJECT
+            null -> return ItemEnum.Empty.ordinal
+            else -> return ItemEnum.Subject.ordinal
         }
     }
 

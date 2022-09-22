@@ -3,7 +3,7 @@ package com.yakushev.sharaguga.ui.adapters.schedule
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.yakushev.sharaguga.ui.table.DayFragment
+import com.yakushev.sharaguga.ui.schedule.SchedulePageFragment
 
 class SchedulePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
@@ -14,19 +14,10 @@ class SchedulePagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) 
     }
 
     override fun createFragment(position: Int): Fragment {
-        // Return a NEW fragment instance in createFragment(int)
-        val fragment = DayFragment()
+        val fragment = SchedulePageFragment()
         fragment.arguments = Bundle().apply {
-            // Our object is just an integer :-P
-            //putArray
             putInt(DAY_FRAGMENT_INDEX, position)
         }
         return fragment
     }
-
-    fun updateData(position: Int) {
-        notifyItemChanged(position)
-    }
 }
-// Instances of this class are fragments representing a single
-// object in our collection.
