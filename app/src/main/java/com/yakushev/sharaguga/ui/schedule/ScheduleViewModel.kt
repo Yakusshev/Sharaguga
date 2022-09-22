@@ -28,8 +28,8 @@ class ScheduleViewModel : ViewModel() {
     private val _timeLiveData = MutableLiveData<Resource<ArrayList<TimeCustom>>>()
     val timeLiveData get(): LiveData<Resource<ArrayList<TimeCustom>>> = _timeLiveData
 
-    private val _toastLiveData = MutableLiveData<Message>()
-    val toastLiveData get(): LiveData<Message> = _toastLiveData
+    private val _toastLiveData = MutableLiveData<Message?>()
+    val toastLiveData get(): LiveData<Message?> = _toastLiveData
 
     //TODO remove testPaths
     private val testPathTime = "/universities/SPGUGA"
@@ -137,6 +137,7 @@ class ScheduleViewModel : ViewModel() {
                 updateLiveDataValue()
             }
             else _toastLiveData.postValue(Message.SaveError)
+            _toastLiveData.postValue(null)
         }
     }
 
@@ -178,6 +179,7 @@ class ScheduleViewModel : ViewModel() {
                 updateLiveDataValue()
             }
             else _toastLiveData.postValue(Message.DeleteError)
+            _toastLiveData.postValue(null)
         }
     }
 }

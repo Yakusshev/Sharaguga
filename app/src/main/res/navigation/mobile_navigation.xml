@@ -58,7 +58,7 @@
     <dialog
         android:id="@+id/navigation_edit_period"
         android:name="com.yakushev.sharaguga.ui.schedule.EditDialog"
-        tools:layout="@layout/schedule_dialog_edit">
+        tools:layout="@layout/schedule_dialog">
 
         <argument
             android:name="pairPosition"

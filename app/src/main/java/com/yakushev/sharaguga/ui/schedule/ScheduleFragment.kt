@@ -1,6 +1,7 @@
 package com.yakushev.sharaguga.ui.schedule
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -21,6 +22,7 @@ import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
 import com.yakushev.sharaguga.ui.adapters.schedule.SchedulePagerAdapter
 import com.yakushev.sharaguga.utils.Message
+import java.time.LocalDate
 import java.util.*
 
 class ScheduleFragment : Fragment() {
@@ -55,13 +57,17 @@ class ScheduleFragment : Fragment() {
         val adapter = SchedulePagerAdapter(this)
         binding.viewPager.adapter = adapter
 
-        val day = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
-        binding.viewPager.currentItem = day - 1
+        chooseCurrentDay()
 
         attachTabLayoutMediator()
 
         observeToastLiveData(view.context)
 
+    }
+
+    private fun chooseCurrentDay() {
+        val day = LocalDate.now().dayOfWeek.ordinal
+        binding.viewPager.currentItem = day
     }
 
     private fun attachTabLayoutMediator() {
