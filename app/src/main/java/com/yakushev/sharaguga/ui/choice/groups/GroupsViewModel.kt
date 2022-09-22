@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.repository.GroupRepository
-import com.yakushev.data.storage.firestore.GroupStorage
+import com.yakushev.data.storage.firestore.choice.GroupStorage
 import com.yakushev.domain.models.choice.UniverUnit.Group
 import com.yakushev.domain.usecase.GroupUseCase
 import com.yakushev.sharaguga.utils.Resource

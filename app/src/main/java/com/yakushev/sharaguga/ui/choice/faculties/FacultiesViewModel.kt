@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.repository.FacultyRepository
-import com.yakushev.data.storage.firestore.FacultiesStorage
+import com.yakushev.data.storage.firestore.choice.FacultiesStorage
 import com.yakushev.domain.models.choice.UniverUnit.Faculty
 import com.yakushev.domain.usecase.FacultiesUseCase
 import com.yakushev.sharaguga.utils.Resource

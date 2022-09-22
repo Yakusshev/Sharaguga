@@ -13,16 +13,65 @@ import kotlinx.coroutines.launch
 
 class DataViewModel : ViewModel() {
 
-    private val _subjects = MutableLiveData<Resource<List<Subject>>>()
-    val subjects get(): LiveData<Resource<List<Subject>>> = _subjects
+    private val _subjects = MutableLiveData<Resource<MutableList<Subject>>>()
+    val subjects get(): LiveData<Resource<MutableList<Subject>>> = _subjects
 
-    private val _teachers = MutableLiveData<Resource<List<Teacher>>>()
-    val teachers get(): LiveData<Resource<List<Teacher>>> = _teachers
+    private val _teachers = MutableLiveData<Resource<MutableList<Teacher>>>()
+    val teachers get(): LiveData<Resource<MutableList<Teacher>>> = _teachers
 
-    private val _places = MutableLiveData<Resource<List<Place>>>()
-    val places get(): LiveData<Resource<List<Place>>> = _places
+    private val _places = MutableLiveData<Resource<MutableList<Place>>>()
+    val places get(): LiveData<Resource<MutableList<Place>>> = _places
 
-    private val storage = DataStorageImpl()
+    private val subjectsCallback = object : DataStorageImpl.SubjectsCallback {
+        override suspend fun added(index: Int, subject: Subject) {
+            _subjects.value?.data?.add(index, subject)
+        }
+
+        override suspend fun modified(index: Int, subject: Subject) {
+            _subjects.value?.data?.set(index, subject)
+        }
+
+        override suspend fun removed(oldIndex: Int) {
+            _subjects.value?.data?.removeAt(oldIndex)
+        }
+    }
+
+    private val teachersCallback = object : DataStorageImpl.TeachersCallback {
+
+        override suspend fun added(index: Int, teacher: Teacher) {
+            _teachers.value?.data?.add(index, teacher)
+        }
+
+        override suspend fun modified(index: Int, teacher: Teacher) {
+            _teachers.value?.data?.set(index, teacher)
+        }
+
+        override suspend fun removed(oldIndex: Int) {
+            _teachers.value?.data?.removeAt(oldIndex)
+        }
+    }
+
+    private val placesCallback = object : DataStorageImpl.PlacesCallback {
+
+        override suspend fun added(index: Int, place: Place) {
+            _places.value?.data?.add(index, place)
+        }
+
+        override suspend fun modified(index: Int, place: Place) {
+            _places.value?.data?.set(index, place)
+        }
+
+        override suspend fun removed(oldIndex: Int) {
+            _places.value?.data?.removeAt(oldIndex)
+        }
+    }
+
+    private val storage = DataStorageImpl(
+        viewModelScope,
+        subjectsCallback,
+        teachersCallback,
+        placesCallback
+    )
 
     init {
         viewModelScope.launch {
@@ -31,9 +80,9 @@ class DataViewModel : ViewModel() {
             _places.postValue(Resource.Loading())
 
             launch {
-                val s = storage.getSubjects()
-                if (s != null)
-                    _subjects.postValue(Resource.Success(s))
+                val subjects = storage.getSubjects()
+                if (subjects != null)
+                    _subjects.postValue(Resource.Success(subjects.toMutableList()))
                 else
                     _subjects.postValue(Resource.Error(null))
             }
@@ -41,7 +90,7 @@ class DataViewModel : ViewModel() {
             launch {
                 val teachers = storage.getTeachers()
                 if (teachers != null)
-                    _teachers.postValue(Resource.Success(teachers))
+                    _teachers.postValue(Resource.Success(teachers.toMutableList()))
                 else
                     _teachers.postValue(Resource.Error(null))
             }
@@ -49,7 +98,7 @@ class DataViewModel : ViewModel() {
             launch {
                 val places = storage.getPlaces()
                 if (places != null)
-                    _places.postValue(Resource.Success(places))
+                    _places.postValue(Resource.Success(places.toMutableList()))
                 else
                     _places.postValue(Resource.Error(null))
             }

@@ -153,7 +153,7 @@ class DataPageFragment : Fragment() {
 
                     val data = it.data!!
 
-                    adapter?.updateItems(places = data.toMutableList())
+                    adapter?.updateItems(places = data)
                 }
             }
         }
