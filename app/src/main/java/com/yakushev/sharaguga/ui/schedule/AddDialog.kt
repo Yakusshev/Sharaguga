@@ -125,14 +125,14 @@ open class AddDialog : DialogFragment() {
         binding.apply {
             save.setOnClickListener {
                 val period = Period(
-                    subject = subject.text.toString(),
+                    subject = subject.text.toString().trim(),
                     teacher = Teacher(
-                        family = teacher.text.toString(),
+                        family = teacher.text.toString().trim(),
                         name = "",
                         patronymic = "",
                         path = null
                     ),
-                    place = place.text.toString(),
+                    place = place.text.toString().trim(),
                     null, null, null
                 )
 

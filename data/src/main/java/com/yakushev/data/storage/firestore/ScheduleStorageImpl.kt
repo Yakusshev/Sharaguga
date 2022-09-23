@@ -272,8 +272,13 @@ class ScheduleStorageImpl : ScheduleStorage {
     }
 
     private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Period {
+        val subject: String
+        this[SUBJECT]!!.getWithoutErrors(false).data.apply {
+            subject = if (this != null) this[NAME].toString() else "Нет данных"
+        }
+
         return Period(
-            subject = this[SUBJECT]!!.getWithoutErrors(false).data?.get(NAME).toString(),
+            subject = subject,
             teacher = Teacher(
                 name = "",
                 family = this[TEACHER]!!.getWithoutErrors(false).data?.get(FAMILY).toString(),

@@ -56,7 +56,7 @@ open class DataDialog : DialogFragment() {
                         dataViewModel.saveSubject(
                             Subject(
                                 path = path,
-                                name = binding.data.text.toString()
+                                name = binding.data.text.toString().trim()
                             )
                         )
                     }
@@ -64,7 +64,7 @@ open class DataDialog : DialogFragment() {
                         dataViewModel.saveTeacher(
                             Teacher(
                                 path = path,
-                                family = binding.data.text.toString(),
+                                family = binding.data.text.toString().trim(),
                                 name = "",
                                 patronymic = ""
                             )
@@ -74,7 +74,7 @@ open class DataDialog : DialogFragment() {
                         dataViewModel.savePlace(
                             Place(
                                 path = path,
-                                name = binding.data.text.toString()
+                                name = binding.data.text.toString().trim()
                             )
                         )
                     }

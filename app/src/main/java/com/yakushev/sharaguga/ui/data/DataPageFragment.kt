@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.domain.models.data.Data
@@ -61,23 +62,26 @@ class DataPageFragment : Fragment() {
 
         page = DataPagesSealed.get(requireArguments().getInt(DataPagesSealed.name))
 
+        val adapter: DataRecyclerAdapter<Data>
+        val liveData: LiveData<out Resource<out MutableList<out Data>>>
+
         when (page!!) {
             is DataPagesSealed.Subjects -> {
-                val adapter = SubjectRecyclerAdapter(onItemClickListener)
-                initRecyclerView(adapter)
-                observeSubjects(adapter)
+                adapter = SubjectRecyclerAdapter(onItemClickListener)
+                liveData = viewModel.subjects
             }
-            is DataPagesSealed.Teachers ->{
-                val adapter = TeacherRecyclerAdapter(onItemClickListener)
-                initRecyclerView(adapter)
-                observeTeachers(adapter)
+            is DataPagesSealed.Teachers -> {
+                adapter = TeacherRecyclerAdapter(onItemClickListener)
+                liveData = viewModel.teachers
             }
             is DataPagesSealed.Places -> {
-                val adapter = PlaceRecyclerAdapter(onItemClickListener)
-                initRecyclerView(adapter)
-                observePlaces(adapter)
+                adapter = PlaceRecyclerAdapter(onItemClickListener)
+                liveData = viewModel.places
             }
         }
+
+        initRecyclerView(adapter)
+        observeData(liveData, adapter)
     }
 
     private fun initRecyclerView(adapter: DataRecyclerAdapter<Data>) {
@@ -85,8 +89,8 @@ class DataPageFragment : Fragment() {
         binding.recyclerView.adapter = adapter
     }
 
-    private fun observeSubjects(adapter: SubjectRecyclerAdapter) {
-        viewModel.subjects.observe(viewLifecycleOwner) {
+    private fun observeData(liveData: LiveData<out Resource<out MutableList<out Data>>>, adapter: DataRecyclerAdapter<Data>) {
+        liveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "observe subjects $page")
             when (it) {
                 is Resource.Loading -> {
@@ -125,88 +129,6 @@ class DataPageFragment : Fragment() {
                         )
                     }
                     it.change.observed = true
-                }
-            }
-        }
-    }
-
-    private fun observeTeachers(adapter: TeacherRecyclerAdapter) {
-        viewModel.teachers.observe(viewLifecycleOwner) {
-            Log.d(TAG, "observe teachers $page")
-            when (it) {
-                is Resource.Loading -> {
-                    binding.recyclerView.visibility = View.INVISIBLE
-                    binding.noDataView.visibility = View.VISIBLE
-                    binding.noDataView.text = getString(R.string.loading)
-                }
-                is Resource.Error -> {
-                    binding.noDataView.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                }
-                is Resource.Success -> {
-                    if (it.data == null) return@observe
-                    val data = it.data
-
-                    when (it.change) {
-                        Change.Get -> {
-                            binding.noDataView.visibility = View.GONE
-                            binding.recyclerView.visibility = View.VISIBLE
-
-                            adapter.updateItems(items = data.toMutableList())
-                        }
-                        is Change.Added -> adapter.addItem(
-                            it.change.index,
-                            data[it.change.index]
-                        )
-                        is Change.Modified -> adapter.modifyItem(
-                            it.change.index,
-                            data[it.change.index]
-                        )
-                        is Change.Removed -> adapter.deleteItem(
-                            it.change.index
-                        )
-                    }
-                }
-            }
-        }
-    }
-
-    private fun observePlaces(adapter: PlaceRecyclerAdapter) {
-        viewModel.places.observe(viewLifecycleOwner) {
-            Log.d(TAG, "observe places $page")
-            when (it) {
-                is Resource.Loading -> {
-                    binding.recyclerView.visibility = View.INVISIBLE
-                    binding.noDataView.visibility = View.VISIBLE
-                    binding.noDataView.text = getString(R.string.loading)
-                }
-                is Resource.Error -> {
-                    binding.noDataView.visibility = View.GONE
-                    binding.recyclerView.visibility = View.VISIBLE
-                }
-                is Resource.Success -> {
-                    if (it.data == null) return@observe
-                    val data = it.data
-
-                    when (it.change) {
-                        Change.Get -> {
-                            binding.noDataView.visibility = View.GONE
-                            binding.recyclerView.visibility = View.VISIBLE
-
-                            adapter.updateItems(items = data.toMutableList())
-                        }
-                        is Change.Added -> adapter.addItem(
-                            it.change.index,
-                            data[it.change.index]
-                        )
-                        is Change.Modified -> adapter.modifyItem(
-                            it.change.index,
-                            data[it.change.index]
-                        )
-                        is Change.Removed -> adapter.deleteItem(
-                            it.change.index
-                        )
-                    }
                 }
             }
         }
