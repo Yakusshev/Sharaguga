@@ -8,9 +8,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.yakushev.data.repository.TimePairRepository
+import com.yakushev.data.storage.firestore.DataStorageImpl
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
 import com.yakushev.domain.models.DaysPerWeek
+import com.yakushev.domain.models.data.Place
+import com.yakushev.domain.models.data.Subject
+import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
 import com.yakushev.domain.usecase.TimeScheduleUseCase

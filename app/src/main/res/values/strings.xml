@@ -40,13 +40,13 @@
     <string name="fab_content_description">добавить пару</string>
     <string name="add_period">Добавить пару</string>
     <string name="window">Окно</string>
-    <string name="edit_period">Сохранить</string>
-    <string name="delete_period">Удалить пару</string>
+    <string name="edit">Сохранить</string>
+    <string name="delete">Удалить</string>
 
     <string name="edit_dialog_confirmation_delete">Удалить</string>
     <string name="edit_dialog_confirmation_cancel">Отмена</string>
-    <string name="edit_dialog_confirmation_title">Удаление пары</string>
-    <string name="edit_dialog_confirmation_message">Вы действительно хотите удалить пару?</string>
+    <string name="schedule_dialog_confirmation_title">Удаление пары</string>
+    <string name="schedule_dialog_confirmation_message">Вы действительно хотите удалить пару?</string>
     <string name="period_save_error">Ошибка сохранения пары</string>
     <string name="period_save_success">Пара добавлена</string>
     <string name="period_delete_success">Пара удалена</string>
@@ -61,5 +61,9 @@
         <item>Третья пара</item>
         <item>Четвертая пара</item>
     </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="data_dialog_confirmation_title">Удаление</string>
+    <string name="data_dialog_confirmation_message">Вы действительно хотите удалить</string>
 
 </resources>

@@ -1,6 +1,8 @@
 package com.yakushev.data.storage.firestore
 
 import android.util.Log
+import com.google.android.gms.tasks.Task
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
@@ -22,42 +24,15 @@ class DataStorageImpl(
 
     private companion object { const val TAG = "DataStorageImpl" }
 
-    interface SubjectsCallback {
-        suspend fun added(index: Int, subject: Subject)
-
-        suspend fun modified(index: Int, subject: Subject)
-
-        suspend fun removed(oldIndex: Int)
-    }
-
-    interface TeachersCallback {
-        suspend fun added(index: Int, teacher: Teacher)
-
-        suspend fun modified(index: Int, teacher: Teacher)
-
-        suspend fun removed(oldIndex: Int)
-    }
-
-    interface PlacesCallback {
-        suspend fun added(index: Int, place: Place)
-
-        suspend fun modified(index: Int, place: Place)
-
-        suspend fun removed(oldIndex: Int)
-    }
-
-    private val subjectsCollection = Firebase.firestore
-        .collection("/universities/SPGUGA/subjects")
-    private val teachersCollection = Firebase.firestore
-        .collection("/universities/SPGUGA/teachers")
-    private val placesCollection = Firebase.firestore
-        .collection("/universities/SPGUGA/places")
-
     init {
         listenSubjects()
         listenTeachers()
         listenPlaces()
     }
+
+    /**
+     * SnapshotListeners
+     */
 
     private fun listenSubjects() {
         subjectsCollection.orderBy(NAME).addSnapshotListener { snapshot, error ->
@@ -152,6 +127,153 @@ class DataStorageImpl(
         }
     }
 
+    interface SubjectsCallback {
+        suspend fun added(index: Int, subject: Subject)
+
+        suspend fun modified(index: Int, subject: Subject)
+
+        suspend fun removed(index: Int)
+    }
+
+    interface TeachersCallback {
+        suspend fun added(index: Int, teacher: Teacher)
+
+        suspend fun modified(index: Int, teacher: Teacher)
+
+        suspend fun removed(index: Int)
+    }
+
+    interface PlacesCallback {
+        suspend fun added(index: Int, place: Place)
+
+        suspend fun modified(index: Int, place: Place)
+
+        suspend fun removed(index: Int)
+    }
+
+    /**
+     * Save methods
+     */
+
+    suspend fun saveSubject(subject: Subject): String? {
+
+        val data = hashMapOf(
+            NAME to subject.name
+        )
+
+        return savePeriodData(
+            data = data,
+            dataPath = subject.path,
+            collectionReference = subjectsCollection
+        )
+    }
+
+    suspend fun saveTeacher(teacher: Teacher): String? {
+        val data = hashMapOf(
+            FAMILY to teacher.family //FAMILY IS FIRST!
+        )
+
+        return savePeriodData(
+            data = data,
+            dataPath = teacher.path,
+            collectionReference = teachersCollection
+        )
+    }
+
+    suspend fun savePlace(place: Place): String? {
+        val data = hashMapOf(
+            NAME to place.name
+        )
+
+        return savePeriodData(
+            data = data,
+            dataPath = place.path,
+            collectionReference = placesCollection
+        )
+    }
+
+    private suspend fun savePeriodData(
+        data: HashMap<String, String>,
+        dataPath: String?,
+        collectionReference: CollectionReference
+    ) : String? {
+        Log.d(TAG, "save ${collectionReference.path}")
+
+        var resultPath: String? = null
+        val task: Task<out Any>?
+
+        if (dataPath != null) {
+            task = Firebase.firestore.document(dataPath)
+                .set(data)
+                .addOnSuccessListener {
+                    resultPath = dataPath
+                }
+        } else {
+            val doc = checkData(data, collectionReference)
+            if (doc != null) {
+                return doc.reference.path
+            } else {
+                task = collectionReference.document(data.toList()[0].second)
+                    .set(data)
+                    .addOnSuccessListener {
+                        resultPath = dataPath
+                    }
+            }
+        }
+
+        task.await()
+
+        return resultPath
+    }
+
+    private suspend fun checkData(
+        data: HashMap<String, String>,
+        collectionReference: CollectionReference
+    ): DocumentSnapshot? {
+        Log.d(TAG, "save ${collectionReference.path}")
+
+        val pair = data.toList()[0]
+
+        val query = collectionReference.whereEqualTo(pair.first, pair.second)
+
+        var document: DocumentSnapshot? = null
+
+        query.get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                task.result.documents.also {
+                    for (i in it.indices) {
+                        if (i == 0) document = it[i]
+                        else it[i].reference.delete()
+                    }
+                }
+            }
+        }.await()
+
+        return document
+    }
+
+
+    suspend fun deleteData(data: Data): Boolean {
+        var result = false
+        val collection: CollectionReference = when (data) {
+            is Subject -> subjectsCollection
+            is Teacher -> teachersCollection
+            is Place -> placesCollection
+        }
+
+        Firebase.firestore.document(data.path!!)
+            .delete()
+            .addOnSuccessListener {
+                result = true
+            }
+            .await()
+        return result
+    }
+
+    /**
+     * Get data once methods
+     */
+
     suspend fun getSubjects() : List<Subject>? {
         var exception: Exception? = null
         val itemsSnapshot = subjectsCollection.orderBy(NAME).get()
@@ -229,6 +351,10 @@ class DataStorageImpl(
 
         return items.toList()
     }
+
+    /**
+     * These methods parse data from Firestore
+     */
 
     private fun DocumentSnapshot.parseSubject() = Subject(
         path = this.reference.path,

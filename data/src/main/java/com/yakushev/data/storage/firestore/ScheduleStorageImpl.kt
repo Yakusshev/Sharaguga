@@ -18,12 +18,6 @@ class ScheduleStorageImpl : ScheduleStorage {
 
     private companion object { const val TAG = "ScheduleStorageImpl" }
 
-    private val subjectsReference = Firebase.firestore.collection(SUBJECTS_COLLECTION_PATH)
-    private val teachersReference = Firebase.firestore.collection(TEACHERS_COLLECTION_PATH)
-    private val placesReference = Firebase.firestore.collection(PLACES_COLLECTION_PATH)
-
-
-
     override suspend fun save(period: Period, periodEnum: PeriodEnum, dayPath: String): Boolean {
 
         val weeksPath = "universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks" //TODO remove
@@ -73,7 +67,7 @@ class ScheduleStorageImpl : ScheduleStorage {
             field = NAME,
             periodData = period.subject,
             dataPath = period.subjectPath,
-            collectionReference = subjectsReference
+            collectionReference = subjectsCollection
         )
     }
 
@@ -86,7 +80,7 @@ class ScheduleStorageImpl : ScheduleStorage {
             field = FAMILY,
             periodData = period.teacher.family,
             dataPath = period.teacherPath,
-            collectionReference = teachersReference
+            collectionReference = teachersCollection
         )
     }
 
@@ -99,11 +93,16 @@ class ScheduleStorageImpl : ScheduleStorage {
             field = NAME,
             periodData = period.place,
             dataPath = period.placePath,
-            collectionReference = placesReference
+            collectionReference = placesCollection
         )
     }
 
-    private suspend fun savePeriodData(field: String, periodData: String, dataPath: String?, collectionReference: CollectionReference) : String? {
+    private suspend fun savePeriodData(
+        field: String,
+        periodData: String,
+        dataPath: String?,
+        collectionReference: CollectionReference
+    ) : String? {
         Log.d(TAG, "save ${collectionReference.path}")
 
         val data = hashMapOf(
@@ -135,10 +134,17 @@ class ScheduleStorageImpl : ScheduleStorage {
         task.await()
 
         return resultPath
-
     }
 
-    private suspend fun checkData(field: String, data: String, collectionReference: CollectionReference): DocumentSnapshot? {
+    /**
+     * this method checks if data already exists in storage in case if user add new data
+     */
+
+    private suspend fun checkData(
+        field: String,
+        data: String,
+        collectionReference: CollectionReference
+    ): DocumentSnapshot? {
         Log.d(TAG, "save ${collectionReference.path}")
 
         val query = collectionReference.whereEqualTo(field, data)
@@ -177,8 +183,7 @@ class ScheduleStorageImpl : ScheduleStorage {
         return result
     }
 
-
-
+    //TODO remove this method and addSnapshotListener
     suspend fun getDay(dayPath: String): Day {
         val dayDocument = Firebase.firestore.document(dayPath)
             .getWithoutErrors(false)
@@ -204,6 +209,7 @@ class ScheduleStorageImpl : ScheduleStorage {
     private val firstWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/FirstWeek"
     private val secondWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/SecondWeek"
 
+    //TODO rewrite this method using query
     override suspend fun get(semesterPath: String): Schedule {
 
         val schedule = Schedule()

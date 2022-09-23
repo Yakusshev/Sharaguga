@@ -7,59 +7,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minWidth="324dp"
     android:orientation="vertical"
-    tools:context=".ui.schedule.EditDialog">
-
-    <androidx.appcompat.widget.AppCompatSpinner
-        android:id="@+id/spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp"
-        android:entries="@array/add_period_spinner" />
+    tools:context=".ui.data.DataDialog">
 
     <com.google.android.material.textfield.MaterialAutoCompleteTextView
-        android:id="@+id/subject"
+        android:id="@+id/data"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:focusable="true"
         android:inputType="textCapWords"
         android:focusedByDefault="true"
         android:imeOptions="actionNext"
         android:completionThreshold="1"
         style="@style/editText"
-        android:hint="@string/subject"
         tools:targetApi="o" />
-
-    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-        android:id="@+id/teacher"
-        android:imeOptions="actionNext"
-        android:completionThreshold="1"
-        style="@style/editText"
-        android:hint="@string/teacher" />
-
-    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-        android:id="@+id/place"
-        android:imeOptions="actionNext"
-        android:completionThreshold="1"
-        style="@style/editText"
-        android:hint="@string/place" />
-
-    <com.google.android.material.textfield.MaterialAutoCompleteTextView
-        android:id="@+id/type"
-        android:imeOptions="actionNext"
-        android:completionThreshold="1"
-        style="@style/editText"
-        android:hint="@string/lecture" />
-
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/switch_window"
-        style="@style/editText"
-        android:layout_width="wrap_content"
-        android:layout_gravity="center"
-        android:checked="false"
-        android:paddingTop="16dp"
-        app:switchPadding="8dp"
-        android:text="@string/window" />
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -77,6 +37,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="16dp"
             android:visibility="gone"
+            tools:visibility="visible"
             android:backgroundTint="?attr/colorTertiary"
             android:textColor="?attr/colorOnTertiary"
             android:text="@string/delete"/>

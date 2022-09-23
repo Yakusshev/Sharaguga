@@ -1,7 +1,18 @@
 package com.yakushev.data.storage.firestore
 
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+
 internal const val SAVING_ERROR_MASSAGE = "Error during saving"
 
+
+internal const val SUBJECTS_COLLECTION_PATH = "universities/SPGUGA/subjects"
+internal const val TEACHERS_COLLECTION_PATH = "universities/SPGUGA/teachers"
+internal const val PLACES_COLLECTION_PATH = "universities/SPGUGA/places"
+
+internal val subjectsCollection = Firebase.firestore.collection(SUBJECTS_COLLECTION_PATH)
+internal val teachersCollection = Firebase.firestore.collection(TEACHERS_COLLECTION_PATH)
+internal val placesCollection = Firebase.firestore.collection(PLACES_COLLECTION_PATH)
 
 internal const val UNIVERSITIES_COLLECTION_NAME = "universities"
 internal const val NAME = "name" //this constants is used in different documents
@@ -24,10 +35,6 @@ internal const val SUBJECT = "subject"
 internal const val TEACHER = "teacher"
 internal const val PLACE = "place"
 internal const val FAMILY = "family"
-
-internal const val PLACES_COLLECTION_PATH = "universities/SPGUGA/places"
-internal const val SUBJECTS_COLLECTION_PATH = "universities/SPGUGA/subjects"
-internal const val TEACHERS_COLLECTION_PATH = "universities/SPGUGA/teachers"
 
 
 

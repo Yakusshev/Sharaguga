@@ -9,11 +9,11 @@ import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.sharaguga.databinding.DataItemBinding
 
-sealed class DataHolder<D : Data>(
+sealed class DataHolder<out D : Data>(
     itemBinding: ViewBinding
 ) : RecyclerView.ViewHolder(itemBinding.root) {
 
-    abstract fun bind(data: D)
+    abstract fun bind(data: @UnsafeVariance D)
 }
 
 class SubjectHolder(

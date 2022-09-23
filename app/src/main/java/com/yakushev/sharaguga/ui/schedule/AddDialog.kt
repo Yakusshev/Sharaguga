@@ -40,6 +40,7 @@ open class AddDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.subject.requestFocus()
         binding.spinner.setSelection(args.pairPosition)
 
         setSwitchListener()
@@ -50,10 +51,6 @@ open class AddDialog : DialogFragment() {
     }
 
     private fun setAutoCompleteTextViewAdapters(context: Context) {
-        binding.subject.threshold = 1
-        binding.teacher.threshold = 1
-        binding.place.threshold = 1
-
         dataViewModel.subjects.observe(viewLifecycleOwner) {
             if (it !is Resource.Success) return@observe
             if (it.data == null) return@observe

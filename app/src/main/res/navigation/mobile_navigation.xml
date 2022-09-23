@@ -43,7 +43,7 @@
     <dialog
         android:id="@+id/navigation_add_period"
         android:name="com.yakushev.sharaguga.ui.schedule.AddDialog"
-        tools:layout="@layout/schedule_dialog_add">
+        tools:layout="@layout/schedule_dialog">
 
         <argument
             android:name="pairPosition"
@@ -76,7 +76,55 @@
         android:id="@+id/navigation_data"
         android:name="com.yakushev.sharaguga.ui.data.DataFragment"
         android:label="@string/title_data"
-        tools:layout="@layout/data_fragment" />
+        tools:layout="@layout/data_fragment">
+
+        <action
+            android:id="@+id/action_data_to_dialog_add"
+            app:destination="@id/navigation_data_dialog"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+        <action
+            android:id="@+id/action_data_to_dialog_edit"
+            app:destination="@id/navigation_data_dialog_edit"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+
+    </fragment>
+
+    <dialog
+        android:id="@+id/navigation_data_dialog"
+        android:name="com.yakushev.sharaguga.ui.data.DataDialog"
+        tools:layout="@layout/data_dialog">
+
+        <argument
+            android:name="position"
+            app:argType="integer"/>
+
+        <argument
+            android:name="page"
+            app:argType="integer"/>
+
+    </dialog>
+
+    <dialog
+        android:id="@+id/navigation_data_dialog_edit"
+        android:name="com.yakushev.sharaguga.ui.data.DataDialogEdit"
+        tools:layout="@layout/data_dialog">
+
+        <argument
+            android:name="position"
+            app:argType="integer"/>
+
+        <argument
+            android:name="page"
+            app:argType="integer"/>
+
+    </dialog>
 
     <!-- choice -->
 

@@ -5,6 +5,6 @@ package com.yakushev.domain.models.data
  */
 
 data class Subject (
-    override val path: String,
+    override val path: String?,
     val name: String
 ) : Data(path = path)

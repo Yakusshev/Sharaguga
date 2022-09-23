@@ -1,5 +1,5 @@
 package com.yakushev.domain.models.data
 
-abstract class Data (
+sealed class Data (
     open val path: String?
 )

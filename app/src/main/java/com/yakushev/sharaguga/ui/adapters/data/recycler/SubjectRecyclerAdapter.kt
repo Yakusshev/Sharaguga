@@ -2,10 +2,9 @@ package com.yakushev.sharaguga.ui.adapters.data.recycler
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
-import com.yakushev.domain.models.data.Teacher
 import com.yakushev.sharaguga.databinding.DataItemBinding
+import com.yakushev.sharaguga.utils.DataPagesEnum
 
 class SubjectRecyclerAdapter(
     onItemClickListener: OnItemClickListener
@@ -24,7 +23,7 @@ class SubjectRecyclerAdapter(
             )
         ).apply {
             itemView.setOnLongClickListener {
-                onItemClickListener.onClick(adapterPosition, items[adapterPosition].path)
+                onItemClickListener.onClick(adapterPosition, DataPagesEnum.Subjects)
                 true
             }
         }
@@ -32,17 +31,30 @@ class SubjectRecyclerAdapter(
 
     override fun onBindViewHolder(holder: DataHolder<Subject>, position: Int) {
         holder.bind(items[position])
-    }
+    }/*
 
     override fun updateItems(
-        subjects: MutableList<Subject>?,
-        teachers: MutableList<Teacher>?,
-        places: MutableList<Place>?
+        items: MutableList<Subject>?
     ) {
-        if (subjects == null) return
+        if (items == null) return
 
-        this.items = subjects
+        this.items = items
 
-        notifyItemRangeChanged(0, items.size)
+        notifyItemRangeChanged(0, this.items.size)
     }
+
+    fun addItem(index: Int, subject: Subject) {
+        items.add(index, subject)
+        notifyItemInserted(index)
+    }
+
+    fun modifyItem(index: Int, subject: Subject) {
+        items[index] = subject
+        notifyItemChanged(index)
+    }
+
+    fun deleteItem(index: Int) {
+        items.removeAt(index)
+        notifyItemRemoved(index)
+    }*/
 }
