@@ -1,7 +1,7 @@
 package com.yakushev.sharaguga.ui.schedule
 
 import android.content.Context
-import android.os.Build
+import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -13,7 +13,6 @@ import android.widget.Toast
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.navArgs
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yakushev.domain.models.DaysPerWeek
@@ -33,8 +32,6 @@ class ScheduleFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ScheduleViewModel by activityViewModels()
-
-    private val args: ScheduleFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -57,24 +54,25 @@ class ScheduleFragment : Fragment() {
         val adapter = SchedulePagerAdapter(this)
         binding.viewPager.adapter = adapter
 
-        chooseCurrentDay()
+        val day = chooseCurrentDay()
 
-        attachTabLayoutMediator()
+        attachTabLayoutMediator(day)
 
         observeToastLiveData(view.context)
-
     }
 
-    private fun chooseCurrentDay() {
+    private fun chooseCurrentDay(): Int {
         val day = LocalDate.now().dayOfWeek.ordinal
         binding.viewPager.currentItem = day
+        return day
     }
 
-    private fun attachTabLayoutMediator() {
+    private fun attachTabLayoutMediator(currentDay: Int) {
         val calendarArray = getDayOfMonthArray()
 
-        val textColor = getColor(com.google.android.material.R.attr.colorTertiary)
-        val backgroundColor = getColor(com.google.android.material.R.attr.colorTertiaryContainer)
+        val currentDayTextColor = getColor(com.google.android.material.R.attr.colorError)
+
+        val weekendTextColor = getColor(com.google.android.material.R.attr.colorOnTertiaryContainer)
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             val dayOfMonth = calendarArray[position].toString()
@@ -84,9 +82,11 @@ class ScheduleFragment : Fragment() {
             tab.text = dayOfMonth + "\n" + dayOfWeek
 
             when (position % DaysPerWeek) {
-                5 -> tab.changeAppearance(textColor, backgroundColor)
-                6 -> tab.changeAppearance(textColor, backgroundColor)
+                5 -> tab.changeAppearance(weekendTextColor)
+                6 -> tab.changeAppearance(weekendTextColor)
             }
+
+            if (position == currentDay) tab.changeAppearance(currentDayTextColor, true)
         }.attach()
     }
 
@@ -100,11 +100,14 @@ class ScheduleFragment : Fragment() {
         return backgroundColor.data
     }
 
-    private fun TabLayout.Tab.changeAppearance(textColor: Int, backgroundColor: Int) {
+    private fun TabLayout.Tab.changeAppearance(textColor: Int, bold: Boolean = false) {
         //view.setBackgroundColor(backgroundColor.data)
         for (c in this.view.children) {
             try {
-                (c as TextView).setTextColor(textColor)
+                (c as TextView).apply {
+                    setTextColor(textColor)
+                    if (bold) setTypeface(null, Typeface.BOLD_ITALIC)
+                }
             } catch (e: ClassCastException) {
 
             }
@@ -135,11 +138,6 @@ class ScheduleFragment : Fragment() {
                 null -> Log.d(TAG, "Message is null")
             }
         }
-    }
-
-    private fun setActionBarTitle() {
-        val title = (requireActivity() as MainActivity).supportActionBar?.title
-        (requireActivity() as MainActivity).supportActionBar?.title = "$title ${args.groupName}"
     }
 
     override fun onDestroyView() {

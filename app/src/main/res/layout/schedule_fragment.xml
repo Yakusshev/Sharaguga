@@ -15,9 +15,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        style="@style/tabLayout"
         app:tabMaxWidth="154px"
-        app:tabMode="scrollable"
-        tools:foreground="?attr/colorSecondaryContainer"/>
+        app:tabMode="scrollable" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/view_pager"

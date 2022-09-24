@@ -31,6 +31,8 @@ internal const val LAST_DAY = "lastDay"
 
 internal const val SCHEDULE_COLLECTION_NAME = "schedule"
 
+internal const val DAY_INDEX = "index"
+
 internal const val SUBJECT = "subject"
 internal const val TEACHER = "teacher"
 internal const val PLACE = "place"

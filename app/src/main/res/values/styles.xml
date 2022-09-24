@@ -35,4 +35,16 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="tabLayout" parent="@style/Widget.Material3.TabLayout">
+
+    </style>
+
+    <style name="toolBar" parent="@style/Widget.Material3.Toolbar">
+
+    </style>
+
+    <style name="toolBarText">
+    </style>
+
+
 </resources>

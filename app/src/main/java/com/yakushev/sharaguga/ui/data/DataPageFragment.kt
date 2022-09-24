@@ -89,7 +89,10 @@ class DataPageFragment : Fragment() {
         binding.recyclerView.adapter = adapter
     }
 
-    private fun observeData(liveData: LiveData<out Resource<out MutableList<out Data>>>, adapter: DataRecyclerAdapter<Data>) {
+    private fun observeData(
+        liveData: LiveData<out Resource<out MutableList<out Data>>>,
+        adapter: DataRecyclerAdapter<Data>
+    ) {
         liveData.observe(viewLifecycleOwner) {
             Log.d(TAG, "observe subjects $page")
             when (it) {
@@ -101,6 +104,7 @@ class DataPageFragment : Fragment() {
                 is Resource.Error -> {
                     binding.noDataView.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
+                    binding.noDataView.text = getString(R.string.period_save_error)
                 }
                 is Resource.Success -> {
                     if (it.data == null) return@observe

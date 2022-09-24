@@ -7,6 +7,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.ScheduleStorage
+import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
@@ -32,20 +33,21 @@ class ScheduleStorageImpl : ScheduleStorage {
         if (subjectPath == null || teacherPath == null || placePath == null)
             return false
 
-        val docData = hashMapOf(
+        val periodData = hashMapOf(
             SUBJECT to Firebase.firestore.document(subjectPath),
             TEACHER to Firebase.firestore.document(teacherPath),
             PLACE to Firebase.firestore.document(placePath)
         )
 
-        val pairData = hashMapOf(
-            periodEnum.name to docData
+        val dayData = hashMapOf(
+            DAY_INDEX to getDayIndex(dayPath),
+            periodEnum.name to periodData
         )
 
         var result = false
         Log.d(TAG, "save: dayPath = $dayPath")
         Firebase.firestore.document(dayPath)
-            .set(pairData, SetOptions.merge())
+            .set(dayData, SetOptions.merge())
             .addOnSuccessListener {
                 result = true
                 Log.d(TAG, "save success")
@@ -55,6 +57,16 @@ class ScheduleStorageImpl : ScheduleStorage {
             }
             .await()
         return result
+    }
+
+    private fun getDayIndex(dayPath: String): Int {
+        val list = dayPath.split("/")
+        Log.d(TAG, dayPath)
+
+        val dayEnum = DayEnum.valueOf(list[11])
+        val weekEnum = WeekEnum.valueOf(list[9])
+
+        return dayEnum.ordinal
     }
 
     private suspend fun saveSubject(period: Period): String? {
