@@ -13,6 +13,8 @@ import android.widget.Toast
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yakushev.domain.models.DaysPerWeek
@@ -23,6 +25,7 @@ import com.yakushev.sharaguga.ui.adapters.schedule.SchedulePagerAdapter
 import com.yakushev.sharaguga.utils.Message
 import java.time.LocalDate
 import java.util.*
+import kotlin.math.abs
 
 class ScheduleFragment : Fragment() {
 
@@ -53,12 +56,71 @@ class ScheduleFragment : Fragment() {
 
         val adapter = SchedulePagerAdapter(this)
         binding.viewPager.adapter = adapter
+        binding.viewPager.setPageTransformer(depthPageTransformer)
 
         val day = chooseCurrentDay()
 
         attachTabLayoutMediator(day)
 
         observeToastLiveData(view.context)
+    }
+
+    private val depthPageTransformer = ViewPager2.PageTransformer { page, position ->
+        val minScale = 0.75f
+        page.apply {
+            val pageWidth = width
+            when {
+                position < -1 -> { // [-Infinity,-1)
+                    // This page is way off-screen to the left.
+                    alpha = 0f
+                }
+                position <= 0 -> { // [-1,0]
+                    // Use the default slide transition when moving to the left page
+                    alpha = 1f
+                    translationX = 0f
+                    translationZ = 0f
+                    scaleX = 1f
+                    scaleY = 1f
+                }
+                position <= 1 -> { // (0,1]
+                    // Fade the page out.
+                    alpha = 1 - position
+
+                    // Counteract the default slide transition
+                    translationX = pageWidth * -position
+                    // Move it behind the left page
+                    translationZ = -1f
+
+                    // Scale the page down (between MIN_SCALE and 1)
+                    val scaleFactor = (minScale + (1 - minScale) * (1 - abs(position)))
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
+                }
+                else -> { // (1,+Infinity]
+                    // This page is way off-screen to the right.
+                    alpha = 0f
+                }
+            }
+        }
+    }
+
+    private val myPageTransformer = ViewPager2.PageTransformer { page, position ->
+        val minScale = 0.75f
+        page.apply {
+            val pageWidth = width
+            scaleX = minScale
+            when {
+                position < 0 -> {
+                    translationX = translationX + 1
+                }
+                position == 0f -> {
+                    translationX = 0f
+                }
+                position > 0 -> {
+                    translationX = translationX - 1
+                }
+            }
+        }
     }
 
     private fun chooseCurrentDay(): Int {

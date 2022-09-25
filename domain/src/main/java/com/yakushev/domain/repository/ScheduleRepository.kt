@@ -9,6 +9,6 @@ interface ScheduleRepository {
 
     suspend fun save(period: Period, pairPosition: PeriodEnum, dayPath: String) : Boolean
 
-    suspend fun get(semesterPath: String) : Schedule
+    suspend fun get(semesterPath: String): Schedule?
 
 }

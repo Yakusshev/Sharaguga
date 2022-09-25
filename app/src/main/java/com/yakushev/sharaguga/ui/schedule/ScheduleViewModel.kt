@@ -59,7 +59,7 @@ class ScheduleViewModel : ViewModel() {
         timeList = timeScheduleUseCase.get(testPathTime)
         timeList!!.printLog(TAG)
         weeksList = scheduleStorage.get(testPathSubject)
-        weeksList!!.printLog(TAG)
+        weeksList?.printLog(TAG)
     }
 
     init {
@@ -79,6 +79,13 @@ class ScheduleViewModel : ViewModel() {
             val timeList = timeList!!.toMutableList() as ArrayList
 
             _timeLiveData.postValue(Resource.Success(timeList))
+
+            if (weeksList == null) {
+                for (data in _listLiveData) {
+                    data.postValue(Resource.Error(null))
+                }
+                return@launch
+            }
 
             val firstWeek = weeksList!![0]!!
             val secondWeek = weeksList!![1]!!

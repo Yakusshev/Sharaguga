@@ -20,13 +20,10 @@
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingBottom="16dp"
                 android:isScrollContainer="false"
                 tools:listitem="@layout/schedule_item_subject"
                 tools:itemCount="4"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="16dp"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

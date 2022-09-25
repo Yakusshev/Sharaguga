@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.domain.models.data.Data
@@ -24,18 +25,16 @@ class DataStorageImpl(
 
     private companion object { const val TAG = "DataStorageImpl" }
 
-    init {
-        listenSubjects()
-        listenTeachers()
-        listenPlaces()
-    }
-
     /**
      * SnapshotListeners
      */
 
-    private fun listenSubjects() {
-        subjectsCollection.orderBy(NAME).addSnapshotListener { snapshot, error ->
+    var subjectsListener: ListenerRegistration? = null
+    var teachersListener: ListenerRegistration? = null
+    var placesListener: ListenerRegistration? = null
+
+    fun listenSubjects() {
+        subjectsListener = subjectsCollection.orderBy(NAME).addSnapshotListener { snapshot, error ->
             if (error != null) {
                 Log.w(TAG, "Subjects listen failed.", error)
                 return@addSnapshotListener
@@ -65,8 +64,8 @@ class DataStorageImpl(
         }
     }
 
-    private fun listenTeachers() {
-        teachersCollection.orderBy(FAMILY).addSnapshotListener { snapshot, error ->
+    fun listenTeachers() {
+        teachersListener = teachersCollection.orderBy(FAMILY).addSnapshotListener { snapshot, error ->
             if (error != null) {
                 Log.w(TAG, "Teachers listen failed.", error)
                 return@addSnapshotListener
@@ -96,8 +95,8 @@ class DataStorageImpl(
         }
     }
 
-    private fun listenPlaces() {
-        placesCollection.orderBy(NAME).addSnapshotListener { snapshot, error ->
+    fun listenPlaces() {
+        placesListener = placesCollection.orderBy(NAME).addSnapshotListener { snapshot, error ->
             if (error != null) {
                 Log.w(TAG, "Teachers listen failed.", error)
                 return@addSnapshotListener
@@ -125,6 +124,18 @@ class DataStorageImpl(
                 }
             }
         }
+    }
+
+    fun stopListenSubjects() {
+        subjectsListener!!.remove()
+    }
+
+    fun stopListenTeachers() {
+        teachersListener!!.remove()
+    }
+
+    fun stopListenPlaces() {
+        placesListener!!.remove()
     }
 
     interface SubjectsCallback {

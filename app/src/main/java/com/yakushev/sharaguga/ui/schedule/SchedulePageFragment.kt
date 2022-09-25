@@ -47,7 +47,6 @@ class SchedulePageFragment : Fragment() {
         initRecyclerView()
 
         startObserving()
-
     }
 
     private fun initRecyclerView() {

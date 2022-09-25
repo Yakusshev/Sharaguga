@@ -11,7 +11,7 @@ class PeriodsScheduleUseCase(private val repository: ScheduleRepository) {
         return repository.save(period, pairPosition, dayPath)
     }
 
-    suspend fun get(semesterPath: String) : Schedule {
+    suspend fun get(semesterPath: String) : Schedule? {
         return repository.get(semesterPath)
     }
 

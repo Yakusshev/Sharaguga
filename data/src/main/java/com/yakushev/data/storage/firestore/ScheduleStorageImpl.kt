@@ -7,7 +7,6 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.ScheduleStorage
-import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
@@ -40,7 +39,7 @@ class ScheduleStorageImpl : ScheduleStorage {
         )
 
         val dayData = hashMapOf(
-            DAY_INDEX to getDayIndex(dayPath),
+            INDEX to getDayIndex(dayPath),
             periodEnum.name to periodData
         )
 
@@ -196,9 +195,9 @@ class ScheduleStorageImpl : ScheduleStorage {
     }
 
     //TODO remove this method and addSnapshotListener
-    suspend fun getDay(dayPath: String): Day {
+    suspend fun getDay(dayPath: String): Day? {
         val dayDocument = Firebase.firestore.document(dayPath)
-            .getWithoutErrors(false)
+            .getDocument() ?: return null
 
         dayDocument.data
 
@@ -222,7 +221,7 @@ class ScheduleStorageImpl : ScheduleStorage {
     private val secondWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/SecondWeek"
 
     //TODO rewrite this method using query
-    override suspend fun get(semesterPath: String): Schedule {
+    override suspend fun get(semesterPath: String): Schedule? {
 
         val schedule = Schedule()
 
@@ -233,38 +232,56 @@ class ScheduleStorageImpl : ScheduleStorage {
         val start = firstWeek.data!![FIRST_DAY] as Timestamp
         val end = firstWeek.data!![LAST_DAY] as Timestamp
 
-        for (weekEnum in WeekEnum.values()) {
-            val scheduleRef = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
-                .document(weekEnum.name).collection(SCHEDULE_COLLECTION_NAME)
+        val weeksQuery = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
+            .orderBy(INDEX)
+            .getCollection() ?: return null
+
+        for (weekDocument in weeksQuery.documents) {
+            val daysQuery = weekDocument.reference.collection(SCHEDULE_COLLECTION_NAME)
+                .orderBy(INDEX)
+                .getCollection() ?: return null
 
             val week = Week(start, end)
 
-            for (dayEnum in DayEnum.values()) {
-                val dayDocument = scheduleRef.document(dayEnum.name).getWithoutErrors(true)
-
-                Log.d(TAG, "$dayEnum ${dayDocument.data != null}")
+            for (dayDocument in daysQuery) { //TODO path if dayPath is null
                 val day = Day(dayDocument.reference.path)
-                if (dayDocument.data != null) {
-                    for (pair in PeriodEnum.values()) {
-                        day.add(getPairData(dayDocument, pair.name))
-                    }
+                for (periodEnum in PeriodEnum.values()) {
+                    day.add(getPairData(dayDocument, periodEnum.name))
                 }
-                week.add(day)
+                week[dayDocument.data[INDEX].toString().toInt()] = day
             }
             schedule.add(week)
         }
+
         schedule.printLog(TAG)
 
         return schedule
    }
 
-    private suspend fun DocumentReference.getWithoutErrors(showToast: Boolean): DocumentSnapshot {
-        return get()
-            .addOnSuccessListener {
+    private suspend fun DocumentReference.getDocument(): DocumentSnapshot? {
+        var doc: DocumentSnapshot? = null
+        get().addOnSuccessListener {
+                doc = it
             }
             .addOnFailureListener {
+                it.printStackTrace()
             }
             .await()
+
+        return doc
+    }
+
+    private suspend fun Query.getCollection(): QuerySnapshot? {
+        var querySnapshot: QuerySnapshot? = null
+        get().addOnSuccessListener {
+                querySnapshot = it
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+            }
+            .await()
+
+        return querySnapshot
     }
 
     /**
@@ -285,19 +302,17 @@ class ScheduleStorageImpl : ScheduleStorage {
 
     private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Period {
         val subject: String
-        this[SUBJECT]!!.getWithoutErrors(false).data.apply {
+        this[SUBJECT]!!.getDocument()?.data.apply {
             subject = if (this != null) this[NAME].toString() else "Нет данных"
         }
 
         return Period(
             subject = subject,
             teacher = Teacher(
-                name = "",
-                family = this[TEACHER]!!.getWithoutErrors(false).data?.get(FAMILY).toString(),
-                patronymic = "",
+                family = this[TEACHER]!!.getDocument()?.data?.get(FAMILY).toString(),
                 path = null
             ),
-            place = this[PLACE]!!.getWithoutErrors(false).data?.get(NAME).toString(),
+            place = this[PLACE]!!.getDocument()?.data?.get(NAME).toString(),
             subjectPath = this[SUBJECT]!!.path,
             teacherPath = this[TEACHER]!!.path,
             placePath = this[PLACE]!!.path

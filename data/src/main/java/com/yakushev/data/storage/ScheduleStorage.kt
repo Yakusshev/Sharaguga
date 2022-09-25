@@ -7,6 +7,6 @@ interface ScheduleStorage {
 
     suspend fun save(period: Period, periodEnum: PeriodEnum, dayPath: String) : Boolean
 
-    suspend fun get(semesterPath: String): Schedule
+    suspend fun get(semesterPath: String): Schedule?
 
 }

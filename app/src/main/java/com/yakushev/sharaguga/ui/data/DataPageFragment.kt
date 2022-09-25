@@ -69,14 +69,20 @@ class DataPageFragment : Fragment() {
             is DataPagesSealed.Subjects -> {
                 adapter = SubjectRecyclerAdapter(onItemClickListener)
                 liveData = viewModel.subjects
+                viewModel.getSubjects()
+                viewModel.listenSubjects()
             }
             is DataPagesSealed.Teachers -> {
                 adapter = TeacherRecyclerAdapter(onItemClickListener)
                 liveData = viewModel.teachers
+                viewModel.getTeachers()
+                viewModel.listenTeachers()
             }
             is DataPagesSealed.Places -> {
                 adapter = PlaceRecyclerAdapter(onItemClickListener)
                 liveData = viewModel.places
+                viewModel.getPlaces()
+                viewModel.listenPlaces()
             }
         }
 
@@ -140,6 +146,11 @@ class DataPageFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        when (page!!) {
+            DataPagesSealed.Subjects -> viewModel.stopListenSubjects()
+            DataPagesSealed.Teachers -> viewModel.stopListenTeachers()
+            DataPagesSealed.Places -> viewModel.stopListenPlaces()
+        }
         _binding = null
     }
 }

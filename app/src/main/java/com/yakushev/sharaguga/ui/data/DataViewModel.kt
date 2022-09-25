@@ -99,27 +99,33 @@ class DataViewModel : ViewModel() {
         placesCallback
     )
 
-    init {
+    fun getSubjects() {
         viewModelScope.launch {
             _subjects.postValue(Resource.Loading())
+
+            val subjects = storage.getSubjects()
+            if (subjects != null)
+                _subjects.postValue(Resource.Success(subjects.toMutableList(), Change.Get))
+            else
+                _subjects.postValue(Resource.Error(null))
+        }
+    }
+
+    fun getTeachers() {
+        viewModelScope.launch {
             _teachers.postValue(Resource.Loading())
+
+            val teachers = storage.getTeachers()
+            if (teachers != null)
+                _teachers.postValue(Resource.Success(teachers.toMutableList(), Change.Get))
+            else
+                _teachers.postValue(Resource.Error(null))
+        }
+    }
+
+    fun getPlaces() {
+        viewModelScope.launch {
             _places.postValue(Resource.Loading())
-
-            launch {
-                val subjects = storage.getSubjects()
-                if (subjects != null)
-                    _subjects.postValue(Resource.Success(subjects.toMutableList(), Change.Get))
-                else
-                    _subjects.postValue(Resource.Error(null))
-            }
-
-            launch {
-                val teachers = storage.getTeachers()
-                if (teachers != null)
-                    _teachers.postValue(Resource.Success(teachers.toMutableList(), Change.Get))
-                else
-                    _teachers.postValue(Resource.Error(null))
-            }
 
             launch {
                 val places = storage.getPlaces()
@@ -153,5 +159,33 @@ class DataViewModel : ViewModel() {
         viewModelScope.launch {
             storage.deleteData(data)
         }
+    }
+
+
+
+    fun listenSubjects() {
+        storage.listenSubjects()
+    }
+
+    fun listenTeachers() {
+        storage.listenTeachers()
+    }
+
+    fun listenPlaces() {
+        storage.listenPlaces()
+    }
+
+
+
+    fun stopListenSubjects() {
+        storage.stopListenSubjects()
+    }
+
+    fun stopListenTeachers() {
+        storage.stopListenTeachers()
+    }
+
+    fun stopListenPlaces() {
+        storage.stopListenPlaces()
     }
 }
