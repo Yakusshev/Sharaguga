@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.schedule.ScheduleFragment">
+    tools:context=".screens.schedule.ScheduleFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
@@ -27,7 +27,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:context=".ui.schedule.SchedulePageFragment"/>
+        tools:context=".screens.schedule.holders.SchedulePageHolder"/>
 
     <include
         android:layout_width="match_parent"
@@ -38,7 +38,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:visibility="gone"
         tools:visibility="visible"
-        layout="@layout/schedule_fragment_page" />
+        layout="@layout/schedule_page" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"

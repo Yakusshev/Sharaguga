@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/navigation_schedule"
-        android:name="com.yakushev.sharaguga.ui.schedule.ScheduleFragment"
+        android:name="com.yakushev.sharaguga.screens.schedule.ScheduleFragment"
         tools:layout="@layout/schedule_fragment">
 
         <argument
@@ -42,7 +42,7 @@
 
     <dialog
         android:id="@+id/navigation_add_period"
-        android:name="com.yakushev.sharaguga.ui.schedule.AddDialog"
+        android:name="com.yakushev.sharaguga.screens.schedule.dialogs.ScheduleDialogAdd"
         tools:layout="@layout/schedule_dialog">
 
         <argument
@@ -57,7 +57,7 @@
 
     <dialog
         android:id="@+id/navigation_edit_period"
-        android:name="com.yakushev.sharaguga.ui.schedule.EditDialog"
+        android:name="com.yakushev.sharaguga.screens.schedule.dialogs.ScheduleDialogEdit"
         tools:layout="@layout/schedule_dialog">
 
         <argument
@@ -74,7 +74,7 @@
 
     <fragment
         android:id="@+id/navigation_data"
-        android:name="com.yakushev.sharaguga.ui.data.DataFragment"
+        android:name="com.yakushev.sharaguga.screens.data.DataFragment"
         android:label="@string/title_data"
         tools:layout="@layout/data_fragment">
 
@@ -98,7 +98,7 @@
 
     <dialog
         android:id="@+id/navigation_data_dialog"
-        android:name="com.yakushev.sharaguga.ui.data.DataDialog"
+        android:name="com.yakushev.sharaguga.screens.data.dialogs.DataDialog"
         tools:layout="@layout/data_dialog">
 
         <argument
@@ -113,7 +113,7 @@
 
     <dialog
         android:id="@+id/navigation_data_dialog_edit"
-        android:name="com.yakushev.sharaguga.ui.data.DataDialogEdit"
+        android:name="com.yakushev.sharaguga.screens.data.dialogs.DataDialogEdit"
         tools:layout="@layout/data_dialog">
 
         <argument
@@ -130,7 +130,7 @@
 
     <fragment
         android:id="@+id/navigation_universities"
-        android:name="com.yakushev.sharaguga.ui.choice.universities.UniversitiesFragment"
+        android:name="com.yakushev.sharaguga.screens.choice.universities.UniversitiesFragment"
         android:label="@string/title_universities"
         tools:layout="@layout/choice_fragment_universities" >
 
@@ -146,7 +146,7 @@
 
     <fragment
         android:id="@+id/navigation_faculties"
-        android:name="com.yakushev.sharaguga.ui.choice.faculties.FacultiesFragment"
+        android:name="com.yakushev.sharaguga.screens.choice.faculties.FacultiesFragment"
         android:label="@string/title_faculties"
         tools:layout="@layout/choice_fragment_faculties">
 
@@ -172,7 +172,7 @@
 
     <fragment
         android:id="@+id/navigation_groups"
-        android:name="com.yakushev.sharaguga.ui.choice.groups.GroupsFragment"
+        android:name="com.yakushev.sharaguga.screens.choice.groups.GroupsFragment"
         android:label="@string/title_groups"
         tools:layout="@layout/choice_fragment_groups">
 

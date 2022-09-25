@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minWidth="324dp"
     android:orientation="vertical"
-    tools:context=".ui.schedule.EditDialog">
+    tools:context=".screens.schedule.dialogs.ScheduleDialogEdit">
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/spinner"

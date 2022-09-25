@@ -7,7 +7,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:minWidth="324dp"
     android:orientation="vertical"
-    tools:context=".ui.data.DataDialog">
+    tools:context=".screens.data.dialogs.DataDialog">
 
     <com.google.android.material.textfield.MaterialAutoCompleteTextView
         android:id="@+id/data"
