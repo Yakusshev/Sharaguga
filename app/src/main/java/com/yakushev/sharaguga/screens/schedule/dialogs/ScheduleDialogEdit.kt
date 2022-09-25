@@ -3,6 +3,7 @@ package com.yakushev.sharaguga.screens.schedule.dialogs
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.lifecycleScope
 import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.utils.Resource
@@ -28,11 +29,11 @@ class ScheduleDialogEdit : ScheduleDialogAdd() {
 
     }
 
-    private fun observeData() {
+    private fun observeData() = lifecycleScope.launchWhenStarted {
         val dayIndex = scheduleViewModel.getDayIndex(args.dayPath)
-        scheduleViewModel.listLiveData[dayIndex].observe(viewLifecycleOwner) {
-            if (it !is Resource.Success || it.data == null) return@observe
-            val period = it.data[args.pairPosition] ?: return@observe
+        scheduleViewModel.days[dayIndex].collect {
+            if (it !is Resource.Success || it.data == null) return@collect
+            val period = it.data[args.pairPosition] ?: return@collect
             binding.apply {
                 subject.setText(period.subject)
                 teacher.setText(period.teacher.family)

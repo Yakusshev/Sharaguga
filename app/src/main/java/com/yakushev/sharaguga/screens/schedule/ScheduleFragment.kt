@@ -15,6 +15,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -55,7 +56,7 @@ class ScheduleFragment : Fragment() {
 
         (activity as MainActivity).setActionBarTitle(getString(R.string.title_schedule))
 
-        val adapter = SchedulePagerAdapter(viewModel, viewLifecycleOwner)
+        val adapter = SchedulePagerAdapter(viewModel, lifecycleScope)
         binding.viewPager.adapter = adapter
 
         binding.viewPager.showSideItems(

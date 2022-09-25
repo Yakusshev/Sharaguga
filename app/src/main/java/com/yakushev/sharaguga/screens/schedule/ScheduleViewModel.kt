@@ -16,17 +16,19 @@ import com.yakushev.domain.models.schedule.*
 import com.yakushev.domain.usecase.TimeScheduleUseCase
 import com.yakushev.sharaguga.utils.Resource
 import com.yakushev.sharaguga.utils.Message
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ScheduleViewModel : ViewModel() {
 
     companion object { private const val TAG = "ScheduleViewModel" }
 
-    private val _listLiveData = ArrayList<MutableLiveData<Resource<Day>>>()
-    val listLiveData: List<LiveData<Resource<Day>>> get() = _listLiveData
+    private val _days = ArrayList<MutableStateFlow<Resource<Day>>>()
+    val days: List<StateFlow<Resource<Day>>> get() = _days
 
-    private val _timeLiveData = MutableLiveData<Resource<ArrayList<TimeCustom>>>()
-    val timeLiveData get(): LiveData<Resource<ArrayList<TimeCustom>>> = _timeLiveData
+    private val _timeFlow = MutableStateFlow<Resource<ArrayList<TimeCustom>>>(Resource.Loading())
+    val timeFlow get(): StateFlow<Resource<ArrayList<TimeCustom>>> = _timeFlow
 
     private val _toastLiveData = MutableLiveData<Message?>()
     val toastLiveData get(): LiveData<Message?> = _toastLiveData
@@ -52,6 +54,11 @@ class ScheduleViewModel : ViewModel() {
     private val scheduleStorage = ScheduleStorageImpl()
 
     private var loadingJob = viewModelScope.launch {
+
+        repeat(14) {
+            _days.add(MutableStateFlow(Resource.Loading()))
+        }
+
         timeList = timeScheduleUseCase.get(testPathTime)
         timeList!!.printLog(TAG)
         weeksList = scheduleStorage.get(testPathSubject)
@@ -59,53 +66,48 @@ class ScheduleViewModel : ViewModel() {
     }
 
     init {
-        viewModelScope.launch {
-            repeat(14) {
-                val liveData: MutableLiveData<Resource<Day>> = MutableLiveData(Resource.Loading())
-                _listLiveData.add(liveData)
-            }
-        }
         updateLiveDataValue()
     }
 
-    private fun updateLiveDataValue() {
-        viewModelScope.launch {
-            loadingJob.join()
+    private fun updateLiveDataValue() = viewModelScope.launch {
+        loadingJob.join()
 
-            val timeList = timeList!!.toMutableList() as ArrayList
+        val timeList = timeList!!.toMutableList() as ArrayList
 
-            _timeLiveData.postValue(Resource.Success(timeList))
+        _timeFlow.value = Resource.Success(timeList)
 
-            if (weeksList == null) {
-                for (data in _listLiveData) {
-                    data.postValue(Resource.Error(null))
-                }
-                return@launch
+        if (weeksList == null) {
+            for (data in _days) {
+                data.value = Resource.Error(null)
             }
-
-            val firstWeek = weeksList!![0]!!
-            val secondWeek = weeksList!![1]!!
-
-            _currentWeekNumber = getWeekNumber(firstWeek.start)
-
-            if (currentWeekNumber == 0) {
-                fillLiveData(firstWeek, 0)
-                fillLiveData(secondWeek, 7)
-            } else {
-                fillLiveData(firstWeek, 7)
-                fillLiveData(secondWeek, 0)
-            }
-
-            Log.d(TAG, "liveDataValue Updated")
+            return@launch
         }
+
+        val firstWeek = weeksList!![0]!!
+        val secondWeek = weeksList!![1]!!
+
+        _currentWeekNumber = getWeekNumber(firstWeek.start)
+
+        if (currentWeekNumber == 0) {
+            fillLiveData(firstWeek, 0)
+            fillLiveData(secondWeek, 7)
+        } else {
+            fillLiveData(firstWeek, 7)
+            fillLiveData(secondWeek, 0)
+        }
+
+        Log.d(TAG, "liveDataValue Updated")
     }
 
-    private fun fillLiveData(week: Week, diff: Int) {
+    private suspend fun fillLiveData(week: Week, diff: Int) {
         for (listIndex in week.indices) {
             week[listIndex].also {
                 if (it != null) {
-                    _listLiveData[listIndex + diff].postValue(Resource.Success(it))
-                } else _listLiveData[listIndex + diff].postValue(Resource.Error(null))
+                    _days[listIndex + diff].emit(Resource.Success(it))
+                    //_days[listIndex + diff].value =
+                } else _days[listIndex + diff].emit(Resource.Error(null))
+
+            //_days[listIndex + diff].value = Resource.Error(null)
             }
         }
     }

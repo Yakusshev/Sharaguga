@@ -1,6 +1,7 @@
 package com.yakushev.sharaguga.screens.schedule.holders
 
 import android.view.View
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,23 +14,24 @@ import com.yakushev.sharaguga.screens.schedule.adapters.ScheduleRecyclerAdapter
 import com.yakushev.sharaguga.utils.Resource
 
 class SchedulePageHolder(
-    val binding: SchedulePageBinding,
-    val viewModel: ScheduleViewModel,
-    val lifecycleOwner: LifecycleOwner
+    private val binding: SchedulePageBinding,
+    private val viewModel: ScheduleViewModel,
+    private val lifecycleScope: LifecycleCoroutineScope
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind() {
         val adapter = initRecyclerView()
-        startObserving(adapterPosition, adapter)
+        observeDays(adapterPosition, adapter)
+        observeTime(adapter)
     }
 
     private fun initRecyclerView() : ScheduleRecyclerAdapter {
         binding.recyclerView.layoutManager = LinearLayoutManager(binding.root.context)
 
         val onItemClickListener =
-            com.yakushev.sharaguga.screens.schedule.holders.OnItemClickListener { viewType, pairPosition, dayPath ->
+            OnItemClickListener { viewType, pairPosition, dayPath ->
                 when (viewType) {
-                    com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Subject -> {
+                    ItemEnum.Subject -> {
                         Navigation.findNavController(binding.root).navigate(
                             ScheduleFragmentDirections.actionScheduleToEditFragment(
                                 pairPosition = pairPosition,
@@ -37,7 +39,7 @@ class SchedulePageHolder(
                             )
                         )
                     }
-                    com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Empty -> {
+                    ItemEnum.Empty -> {
                         Navigation.findNavController(binding.root).navigate(
                             ScheduleFragmentDirections.actionScheduleToAddFragment(
                                 pairPosition = pairPosition,
@@ -54,9 +56,11 @@ class SchedulePageHolder(
         return adapter
     }
 
-    private fun startObserving(index: Int, adapter : ScheduleRecyclerAdapter) {
-
-        viewModel.listLiveData[index].observe(lifecycleOwner) {
+    private fun observeDays(
+        index: Int,
+        adapter: ScheduleRecyclerAdapter
+    ) = lifecycleScope.launchWhenStarted {
+        viewModel.days[index].collect {
             when (it) {
                 is Resource.Loading -> {
                     binding.recyclerView.visibility = View.INVISIBLE
@@ -77,7 +81,12 @@ class SchedulePageHolder(
                 }
             }
         }
-        viewModel.timeLiveData.observe(lifecycleOwner) {
+    }
+
+    private fun observeTime(
+        adapter: ScheduleRecyclerAdapter
+    ) = lifecycleScope.launchWhenStarted {
+        viewModel.timeFlow.collect {
             if (it is Resource.Success) {
                 val data = it.data!!
 

@@ -2,7 +2,7 @@ package com.yakushev.sharaguga.screens.schedule.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.domain.models.schedule.Day
 import com.yakushev.sharaguga.databinding.SchedulePageBinding
@@ -11,7 +11,7 @@ import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 
 class SchedulePagerAdapter(
     private val viewModel: ScheduleViewModel,
-    private val lifecycleOwner: LifecycleOwner
+    private val lifecycleScope: LifecycleCoroutineScope
 ) : RecyclerView.Adapter<SchedulePageHolder>() {
 
     private val days: MutableList<Day> = ArrayList()
@@ -24,7 +24,7 @@ class SchedulePagerAdapter(
                 false
             ),
             viewModel = viewModel,
-            lifecycleOwner = lifecycleOwner
+            lifecycleScope = lifecycleScope
         )
     }
 
