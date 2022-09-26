@@ -55,7 +55,7 @@ class ScheduleViewModel : ViewModel() {
 
     private var loadingJob = viewModelScope.launch {
 
-        repeat(14) {
+        repeat(DaysPerWeek * 2) {
             _days.add(MutableStateFlow(Resource.Loading()))
         }
 

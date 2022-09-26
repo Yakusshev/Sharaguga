@@ -18,12 +18,11 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
-import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
 import com.yakushev.sharaguga.screens.schedule.adapters.SchedulePagerAdapter
+import com.yakushev.sharaguga.screens.schedule.adapters.ScheduleTabsAdapter
 import com.yakushev.sharaguga.utils.Message
 import java.time.LocalDate
 import java.util.*
@@ -51,67 +50,38 @@ class ScheduleFragment : Fragment() {
         return binding.root
     }
 
+    //private val onTabSelectedListener =
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         (activity as MainActivity).setActionBarTitle(getString(R.string.title_schedule))
 
-        val adapter = SchedulePagerAdapter(viewModel, lifecycleScope)
-        binding.viewPager.adapter = adapter
+        val daysAdapter = SchedulePagerAdapter(
+            viewModel,
+            lifecycleScope
+        )
 
-        binding.viewPager.showSideItems(
+        binding.daysPager.adapter = daysAdapter
+
+        val tabPagerAdapter = ScheduleTabsAdapter(binding.daysPager)
+
+        binding.tabPager.adapter = tabPagerAdapter
+        binding.tabPager.currentItem = tabPagerAdapter.startPosition
+
+        val now = LocalDate.now()
+
+        binding.tabPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                var date = now.plusWeeks((position - tabPagerAdapter.startPosition).toLong())
+                //daysAdapter.updateItems(date)
+            }
+        })
+
+        binding.daysPager.showSideItems(
             pageMarginPx = resources.getDimension(R.dimen.pageMargin).toInt(),
             offsetPx = resources.getDimension(R.dimen.pagerOffset).toInt()
         )
-
-        val day = chooseCurrentDay()
-
-        attachTabLayoutMediator(day)
-
-        observeToastLiveData(view.context)
-    }
-
-    val Int.dp: Int get() = (this / getSystem().displayMetrics.density).toInt()
-
-    val Int.px: Int get() = (this * getSystem().displayMetrics.density).toInt()
-
-    private val depthPageTransformer = ViewPager2.PageTransformer { page, position ->
-        val minScale = 0.75f
-        page.apply {
-            val pageWidth = width
-            when {
-                position < -1 -> { // [-Infinity,-1)
-                    // This page is way off-screen to the left.
-                    alpha = 0f
-                }
-                position <= 0 -> { // [-1,0]
-                    // Use the default slide transition when moving to the left page
-                    alpha = 1f
-                    translationX = 0f
-                    translationZ = 0f
-                    scaleX = 1f
-                    scaleY = 1f
-                }
-                position <= 1 -> { // (0,1]
-                    // Fade the page out.
-                    alpha = 1 - position
-
-                    // Counteract the default slide transition
-                    translationX = pageWidth * -position
-                    // Move it behind the left page
-                    translationZ = -1f
-
-                    // Scale the page down (between MIN_SCALE and 1)
-                    val scaleFactor = (minScale + (1 - minScale) * (1 - abs(position)))
-                    scaleX = scaleFactor
-                    scaleY = scaleFactor
-                }
-                else -> { // (1,+Infinity]
-                    // This page is way off-screen to the right.
-                    alpha = 0f
-                }
-            }
-        }
     }
 
     private fun ViewPager2.showSideItems(pageMarginPx : Int, offsetPx : Int) {
@@ -135,34 +105,29 @@ class ScheduleFragment : Fragment() {
         }
     }
 
-    private fun chooseCurrentDay(): Int {
-        val day = LocalDate.now().dayOfWeek.ordinal
-        binding.viewPager.currentItem = day
-        return day
-    }
+    /*private fun attachTabLayoutMediator(adapter: SchedulePagerAdapter) {
 
-    private fun attachTabLayoutMediator(currentDay: Int) {
-        val calendarArray = getDayOfMonthArray()
+        val initialPosition = binding.tabLayout.tabCount / 2 + 1
+
+        binding.viewPager.currentItem = initialPosition
+
+        val today = LocalDate.now()
 
         val currentDayTextColor = getColor(com.google.android.material.R.attr.colorError)
-
         val weekendTextColor = getColor(com.google.android.material.R.attr.colorOnTertiaryContainer)
 
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-            val dayOfMonth = calendarArray[position].toString()
-
-            val dayOfWeek = resources.getStringArray(R.array.tab_layout)[position % DaysPerWeek]
-
-            tab.text = dayOfMonth + "\n" + dayOfWeek
+        val mediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
 
             when (position % DaysPerWeek) {
                 5 -> tab.changeAppearance(weekendTextColor)
                 6 -> tab.changeAppearance(weekendTextColor)
             }
 
-            if (position == currentDay) tab.changeAppearance(currentDayTextColor, true)
-        }.attach()
-    }
+            if (position == initialPosition) tab.changeAppearance(currentDayTextColor, true)
+        }
+
+        //mediator.attach()
+    }*/
 
     private fun getColor(attr: Int): Int {
         val backgroundColor = TypedValue()
@@ -217,6 +182,49 @@ class ScheduleFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    val Int.dp: Int get() = (this / getSystem().displayMetrics.density).toInt()
+
+    val Int.px: Int get() = (this * getSystem().displayMetrics.density).toInt()
+
+    private val depthPageTransformer = ViewPager2.PageTransformer { page, position ->
+        val minScale = 0.75f
+        page.apply {
+            val pageWidth = width
+            when {
+                position < -1 -> { // [-Infinity,-1)
+                    // This page is way off-screen to the left.
+                    alpha = 0f
+                }
+                position <= 0 -> { // [-1,0]
+                    // Use the default slide transition when moving to the left page
+                    alpha = 1f
+                    translationX = 0f
+                    translationZ = 0f
+                    scaleX = 1f
+                    scaleY = 1f
+                }
+                position <= 1 -> { // (0,1]
+                    // Fade the page out.
+                    alpha = 1 - position
+
+                    // Counteract the default slide transition
+                    translationX = pageWidth * -position
+                    // Move it behind the left page
+                    translationZ = -1f
+
+                    // Scale the page down (between MIN_SCALE and 1)
+                    val scaleFactor = (minScale + (1 - minScale) * (1 - abs(position)))
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
+                }
+                else -> { // (1,+Infinity]
+                    // This page is way off-screen to the right.
+                    alpha = 0f
+                }
+            }
+        }
     }
 
 }

@@ -60,6 +60,7 @@ class SchedulePageHolder(
         index: Int,
         adapter: ScheduleRecyclerAdapter
     ) = lifecycleScope.launchWhenStarted {
+        if (index < 0 || index > viewModel.days.lastIndex) return@launchWhenStarted
         viewModel.days[index].collect {
             when (it) {
                 is Resource.Loading -> {
