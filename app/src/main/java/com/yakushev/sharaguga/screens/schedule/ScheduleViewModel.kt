@@ -11,21 +11,23 @@ import com.yakushev.data.repository.TimePairRepository
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
 import com.yakushev.domain.models.DaysPerWeek
-import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
 import com.yakushev.domain.usecase.TimeScheduleUseCase
 import com.yakushev.sharaguga.utils.Resource
 import com.yakushev.sharaguga.utils.Message
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import kotlin.math.abs
 
 class ScheduleViewModel : ViewModel() {
 
     companion object { private const val TAG = "ScheduleViewModel" }
 
-    private val _days = ArrayList<MutableStateFlow<Resource<Day>>>()
-    val days: List<StateFlow<Resource<Day>>> get() = _days
+    private val _scheduleFlow = ArrayList<ArrayList<MutableStateFlow<Resource<Day>>>>()
+    val scheduleFlow: List<List<StateFlow<Resource<Day>>>> get() = _scheduleFlow
 
     private val _timeFlow = MutableStateFlow<Resource<ArrayList<TimeCustom>>>(Resource.Loading())
     val timeFlow get(): StateFlow<Resource<ArrayList<TimeCustom>>> = _timeFlow
@@ -38,7 +40,7 @@ class ScheduleViewModel : ViewModel() {
     private val testPathSubject = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V"
 
     private var timeList: List<TimeCustom>? = null
-    private var weeksList: Schedule? = null
+    private var schedule: Schedule? = null
 
     private var _currentWeekNumber: Int? = null
     private val currentWeekNumber get() = _currentWeekNumber!!
@@ -53,72 +55,78 @@ class ScheduleViewModel : ViewModel() {
 
     private val scheduleStorage = ScheduleStorageImpl()
 
-    private var loadingJob = viewModelScope.launch {
 
-        repeat(DaysPerWeek * 2) {
-            _days.add(MutableStateFlow(Resource.Loading()))
-        }
+    private val _date = MutableStateFlow<Resource<Timestamp>>(Resource.Loading())
+    val date get(): StateFlow<Resource<Timestamp>> = _date
 
-        timeList = timeScheduleUseCase.get(testPathTime)
-        timeList!!.printLog(TAG)
-        weeksList = scheduleStorage.get(testPathSubject)
-        weeksList?.printLog(TAG)
+    private val getStartDateJob: Job = viewModelScope.launch {
+        _date.emit(Resource.Success(scheduleStorage.getStartDate()))
     }
 
     init {
-        updateLiveDataValue()
+        viewModelScope.launch {
+            getStartDateJob
+
+            loadData().join()
+
+            updateLiveDataValue()
+        }
+    }
+
+    private fun loadData() = viewModelScope.launch {
+        for (w in 0 until 2) {
+            _scheduleFlow.add(ArrayList())
+            for (d in 0 until 7) {
+                _scheduleFlow[w].add(MutableStateFlow(Resource.Loading()))
+            }
+        }
+
+        timeList = timeScheduleUseCase.get(testPathTime)
+
+        schedule = scheduleStorage.get(testPathSubject)
     }
 
     private fun updateLiveDataValue() = viewModelScope.launch {
-        loadingJob.join()
 
         val timeList = timeList!!.toMutableList() as ArrayList
 
         _timeFlow.value = Resource.Success(timeList)
 
-        if (weeksList == null) {
-            for (data in _days) {
-                data.value = Resource.Error(null)
+        if (schedule == null) {
+            for (w in 0 until 2) {
+                val week = _scheduleFlow[w]
+                for (d in 0 until 7) {
+                    week[d].emit(Resource.Error(null))
+                }
             }
             return@launch
         }
 
-        val firstWeek = weeksList!![0]!!
-        val secondWeek = weeksList!![1]!!
-
-        _currentWeekNumber = getWeekNumber(firstWeek.start)
-
-        if (currentWeekNumber == 0) {
-            fillLiveData(firstWeek, 0)
-            fillLiveData(secondWeek, 7)
-        } else {
-            fillLiveData(firstWeek, 7)
-            fillLiveData(secondWeek, 0)
+        for (w in 0 until 2) {
+            val weekFlow = _scheduleFlow[w]
+            val week = schedule!![w]
+            for (d in 0 until 7) {
+                if (week!![d] != null) weekFlow[d].emit(Resource.Success(week[d]!!))
+                else weekFlow[d].emit(Resource.Error(null))
+            }
         }
 
         Log.d(TAG, "liveDataValue Updated")
     }
 
-    private suspend fun fillLiveData(week: Week, diff: Int) {
-        for (listIndex in week.indices) {
-            week[listIndex].also {
-                if (it != null) {
-                    _days[listIndex + diff].emit(Resource.Success(it))
-                    //_days[listIndex + diff].value =
-                } else _days[listIndex + diff].emit(Resource.Error(null))
-
-            //_days[listIndex + diff].value = Resource.Error(null)
-            }
-        }
+    suspend fun getWeek(calendar: Calendar) : List<StateFlow<Resource<Day>>> {
+        return scheduleFlow[getWeekNumber(calendar)]
     }
 
-    private fun getWeekNumber(firstWeekStart: Timestamp): Int {
-        val start = firstWeekStart.toDate().time
-        val today = Calendar.getInstance().time.time
+    private suspend fun getWeekNumber(calendar: Calendar): Int {
+        getStartDateJob.join()
 
-        val daysDiff = ((start - today) / (1000 * 60 * 60 * 24)).toInt()
+        val start = date.value.data!!.toDate().time
+        val required = calendar.time.time
 
-        return (daysDiff / 7) % 2
+        val daysDiff = ((start - required) / (1000 * 60 * 60 * 24)).toInt()
+
+        return (abs(daysDiff) / 7) % 2
     }
 
     fun savePeriod(period: Period, pairPosition: PeriodEnum, dayPath: String) {
@@ -141,7 +149,7 @@ class ScheduleViewModel : ViewModel() {
                 val dayNumb = dayEnum.ordinal
                 val weekNumb = weekEnum.ordinal
 
-                weeksList!![weekNumb]!![dayNumb] = day
+                schedule!![weekNumb]!![dayNumb] = day
 
                 updateLiveDataValue()
             }
@@ -150,7 +158,7 @@ class ScheduleViewModel : ViewModel() {
         }
     }
 
-    fun getDayIndex(dayPath: String): Int {
+    fun getDay(dayPath: String): StateFlow<Resource<Day>> {
         val list = dayPath.split("/")
         Log.d(TAG, dayPath)
 
@@ -159,15 +167,9 @@ class ScheduleViewModel : ViewModel() {
         Log.d(TAG, dayEnum.name)
         Log.d(TAG, weekEnum.name)
 
-        val dayNumb = dayEnum.ordinal
-
         Log.d(TAG, (weekEnum == WeekEnum.FirstWeek).toString())
 
-        return if (weekEnum == WeekEnum.FirstWeek) {
-            dayNumb + DaysPerWeek
-        } else {
-            dayNumb
-        }
+        return scheduleFlow[weekEnum.ordinal][dayEnum.ordinal]
     }
 
     fun deletePeriod(periodEnum: PeriodEnum, dayPath: String) {
@@ -183,7 +185,7 @@ class ScheduleViewModel : ViewModel() {
                 val dayNumb = dayEnum.ordinal
                 val weekNumb = weekEnum.ordinal
 
-                weeksList!![weekNumb]!![dayNumb]!![periodEnum.ordinal] = null
+                schedule!![weekNumb]!![dayNumb]!![periodEnum.ordinal] = null
 
                 updateLiveDataValue()
             }

@@ -1,31 +1,33 @@
 package com.yakushev.sharaguga.screens.schedule.holders
 
+import android.util.Log
 import android.view.View
 import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.yakushev.domain.models.schedule.Day
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.SchedulePageBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleFragmentDirections
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
-import com.yakushev.sharaguga.screens.schedule.adapters.ScheduleRecyclerAdapter
+import com.yakushev.sharaguga.screens.schedule.adapters.PeriodsRecyclerAdapter
 import com.yakushev.sharaguga.utils.Resource
+import kotlinx.coroutines.flow.StateFlow
 
-class SchedulePageHolder(
+class DayHolder(
     private val binding: SchedulePageBinding,
     private val viewModel: ScheduleViewModel,
     private val lifecycleScope: LifecycleCoroutineScope
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind() {
+    fun bind(day: StateFlow<Resource<Day>>) {
         val adapter = initRecyclerView()
-        observeDays(adapterPosition, adapter)
+        observeDays(day, adapter)
         observeTime(adapter)
     }
 
-    private fun initRecyclerView() : ScheduleRecyclerAdapter {
+    private fun initRecyclerView() : PeriodsRecyclerAdapter {
         binding.recyclerView.layoutManager = LinearLayoutManager(binding.root.context)
 
         val onItemClickListener =
@@ -51,17 +53,18 @@ class SchedulePageHolder(
                 }
             }
 
-        val adapter = ScheduleRecyclerAdapter(onItemClickListener)
+        val adapter = PeriodsRecyclerAdapter(onItemClickListener)
         binding.recyclerView.adapter = adapter
         return adapter
     }
 
     private fun observeDays(
-        index: Int,
-        adapter: ScheduleRecyclerAdapter
+        day: StateFlow<Resource<Day>>,
+        adapter: PeriodsRecyclerAdapter
     ) = lifecycleScope.launchWhenStarted {
-        if (index < 0 || index > viewModel.days.lastIndex) return@launchWhenStarted
-        viewModel.days[index].collect {
+
+        day.collect {
+            Log.d(this@DayHolder::class.simpleName, it.toString())
             when (it) {
                 is Resource.Loading -> {
                     binding.recyclerView.visibility = View.INVISIBLE
@@ -85,7 +88,7 @@ class SchedulePageHolder(
     }
 
     private fun observeTime(
-        adapter: ScheduleRecyclerAdapter
+        adapter: PeriodsRecyclerAdapter
     ) = lifecycleScope.launchWhenStarted {
         viewModel.timeFlow.collect {
             if (it is Resource.Success) {

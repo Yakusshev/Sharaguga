@@ -5,10 +5,7 @@ import com.yakushev.domain.models.DaysPerWeek
 
 class Schedule : ArrayList<Week?>()
 
-class Week(
-    val start: Timestamp,
-    val end: Timestamp
-) : ArrayList<Day?>(DaysPerWeek) {
+class Week() : ArrayList<Day?>(DaysPerWeek) {
     init {
         repeat(DaysPerWeek) {
             this.add(null)

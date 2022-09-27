@@ -34,7 +34,7 @@ class DataFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as MainActivity).setActionBarTitle(getString(R.string.title_data))
+        // TODO (activity as MainActivity).setActionBarTitle(getString(R.string.title_data))
 
         val adapter = DataPagerAdapter(this)
         binding.viewPager.adapter = adapter

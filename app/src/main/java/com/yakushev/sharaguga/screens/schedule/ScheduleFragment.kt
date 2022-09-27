@@ -3,6 +3,7 @@ package com.yakushev.sharaguga.screens.schedule
 import android.content.Context
 import android.content.res.Resources.getSystem
 import android.graphics.Typeface
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -11,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.view.ViewCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -21,10 +21,10 @@ import com.google.android.material.tabs.TabLayout
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
-import com.yakushev.sharaguga.screens.schedule.adapters.SchedulePagerAdapter
-import com.yakushev.sharaguga.screens.schedule.adapters.ScheduleTabsAdapter
+import com.yakushev.sharaguga.screens.schedule.adapters.WeeksPagerAdapter
 import com.yakushev.sharaguga.utils.Message
 import java.time.LocalDate
+import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.abs
 
@@ -55,54 +55,38 @@ class ScheduleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as MainActivity).setActionBarTitle(getString(R.string.title_schedule))
+        //TODO (activity as MainActivity).setActionBarTitle(getString(R.string.title_schedule))
 
-        val daysAdapter = SchedulePagerAdapter(
-            viewModel,
-            lifecycleScope
-        )
+        val weeksPagerAdapter = WeeksPagerAdapter(viewModel, lifecycleScope)
 
-        binding.daysPager.adapter = daysAdapter
+        setActionBarTitle(weeksPagerAdapter.startPosition, weeksPagerAdapter)
 
-        val tabPagerAdapter = ScheduleTabsAdapter(binding.daysPager)
+        binding.weeksPager.apply {
+            adapter = weeksPagerAdapter
+            currentItem = weeksPagerAdapter.startPosition
 
-        binding.tabPager.adapter = tabPagerAdapter
-        binding.tabPager.currentItem = tabPagerAdapter.startPosition
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    setActionBarTitle(position, weeksPagerAdapter)
 
-        val now = LocalDate.now()
-
-        binding.tabPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                var date = now.plusWeeks((position - tabPagerAdapter.startPosition).toLong())
-                //daysAdapter.updateItems(date)
-            }
-        })
-
-        binding.daysPager.showSideItems(
-            pageMarginPx = resources.getDimension(R.dimen.pageMargin).toInt(),
-            offsetPx = resources.getDimension(R.dimen.pagerOffset).toInt()
-        )
+                    //val calendar = Calendar.getInstance().apply { add(Calendar.WEEK_OF_YEAR, diff) }
+                    //val asd = calendar[Calendar.MONTH]
+                }
+            })
+        }
     }
 
-    private fun ViewPager2.showSideItems(pageMarginPx : Int, offsetPx : Int) {
 
-        clipToPadding = false
-        clipChildren = false
-        offscreenPageLimit = 3
+    private fun setActionBarTitle(
+        position: Int,
+        weeksPagerAdapter: WeeksPagerAdapter
+    ) {
+        val diff = position - weeksPagerAdapter.startPosition
+        val now = LocalDate.now().plusWeeks(diff.toLong())
 
-        setPageTransformer { page, position ->
-            val offset = position * -(2 * offsetPx + pageMarginPx)
-
-            if (this.orientation == ViewPager2.ORIENTATION_HORIZONTAL) {
-                if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL) {
-                    page.translationX = -offset
-                } else {
-                    page.translationX = offset
-                }
-            } else {
-                page.translationY = offset
-            }
-        }
+        (requireActivity() as MainActivity).supportActionBar?.title =
+            resources.getStringArray(R.array.months)[now.month.ordinal]
     }
 
     /*private fun attachTabLayoutMediator(adapter: SchedulePagerAdapter) {

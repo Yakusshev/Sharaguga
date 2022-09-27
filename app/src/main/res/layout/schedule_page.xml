@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="@dimen/pageMarginAndOffset"
     android:layout_marginRight="@dimen/pageMarginAndOffset"
-    tools:context=".screens.schedule.holders.SchedulePageHolder">
+    tools:context=".screens.schedule.holders.DayHolder">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

@@ -32,29 +32,10 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        setSupportActionBar(binding.appBar)
-
         setupActionBarWithNavController(navController, appBarConfiguration)
         actionBar?.setHomeButtonEnabled(true)
         actionBar?.setDisplayHomeAsUpEnabled(true)
         navView.setupWithNavController(navController)
-
-        binding.forward.setOnClickListener {
-            it.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in))
-        }
-
-        binding.back.setOnClickListener {
-            it.startAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in))
-        }
-    }
-
-    fun setActionBarTitle(title: String) {
-        binding.apply {
-            back.visibility = View.GONE
-            forward.visibility = View.GONE
-            appBarTitle.text = title
-            appBarMargin.visibility = View.VISIBLE
-        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

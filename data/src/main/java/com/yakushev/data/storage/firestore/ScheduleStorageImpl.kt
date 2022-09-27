@@ -62,7 +62,7 @@ class ScheduleStorageImpl : ScheduleStorage {
         val list = dayPath.split("/")
         Log.d(TAG, dayPath)
 
-        val dayEnum = DayEnum.valueOf(list[11])
+        val dayEnum = DayEnum.valueOf(list[11]) //TODO java.lang.IndexOutOfBoundsException: Index: 11, Size: 1 (the problem in storage)
         val weekEnum = WeekEnum.valueOf(list[9])
 
         return dayEnum.ordinal
@@ -225,13 +225,6 @@ class ScheduleStorageImpl : ScheduleStorage {
 
         val schedule = Schedule()
 
-        val firstWeek = Firebase.firestore.document(firstWeekPath)
-            .get()
-            .await()
-
-        val start = firstWeek.data!![FIRST_DAY] as Timestamp
-        val end = firstWeek.data!![LAST_DAY] as Timestamp
-
         val weeksQuery = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
             .orderBy(INDEX)
             .getCollection() ?: return null
@@ -241,7 +234,7 @@ class ScheduleStorageImpl : ScheduleStorage {
                 .orderBy(INDEX)
                 .getCollection() ?: return null
 
-            val week = Week(start, end)
+            val week = Week()
 
             for (dayDocument in daysQuery) { //TODO path if dayPath is null
                 val day = Day(dayDocument.reference.path)
@@ -257,6 +250,14 @@ class ScheduleStorageImpl : ScheduleStorage {
 
         return schedule
    }
+
+    suspend fun getStartDate(): Timestamp {
+        val firstWeek = Firebase.firestore.document(firstWeekPath)
+            .get()
+            .await()
+
+        return firstWeek.data!![FIRST_DAY] as Timestamp
+    }
 
     private suspend fun DocumentReference.getDocument(): DocumentSnapshot? {
         var doc: DocumentSnapshot? = null

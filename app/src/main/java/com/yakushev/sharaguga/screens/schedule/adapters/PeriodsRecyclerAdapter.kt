@@ -13,7 +13,7 @@ import com.yakushev.sharaguga.screens.schedule.holders.EmptyHolder
 import com.yakushev.sharaguga.screens.schedule.holders.PeriodHolder
 import com.yakushev.sharaguga.screens.schedule.holders.WindowHolder
 
-class ScheduleRecyclerAdapter(
+class PeriodsRecyclerAdapter(
     private val onItemClickListener: com.yakushev.sharaguga.screens.schedule.holders.OnItemClickListener
 ) : RecyclerView.Adapter<com.yakushev.sharaguga.screens.schedule.holders.AbstractSubjectHolder>() {
 

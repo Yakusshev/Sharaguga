@@ -30,8 +30,7 @@ class ScheduleDialogEdit : ScheduleDialogAdd() {
     }
 
     private fun observeData() = lifecycleScope.launchWhenStarted {
-        val dayIndex = scheduleViewModel.getDayIndex(args.dayPath)
-        scheduleViewModel.days[dayIndex].collect {
+        scheduleViewModel.getDay(args.dayPath).collect {
             if (it !is Resource.Success || it.data == null) return@collect
             val period = it.data[args.pairPosition] ?: return@collect
             binding.apply {

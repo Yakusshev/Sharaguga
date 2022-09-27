@@ -38,8 +38,8 @@
 
     </style>
 
-    <style name="toolBar" parent="@style/Widget.Material3.Toolbar">
-
+    <style name="actionBar" parent="@style/Widget.Material3.ActionBar.Solid">
+        <item name="background">?attr/colorSurface</item>
     </style>
 
     <style name="toolBarText">
