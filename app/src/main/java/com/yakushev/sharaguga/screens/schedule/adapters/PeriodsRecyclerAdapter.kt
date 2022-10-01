@@ -4,9 +4,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.TimeCustom
+import com.yakushev.sharaguga.databinding.ScheduleItemLoadingBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectEmptyBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectWindowBinding
@@ -16,7 +17,10 @@ class PeriodsRecyclerAdapter(
     private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<AbstractSubjectHolder>() {
 
-    private var timeList: ArrayList<TimeCustom> = ArrayList()
+    private var timeList: ArrayList<Resource<TimeCustom>> = arrayListOf(
+        Resource.Loading(), Resource.Loading(), Resource.Loading(), Resource.Loading()
+    )
+
     private var periods: ArrayList<Resource<Period?>> = arrayListOf(
         Resource.Loading(), Resource.Loading(), Resource.Loading(), Resource.Loading()
     )
@@ -25,17 +29,26 @@ class PeriodsRecyclerAdapter(
         Log.d("Adapter", "init")
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AbstractSubjectHolder {
-        return when (viewType) {
-            ItemEnum.Subject.ordinal -> createSubjectHolder(parent)
-            ItemEnum.Empty.ordinal -> createEmptyHolder(parent)
-            else -> createWindowHolder(parent)
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = when (viewType) {
+        ItemEnum.Loading.ordinal -> createLoadingHolder(parent)
+        ItemEnum.Subject.ordinal -> createSubjectHolder(parent)
+        ItemEnum.Empty.ordinal -> createEmptyHolder(parent)
+        else -> createWindowHolder(parent)
+    }
+
+    private fun createLoadingHolder(parent: ViewGroup) : LoadingHolder {
+        return LoadingHolder(
+            binding = ScheduleItemLoadingBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
     private fun createSubjectHolder(parent: ViewGroup) : PeriodHolder {
         return PeriodHolder(
-            itemBinding = ScheduleItemSubjectBinding.inflate(
+            binding = ScheduleItemSubjectBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -50,7 +63,7 @@ class PeriodsRecyclerAdapter(
 
     private fun createEmptyHolder(parent: ViewGroup) : EmptyHolder {
         return EmptyHolder(
-            itemBinding = ScheduleItemSubjectEmptyBinding.inflate(
+            binding = ScheduleItemSubjectEmptyBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -64,7 +77,7 @@ class PeriodsRecyclerAdapter(
 
     private fun createWindowHolder(parent: ViewGroup) : WindowHolder {
         return WindowHolder(
-            itemBinding = ScheduleItemSubjectWindowBinding.inflate(
+            binding = ScheduleItemSubjectWindowBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
@@ -81,11 +94,7 @@ class PeriodsRecyclerAdapter(
             ItemEnum.Subject.ordinal -> {
                 val subjectHolder = holder as PeriodHolder
 
-                var time: TimeCustom? = null
-
-                if (timeList.isNotEmpty()) time = timeList[position]
-
-                subjectHolder.bind(periods[position], time)
+                subjectHolder.bind(periods[position], timeList[position])
             }
             ItemEnum.Empty.ordinal -> {
             }
@@ -100,27 +109,22 @@ class PeriodsRecyclerAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (periods.isEmpty()) return ItemEnum.Subject.ordinal
-        when (periods[position]) {
-            is Error -> return ItemEnum.Empty.ordinal
-            else -> return ItemEnum.Subject.ordinal
+        val resource = periods[position]
+        return when {
+            resource is Resource.Loading -> ItemEnum.Loading.ordinal
+            resource.data == null -> ItemEnum.Empty.ordinal
+            else -> ItemEnum.Subject.ordinal
         }
     }
 
-    /*fun updatePeriods(periods: Day) {
-        this.periods = periods
-
-        notifyItemRangeChanged(0, periods.size)
-    }*/
-
     fun updatePeriod(position: Int, resource: Resource<Period?>) {
         periods[position] = resource
-        notifyItemChanged(position)
+        if (timeList[position] is Resource.Success) notifyItemChanged(position)
     }
 
-    fun updateTimeList(timeList: ArrayList<TimeCustom>) {
-        if (this.timeList.isEmpty()) this.timeList = timeList
-        if (!this.periods.isEmpty()) notifyItemRangeChanged(0, timeList.size)
+    fun updateTime(position: Int, resource: Resource<TimeCustom>) {
+        timeList[position] = resource
+        if (periods[position] is Resource.Success) notifyItemChanged(position)
     }
 
 }

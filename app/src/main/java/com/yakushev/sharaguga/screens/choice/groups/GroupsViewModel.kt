@@ -10,7 +10,7 @@ import com.yakushev.data.repository.GroupRepository
 import com.yakushev.data.storage.firestore.choice.GroupStorage
 import com.yakushev.domain.models.choice.UniverUnit.Group
 import com.yakushev.domain.usecase.GroupUseCase
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 import kotlinx.coroutines.launch
 
 class GroupsViewModel : ViewModel() {

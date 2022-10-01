@@ -1,4 +1,4 @@
-package com.yakushev.data
+package com.yakushev.data.utils
 
 enum class Message {
     SaveSuccess,

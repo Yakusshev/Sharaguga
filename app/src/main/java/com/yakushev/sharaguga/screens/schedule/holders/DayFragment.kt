@@ -12,7 +12,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.data.Resource
 import com.yakushev.domain.models.schedule.DayEnum
 import com.yakushev.sharaguga.databinding.SchedulePageBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleFragmentDirections
@@ -96,45 +95,28 @@ class DayFragment : Fragment() {
         return adapter
     }
 
-    private fun observeDays(
-        adapter: PeriodsRecyclerAdapter
-    ) {
+    private fun observeDays(adapter: PeriodsRecyclerAdapter) = lifecycleScope.launch {
+        val periods = viewModel.getWeek(weekPosition)[dayPosition.ordinal]
 
-        for (p in 0..3) {
-            lifecycleScope.launch {
-
-                val periods = viewModel.getWeek(weekPosition)[dayPosition.ordinal]
-
+        for (periodIndex in 0..3) {
+            launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    periods[p].collect {
-                        adapter.updatePeriod(p, it)
-                        Log.d(TAG, "$p, ${it::class}, ${it.data.toString()}")
+                    periods[periodIndex].collect {
+                        adapter.updatePeriod(periodIndex, it)
+                        Log.d(TAG, "$periodIndex, ${it::class}, ${it.data.toString()}")
                     }
                 }
             }
         }
-
-        /*
-         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            val periods = viewModel.getWeek(weekPosition)[dayPosition.ordinal]
-
-            for (p in 0..3) {
-                periods[p].collect {
-                    adapter.updatePeriod(p, it)
-                    Log.d(TAG, "$p, ${it.data.toString()}")
-                }
-            }
-        }*/
     }
 
-    private fun observeTime(
-        adapter: PeriodsRecyclerAdapter
-    ) = lifecycleScope.launch {
-        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            viewModel.timeFlow.collect {
-                if (it is Resource.Success) {
-                    val data = it.data!!
-                    adapter.updateTimeList(data)
+    private fun observeTime(adapter: PeriodsRecyclerAdapter) {
+        for (periodIndex in 0..3) {
+            lifecycleScope.launch {
+                lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    viewModel.timeFlow[periodIndex].collect {
+                        adapter.updateTime(periodIndex, it)
+                    }
                 }
             }
         }

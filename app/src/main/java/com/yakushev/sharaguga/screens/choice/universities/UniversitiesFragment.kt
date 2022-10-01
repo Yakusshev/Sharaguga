@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.domain.models.choice.UniverUnit
 import com.yakushev.sharaguga.databinding.ChoiceFragmentUniversitiesBinding
 import com.yakushev.sharaguga.screens.choice.adapters.UniverUnitRecyclerAdapter
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 
 
 class UniversitiesFragment : Fragment() {

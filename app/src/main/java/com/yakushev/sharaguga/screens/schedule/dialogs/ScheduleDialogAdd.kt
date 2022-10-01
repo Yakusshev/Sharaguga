@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.PeriodEnum

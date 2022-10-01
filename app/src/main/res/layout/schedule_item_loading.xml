@@ -13,25 +13,31 @@
     android:layout_marginStart="16dp"
     android:background="@drawable/background_subject">
 
-    <com.google.android.material.textview.MaterialTextView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/startTime"
-        style="@style/subject_text_view"
+        android:layout_width="48dp"
+        android:layout_height="16dp"
+        android:background="?attr/colorOnSecondaryContainer"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="16dp"
         tools:text="09:00" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/endTime"
-        style="@style/subject_text_view"
+        android:layout_width="48dp"
+        android:layout_height="16dp"
+        android:background="?attr/colorOnSecondaryContainer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_margin="16dp"
         tools:text="10:35" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/subject"
-        style="@style/subject_text_view"
+        android:layout_width="192dp"
+        android:layout_height="16dp"
+        android:background="?attr/colorOnSecondaryContainer"
         android:layout_margin="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -41,7 +47,10 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/type"
-        style="@style/subject_text_view"
+        android:layout_width="196dp"
+        android:layout_height="16dp"
+        android:background="?attr/colorOnSecondaryContainer"
+        android:visibility="gone"
         app:layout_constraintBaseline_toBaselineOf="@id/place"
         app:layout_constraintStart_toEndOf="@id/place"
         android:layout_marginStart="16dp"
@@ -49,18 +58,22 @@
         android:layout_marginBottom="16dp"
         tools:text="Практика"/>
 
-    <com.google.android.material.textview.MaterialTextView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/place"
-        style="@style/subject_text_view"
+        android:layout_width="48dp"
+        android:layout_height="16dp"
+        android:background="?attr/colorOnSecondaryContainer"
         app:layout_constraintTop_toBottomOf="@id/subject"
         app:layout_constraintStart_toStartOf="@id/subject"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         tools:text="ауд. 409"/>
 
-    <com.google.android.material.textview.MaterialTextView
+    <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/teacher"
-        style="@style/subject_text_view"
+        android:layout_width="96dp"
+        android:layout_height="16dp"
+        android:background="?attr/colorOnSecondaryContainer"
         app:layout_constraintTop_toBottomOf="@id/place"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/subject"

@@ -10,7 +10,7 @@ import com.yakushev.data.repository.FacultyRepository
 import com.yakushev.data.storage.firestore.choice.FacultiesStorage
 import com.yakushev.domain.models.choice.UniverUnit.Faculty
 import com.yakushev.domain.usecase.FacultiesUseCase
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 import kotlinx.coroutines.launch
 
 class FacultiesViewModel : ViewModel() {

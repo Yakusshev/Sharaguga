@@ -1,4 +1,4 @@
-package com.yakushev.data
+package com.yakushev.data.utils
 
 sealed class Resource<T>(
     val data: T? = null,
@@ -15,6 +15,12 @@ sealed class Resource<T>(
     class Loading<T>: Resource<T>()
 
 }
+
+/*sealed class ResourcePeriod(
+
+) {
+    class Loading
+}*/
 
 sealed class Change(
     val index: Int,

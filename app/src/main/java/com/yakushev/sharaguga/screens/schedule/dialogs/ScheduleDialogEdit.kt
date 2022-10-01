@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.sharaguga.R
 

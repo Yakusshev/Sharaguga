@@ -10,8 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.data.Change
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Change
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Data
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.DataFragmentPageBinding

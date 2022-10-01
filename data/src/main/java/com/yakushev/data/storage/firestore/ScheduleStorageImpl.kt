@@ -6,8 +6,8 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.yakushev.data.Resource
 import com.yakushev.data.storage.ScheduleStorage
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -215,7 +215,7 @@ class ScheduleStorageImpl : ScheduleStorage {
     //TODO remove this method and addSnapshotListener
     suspend fun getDay(dayPath: String): Day? {
         val dayDocument = Firebase.firestore.document(dayPath)
-            .getDocument() ?: return null
+            .getDocumentSnapshot() ?: return null
 
         dayDocument.data
 
@@ -273,14 +273,14 @@ class ScheduleStorageImpl : ScheduleStorage {
 
         val weeksQuery = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
             .orderBy(INDEX)
-            .getCollection() ?: return
+            .getQuerySnapshot() ?: return
 
         val weekDocuments = weeksQuery.documents
 
         for (w in weekDocuments.indices) {
             val daysQuery = weekDocuments[w].reference.collection(SCHEDULE_COLLECTION_NAME)
                 .orderBy(INDEX)
-                .getCollection() ?: return
+                .getQuerySnapshot() ?: return
 
             val dayDocuments = daysQuery.documents
 
@@ -288,7 +288,8 @@ class ScheduleStorageImpl : ScheduleStorage {
 
                 for (p in PeriodEnum.values().indices) {
                     val dayIndex = (dayDocuments[d].data!![INDEX]!! as Long).toInt()
-                    _scheduleFlow[w][dayIndex][p].emit(Resource.Success(
+                    _scheduleFlow[w][dayIndex][p].emit(
+                        Resource.Success(
                         getPairData(dayDocuments[d], PeriodEnum.values()[p].name)
                     ))
                 }
@@ -302,32 +303,6 @@ class ScheduleStorageImpl : ScheduleStorage {
             .await()
 
         return firstWeek.data!![FIRST_DAY] as Timestamp
-    }
-
-    private suspend fun DocumentReference.getDocument(): DocumentSnapshot? {
-        var doc: DocumentSnapshot? = null
-        get().addOnSuccessListener {
-                doc = it
-            }
-            .addOnFailureListener {
-                it.printStackTrace()
-            }
-            .await()
-
-        return doc
-    }
-
-    private suspend fun Query.getCollection(): QuerySnapshot? {
-        var querySnapshot: QuerySnapshot? = null
-        get().addOnSuccessListener {
-                querySnapshot = it
-            }
-            .addOnFailureListener {
-                it.printStackTrace()
-            }
-            .await()
-
-        return querySnapshot
     }
 
     /**
@@ -348,17 +323,17 @@ class ScheduleStorageImpl : ScheduleStorage {
 
     private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Period {
         val subject: String
-        this[SUBJECT]!!.getDocument()?.data.apply {
+        this[SUBJECT]!!.getDocumentSnapshot()?.data.apply {
             subject = if (this != null) this[NAME].toString() else "Нет данных"
         }
 
         return Period(
             subject = subject,
             teacher = Teacher(
-                family = this[TEACHER]!!.getDocument()?.data?.get(FAMILY).toString(),
+                family = this[TEACHER]!!.getDocumentSnapshot()?.data?.get(FAMILY).toString(),
                 path = null
             ),
-            place = this[PLACE]!!.getDocument()?.data?.get(NAME).toString(),
+            place = this[PLACE]!!.getDocumentSnapshot()?.data?.get(NAME).toString(),
             subjectPath = this[SUBJECT]!!.path,
             teacherPath = this[TEACHER]!!.path,
             placePath = this[PLACE]!!.path

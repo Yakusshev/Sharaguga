@@ -6,16 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.yakushev.data.Message
-import com.yakushev.data.Resource
-import com.yakushev.data.repository.TimePairRepository
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
-import com.yakushev.data.storage.firestore.TimePairStorage
+import com.yakushev.data.storage.firestore.TimeStorage
+import com.yakushev.data.utils.Message
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.schedule.Day
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.domain.models.schedule.TimeCustom
-import com.yakushev.domain.usecase.TimeScheduleUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,16 +24,11 @@ class ScheduleViewModel : ViewModel() {
 
     companion object { private const val TAG = "ScheduleViewModel" }
 
-    private val timeScheduleUseCase = TimeScheduleUseCase(
-        TimePairRepository(TimePairStorage())
-    )
-
+    private val timeStorage = TimeStorage()
     private val scheduleStorage = ScheduleStorageImpl()
 
-    val scheduleFlow: List<List<List<StateFlow<Resource<Period?>>>>> get() = scheduleStorage.scheduleFlow
-
-    private val _timeFlow = MutableStateFlow<Resource<ArrayList<TimeCustom>>>(Resource.Loading())
-    val timeFlow get(): StateFlow<Resource<ArrayList<TimeCustom>>> = _timeFlow
+    val timeFlow get(): List<StateFlow<Resource<TimeCustom>>> = timeStorage.timeFlow
+    private val scheduleFlow get(): List<List<List<StateFlow<Resource<Period?>>>>> = scheduleStorage.scheduleFlow
 
     private val _toastLiveData = MutableLiveData<Message?>()
     val toastLiveData get(): LiveData<Message?> = _toastLiveData
@@ -53,7 +46,7 @@ class ScheduleViewModel : ViewModel() {
 
 
     private val _date = MutableStateFlow<Resource<Timestamp>>(Resource.Loading())
-    val date get(): StateFlow<Resource<Timestamp>> = _date
+    private val date get(): StateFlow<Resource<Timestamp>> = _date
 
     private val getStartDateJob: Job = viewModelScope.launch {
         _date.emit(Resource.Success(scheduleStorage.getStartDate()))
@@ -61,22 +54,10 @@ class ScheduleViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            loadData().join()
-            updateLiveDataValue()
+            timeStorage.load(testPathTime)
 
             scheduleStorage.load(testSemesterPath)
         }
-    }
-
-    private fun loadData() = viewModelScope.launch {
-        timeList = timeScheduleUseCase.get(testPathTime)
-    }
-
-    private fun updateLiveDataValue() = viewModelScope.launch {
-
-        val timeList = timeList!!.toMutableList() as ArrayList
-
-        _timeFlow.value = Resource.Success(timeList)
     }
 
     suspend fun getWeek(requiredPosition: Int) : List<List<StateFlow<Resource<Period?>>>> {

@@ -3,7 +3,7 @@ package com.yakushev.sharaguga.screens.data.dialogs
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Data
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.utils.DataPagesEnum

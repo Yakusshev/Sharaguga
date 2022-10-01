@@ -2,13 +2,27 @@ package com.yakushev.data.storage.firestore
 
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.type.TimeOfDay
 import com.yakushev.data.storage.Storage
-import com.yakushev.domain.models.schedule.TimeCustom
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.printLog
+import com.yakushev.domain.models.schedule.TimeCustom
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 
-class TimePairStorage : Storage<TimeCustom> {
+class TimeStorage : Storage<TimeCustom> {
+
+    private val _timeFlow = ArrayList<MutableStateFlow<Resource<TimeCustom>>>()
+    val timeFlow get(): List<StateFlow<Resource<TimeCustom>>> = _timeFlow
+
+    init {
+        for (i in 0..3) {
+            _timeFlow.add(MutableStateFlow(Resource.Loading()))
+        }
+    }
 
     override suspend fun save(unit: TimeCustom, reference: DocumentReference?): Boolean {
         TODO("Not yet implemented")
@@ -32,6 +46,19 @@ class TimePairStorage : Storage<TimeCustom> {
         return timeList
     }
 
+    suspend fun load(path: String) {
+        val documentSnapshot = Firebase.firestore.document(path)
+            .getDocumentSnapshot() ?: return
+
+        val list = documentSnapshot.data!![TIME_TABLE] as ArrayList<*>
+
+        for (t in list.indices) {
+            _timeFlow[t].emit(Resource.Success(parseFromFireStore(list[t] as String)))
+        }
+    }
+
+
+    @Deprecated("this method produces errors", ReplaceWith("getDocumentSnapshot()")) //TODO remove
     private suspend fun DocumentReference.getWithoutErrors(): DocumentSnapshot {
         return get()
             .addOnSuccessListener {
@@ -67,6 +94,4 @@ class TimePairStorage : Storage<TimeCustom> {
 
         return TimeCustom(start, end)
     }
-
-
 }

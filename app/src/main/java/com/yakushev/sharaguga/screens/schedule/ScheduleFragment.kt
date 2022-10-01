@@ -21,7 +21,7 @@ import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
 import com.yakushev.sharaguga.screens.schedule.adapters.WeeksPagerAdapter
-import com.yakushev.data.Message
+import com.yakushev.data.utils.Message
 import java.time.LocalDate
 import kotlin.math.abs
 

@@ -13,7 +13,7 @@ import com.yakushev.domain.models.choice.UniverUnit
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.databinding.ChoiceFragmentFacultiesBinding
 import com.yakushev.sharaguga.screens.choice.adapters.UniverUnitRecyclerAdapter
-import com.yakushev.data.Resource
+import com.yakushev.data.utils.Resource
 
 class FacultiesFragment : Fragment() {
 
