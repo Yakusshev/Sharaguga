@@ -4,8 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.domain.models.data.Teacher
-import com.yakushev.domain.models.schedule.Day
+import com.yakushev.data.Resource
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
@@ -18,7 +17,9 @@ class PeriodsRecyclerAdapter(
 ) : RecyclerView.Adapter<AbstractSubjectHolder>() {
 
     private var timeList: ArrayList<TimeCustom> = ArrayList()
-    private var periods: Day = Day("null")
+    private var periods: ArrayList<Resource<Period?>> = arrayListOf(
+        Resource.Loading(), Resource.Loading(), Resource.Loading(), Resource.Loading()
+    )
 
     init {
         Log.d("Adapter", "init")
@@ -41,7 +42,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnLongClickListener {
-                onItemClickListener.onClick(ItemEnum.Subject, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Subject, adapterPosition, "TODO") //TODO
                 true
             }
         }
@@ -56,7 +57,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(ItemEnum.Empty, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Empty, adapterPosition, "TODO") //TODO
             }
         }
     }
@@ -70,7 +71,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(ItemEnum.Window, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Window, adapterPosition, "TODO") //TODO
             }
         }
     }
@@ -80,21 +81,11 @@ class PeriodsRecyclerAdapter(
             ItemEnum.Subject.ordinal -> {
                 val subjectHolder = holder as PeriodHolder
 
-                var period: Period? = Period(
-                    subject = "Предмет",
-                    teacher = Teacher(
-                        null,"","Препод",""
-                    ),
-                    place = "Аудитория",
-                    null, null, null
-                )
-
                 var time: TimeCustom? = null
 
-                if (periods.isNotEmpty()) period = periods[position]
                 if (timeList.isNotEmpty()) time = timeList[position]
 
-                subjectHolder.bind(period, time)
+                subjectHolder.bind(periods[position], time)
             }
             ItemEnum.Empty.ordinal -> {
             }
@@ -111,15 +102,20 @@ class PeriodsRecyclerAdapter(
     override fun getItemViewType(position: Int): Int {
         if (periods.isEmpty()) return ItemEnum.Subject.ordinal
         when (periods[position]) {
-            null -> return ItemEnum.Empty.ordinal
+            is Error -> return ItemEnum.Empty.ordinal
             else -> return ItemEnum.Subject.ordinal
         }
     }
 
-    fun updatePeriods(periods: Day) {
+    /*fun updatePeriods(periods: Day) {
         this.periods = periods
 
         notifyItemRangeChanged(0, periods.size)
+    }*/
+
+    fun updatePeriod(position: Int, resource: Resource<Period?>) {
+        periods[position] = resource
+        notifyItemChanged(position)
     }
 
     fun updateTimeList(timeList: ArrayList<TimeCustom>) {

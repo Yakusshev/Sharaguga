@@ -10,6 +10,8 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.LiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yakushev.data.Change
+import com.yakushev.data.Resource
 import com.yakushev.domain.models.data.Data
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.DataFragmentPageBinding
@@ -17,9 +19,7 @@ import com.yakushev.sharaguga.screens.data.adapters.DataRecyclerAdapter
 import com.yakushev.sharaguga.screens.data.adapters.PlaceRecyclerAdapter
 import com.yakushev.sharaguga.screens.data.adapters.SubjectRecyclerAdapter
 import com.yakushev.sharaguga.screens.data.adapters.TeacherRecyclerAdapter
-import com.yakushev.sharaguga.utils.Change
 import com.yakushev.sharaguga.utils.DataPagesSealed
-import com.yakushev.sharaguga.utils.Resource
 
 class DataPageFragment : Fragment() {
 
@@ -114,7 +114,7 @@ class DataPageFragment : Fragment() {
                 }
                 is Resource.Success -> {
                     if (it.data == null) return@observe
-                    val data = it.data
+                    val data = it.data!!
 
                     val change = if (it.change.observed) Change.Get
                         else it.change

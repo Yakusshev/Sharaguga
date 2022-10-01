@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.utils
+package com.yakushev.data
 
 sealed class Resource<T>(
     val data: T? = null,

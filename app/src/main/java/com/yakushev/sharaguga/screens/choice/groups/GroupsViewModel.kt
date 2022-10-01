@@ -10,7 +10,7 @@ import com.yakushev.data.repository.GroupRepository
 import com.yakushev.data.storage.firestore.choice.GroupStorage
 import com.yakushev.domain.models.choice.UniverUnit.Group
 import com.yakushev.domain.usecase.GroupUseCase
-import com.yakushev.sharaguga.utils.Resource
+import com.yakushev.data.Resource
 import kotlinx.coroutines.launch
 
 class GroupsViewModel : ViewModel() {
@@ -25,7 +25,8 @@ class GroupsViewModel : ViewModel() {
     fun getGroups(path: String) {
         viewModelScope.launch {
             _liveData.postValue(Resource.Loading())
-            _liveData.postValue(Resource.Success(groupUseCase.get(
+            _liveData.postValue(
+                Resource.Success(groupUseCase.get(
                 Firebase.firestore.document(path)
             )))
         }

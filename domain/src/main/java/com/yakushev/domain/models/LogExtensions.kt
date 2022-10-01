@@ -1,11 +1,10 @@
 package com.yakushev.domain.models
 
 import android.util.Log
-import com.google.type.TimeOfDay
-import com.yakushev.domain.models.schedule.Week
 import com.yakushev.domain.models.schedule.Day
-import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.domain.models.schedule.Schedule
+import com.yakushev.domain.models.schedule.TimeCustom
+import com.yakushev.domain.models.schedule.Week
 
 fun List<TimeCustom>.printLog(tag: String) {
     for (time in this) {
@@ -47,14 +46,25 @@ fun Day.printLog(tag: String) {
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
-        val a = 1
+/*
+        val period = Period(
+            "subject",
+            Teacher(null),
+            "place",
+            null, null, null
+        )
 
-        for (i in 1..2) {
-            println("Vesna")
-            for (a in 1..2) {
-                println("Leto")
-            }
-        }
+        val day: Day = arrayListOf<Period>(
+            period, period, period
+        )
+
+        val week: Week = arrayListOf<Day>(
+            day, day, day
+        )
+
+        val schedule: Schedule = arrayListOf<Week>(
+
+        )*/
     }
 }
 

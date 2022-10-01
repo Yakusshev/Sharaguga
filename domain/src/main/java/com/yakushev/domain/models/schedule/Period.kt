@@ -9,4 +9,7 @@ data class Period (
     val subjectPath: String?,
     val teacherPath: String?,
     val placePath: String?
-)
+) {
+    companion object {
+    }
+}

@@ -1,6 +1,7 @@
 package com.yakushev.sharaguga.screens.schedule.holders
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,18 +12,19 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yakushev.data.Resource
 import com.yakushev.domain.models.schedule.DayEnum
-import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.SchedulePageBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleFragmentDirections
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.DAY_POSITION
 import com.yakushev.sharaguga.screens.schedule.adapters.PeriodsRecyclerAdapter
 import com.yakushev.sharaguga.screens.schedule.adapters.WEEK_POSITION
-import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.launch
 
 class DayFragment : Fragment() {
+
+    private val TAG = this::class.simpleName
 
     private val viewModel: ScheduleViewModel by activityViewModels()
 
@@ -96,36 +98,33 @@ class DayFragment : Fragment() {
 
     private fun observeDays(
         adapter: PeriodsRecyclerAdapter
-    ) = lifecycleScope.launch {
-        val day = viewModel.getWeek(weekPosition)[dayPosition.ordinal]
+    ) {
 
-        viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-            day.collect {
-                when (it) {
-                    is Resource.Loading -> {
-                        binding.noDataView.visibility = View.GONE
-                        binding.recyclerView.visibility = View.VISIBLE
+        for (p in 0..3) {
+            lifecycleScope.launch {
 
-                        //binding.shimmerFrameLayout.startShimmer()
-                        binding.noDataView.text = binding.root.context.getString(R.string.loading)
-                    }
-                    is Resource.Error -> {
-                        binding.noDataView.visibility = View.VISIBLE
-                        binding.recyclerView.visibility = View.GONE
+                val periods = viewModel.getWeek(weekPosition)[dayPosition.ordinal]
 
-                        binding.noDataView.text = binding.root.context.getString(R.string.error)
-                    }
-                    is Resource.Success -> {
-                        binding.noDataView.visibility = View.GONE
-                        binding.recyclerView.visibility = View.VISIBLE
-
-                        val data = it.data!!
-
-                        adapter.updatePeriods(data)
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    periods[p].collect {
+                        adapter.updatePeriod(p, it)
+                        Log.d(TAG, "$p, ${it::class}, ${it.data.toString()}")
                     }
                 }
             }
         }
+
+        /*
+         viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            val periods = viewModel.getWeek(weekPosition)[dayPosition.ordinal]
+
+            for (p in 0..3) {
+                periods[p].collect {
+                    adapter.updatePeriod(p, it)
+                    Log.d(TAG, "$p, ${it.data.toString()}")
+                }
+            }
+        }*/
     }
 
     private fun observeTime(

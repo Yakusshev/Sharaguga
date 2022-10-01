@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.lifecycleScope
+import com.yakushev.data.Resource
 import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.sharaguga.R
-import com.yakushev.sharaguga.utils.Resource
 
 
 class ScheduleDialogEdit : ScheduleDialogAdd() {
@@ -32,7 +32,7 @@ class ScheduleDialogEdit : ScheduleDialogAdd() {
     private fun observeData() = lifecycleScope.launchWhenStarted {
         scheduleViewModel.getDay(args.dayPath).collect {
             if (it !is Resource.Success || it.data == null) return@collect
-            val period = it.data[args.pairPosition] ?: return@collect
+            val period = it.data!![args.pairPosition] ?: return@collect
             binding.apply {
                 subject.setText(period.subject)
                 teacher.setText(period.teacher.family)

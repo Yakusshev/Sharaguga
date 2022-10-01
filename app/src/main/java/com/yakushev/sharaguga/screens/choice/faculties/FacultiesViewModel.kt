@@ -10,7 +10,7 @@ import com.yakushev.data.repository.FacultyRepository
 import com.yakushev.data.storage.firestore.choice.FacultiesStorage
 import com.yakushev.domain.models.choice.UniverUnit.Faculty
 import com.yakushev.domain.usecase.FacultiesUseCase
-import com.yakushev.sharaguga.utils.Resource
+import com.yakushev.data.Resource
 import kotlinx.coroutines.launch
 
 class FacultiesViewModel : ViewModel() {
@@ -24,7 +24,8 @@ class FacultiesViewModel : ViewModel() {
     fun getFaculties(universityId: String) {
         viewModelScope.launch {
             _liveData.postValue(Resource.Loading())
-            _liveData.postValue(Resource.Success(facultiesUseCase.get(
+            _liveData.postValue(
+                Resource.Success(facultiesUseCase.get(
                 Firebase.firestore.document(universityId)))
             )
         }

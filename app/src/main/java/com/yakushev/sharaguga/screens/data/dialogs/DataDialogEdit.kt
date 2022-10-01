@@ -3,10 +3,10 @@ package com.yakushev.sharaguga.screens.data.dialogs
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import com.yakushev.data.Resource
 import com.yakushev.domain.models.data.Data
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.utils.DataPagesEnum
-import com.yakushev.sharaguga.utils.Resource
 
 class DataDialogEdit : DataDialog() {
 
@@ -28,9 +28,9 @@ class DataDialogEdit : DataDialog() {
     private fun observeSubjects() {
         dataViewModel.subjects.observe(viewLifecycleOwner) {
             if (it !is Resource.Success || it.data == null) return@observe
-            data = it.data[args.position]
+            data = it.data!![args.position]
             binding.data.setText(
-                it.data[args.position].name
+                it.data!![args.position].name
             )
         }
     }
@@ -38,9 +38,9 @@ class DataDialogEdit : DataDialog() {
     private fun observeTeachers() {
         dataViewModel.teachers.observe(viewLifecycleOwner) {
             if (it !is Resource.Success || it.data == null) return@observe
-            data = it.data[args.position]
+            data = it.data!![args.position]
             binding.data.setText(
-                it.data[args.position].family
+                it.data!![args.position].family
             )
         }
     }
@@ -48,9 +48,9 @@ class DataDialogEdit : DataDialog() {
     private fun observePlaces() {
         dataViewModel.places.observe(viewLifecycleOwner) {
             if (it !is Resource.Success || it.data == null) return@observe
-            data = it.data[args.position]
+            data = it.data!![args.position]
             binding.data.setText(
-                it.data[args.position].name
+                it.data!![args.position].name
             )
         }
     }

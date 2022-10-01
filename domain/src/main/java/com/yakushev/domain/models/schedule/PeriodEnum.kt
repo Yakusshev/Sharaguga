@@ -1,7 +1,7 @@
 package com.yakushev.domain.models.schedule
 
 /**
- * Do not rename
+ * Do not rename!
  */
 
 enum class PeriodEnum {

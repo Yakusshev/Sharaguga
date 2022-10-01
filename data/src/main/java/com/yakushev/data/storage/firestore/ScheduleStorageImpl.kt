@@ -6,10 +6,12 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.yakushev.data.Resource
 import com.yakushev.data.storage.ScheduleStorage
 import com.yakushev.domain.models.data.Teacher
-import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.tasks.await
 
 class ScheduleStorageImpl : ScheduleStorage {
@@ -17,6 +19,22 @@ class ScheduleStorageImpl : ScheduleStorage {
     //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
 
     private companion object { const val TAG = "ScheduleStorageImpl" }
+
+    private val _scheduleFlow = ArrayList<ArrayList<ArrayList<MutableStateFlow<Resource<Period?>>>>>()
+    val scheduleFlow: List<List<List<StateFlow<Resource<Period?>>>>> get() = _scheduleFlow
+
+    init {
+        for (w in 0 until 2) {
+            _scheduleFlow.add(ArrayList())
+            for (d in 0 until 7) {
+                _scheduleFlow[w].add(ArrayList())
+                for (p in 0 until 4) {
+                    _scheduleFlow[w][d].add(MutableStateFlow(Resource.Loading()))
+                    Log.d(TAG, "$w.$d.$p Loading")
+                }
+            }
+        }
+    }
 
     override suspend fun save(period: Period, periodEnum: PeriodEnum, dayPath: String): Boolean {
 
@@ -220,10 +238,10 @@ class ScheduleStorageImpl : ScheduleStorage {
     private val firstWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/FirstWeek"
     private val secondWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/SecondWeek"
 
-    //TODO rewrite this method using query
+    //TODO remove
     override suspend fun get(semesterPath: String): Schedule? {
 
-        val schedule = Schedule()
+        val schedule = Schedule()/*
 
         val weeksQuery = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
             .orderBy(INDEX)
@@ -246,10 +264,37 @@ class ScheduleStorageImpl : ScheduleStorage {
             schedule.add(week)
         }
 
-        schedule.printLog(TAG)
+        schedule.printLog(TAG)*/
 
         return schedule
    }
+
+    suspend fun load(semesterPath: String) {
+
+        val weeksQuery = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
+            .orderBy(INDEX)
+            .getCollection() ?: return
+
+        val weekDocuments = weeksQuery.documents
+
+        for (w in weekDocuments.indices) {
+            val daysQuery = weekDocuments[w].reference.collection(SCHEDULE_COLLECTION_NAME)
+                .orderBy(INDEX)
+                .getCollection() ?: return
+
+            val dayDocuments = daysQuery.documents
+
+            for (d in dayDocuments.indices) { //TODO path if dayPath is null
+
+                for (p in PeriodEnum.values().indices) {
+                    val dayIndex = (dayDocuments[d].data!![INDEX]!! as Long).toInt()
+                    _scheduleFlow[w][dayIndex][p].emit(Resource.Success(
+                        getPairData(dayDocuments[d], PeriodEnum.values()[p].name)
+                    ))
+                }
+            }
+        }
+    }
 
     suspend fun getStartDate(): Timestamp {
         val firstWeek = Firebase.firestore.document(firstWeekPath)

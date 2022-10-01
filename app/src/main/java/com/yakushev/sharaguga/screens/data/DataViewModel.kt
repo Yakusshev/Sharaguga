@@ -9,8 +9,8 @@ import com.yakushev.domain.models.data.Data
 import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
-import com.yakushev.sharaguga.utils.Change
-import com.yakushev.sharaguga.utils.Resource
+import com.yakushev.data.Change
+import com.yakushev.data.Resource
 import kotlinx.coroutines.launch
 
 class DataViewModel : ViewModel() {

@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.utils
+package com.yakushev.data
 
 enum class Message {
     SaveSuccess,

@@ -8,7 +8,7 @@ import com.yakushev.data.repository.UniversityRepository
 import com.yakushev.data.storage.firestore.choice.UniversitiesStorage
 import com.yakushev.domain.models.choice.UniverUnit.University
 import com.yakushev.domain.usecase.UniversitiesUseCase
-import com.yakushev.sharaguga.utils.Resource
+import com.yakushev.data.Resource
 import kotlinx.coroutines.launch
 
 class UniversitiesViewModel : ViewModel() {
