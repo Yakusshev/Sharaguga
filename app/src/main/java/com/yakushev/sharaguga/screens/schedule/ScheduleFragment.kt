@@ -15,7 +15,6 @@ import android.widget.Toast
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.yakushev.sharaguga.MainActivity
@@ -24,8 +23,6 @@ import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
 import com.yakushev.sharaguga.screens.schedule.adapters.WeeksPagerAdapter
 import com.yakushev.sharaguga.utils.Message
 import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.*
 import kotlin.math.abs
 
 class ScheduleFragment : Fragment() {
@@ -57,13 +54,13 @@ class ScheduleFragment : Fragment() {
 
         //TODO (activity as MainActivity).setActionBarTitle(getString(R.string.title_schedule))
 
-        val weeksPagerAdapter = WeeksPagerAdapter(viewModel, lifecycleScope)
+        val weeksPagerAdapter = WeeksPagerAdapter(this)
 
-        setActionBarTitle(weeksPagerAdapter.startPosition, weeksPagerAdapter)
+        setActionBarTitle(viewModel.startPosition, weeksPagerAdapter)
 
         binding.weeksPager.apply {
             adapter = weeksPagerAdapter
-            currentItem = weeksPagerAdapter.startPosition
+            currentItem = viewModel.startPosition
 
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -82,7 +79,7 @@ class ScheduleFragment : Fragment() {
         position: Int,
         weeksPagerAdapter: WeeksPagerAdapter
     ) {
-        val diff = position - weeksPagerAdapter.startPosition
+        val diff = position - viewModel.startPosition
         val now = LocalDate.now().plusWeeks(diff.toLong())
 
         (requireActivity() as MainActivity).supportActionBar?.title =

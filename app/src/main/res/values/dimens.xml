@@ -3,7 +3,7 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="pageMargin">20dp</dimen>
-    <dimen name="pagerOffset">30dp</dimen>
+    <dimen name="pageMargin">32dp</dimen>
+    <dimen name="pagerOffset">16dp</dimen>
     <dimen name="pageMarginAndOffset">32dp</dimen>
 </resources>

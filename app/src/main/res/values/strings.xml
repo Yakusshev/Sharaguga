@@ -45,6 +45,7 @@
     </string-array>
 
     <string name="loading">Загрузка…</string>
+    <string name="error">Ошибка загрузки данных</string>
     <string name="no_data">Нет данных</string>
     <string name="chill">Чилл</string>
     <string name="subject">Предмет</string>

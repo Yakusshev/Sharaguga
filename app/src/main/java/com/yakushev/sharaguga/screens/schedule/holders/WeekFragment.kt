@@ -1,44 +1,99 @@
 package com.yakushev.sharaguga.screens.schedule.holders
 
-import android.icu.util.Calendar
-import android.util.Log
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.recyclerview.widget.RecyclerView
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.yakushev.domain.models.DaysPerWeek
-import com.yakushev.domain.models.schedule.Day
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleTabsBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.DaysPagerAdapter
-import com.yakushev.sharaguga.utils.Resource
+import com.yakushev.sharaguga.screens.schedule.adapters.WEEK_POSITION
 import com.yakushev.sharaguga.views.showSideItems
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.TemporalField
 import java.time.temporal.WeekFields
 import java.util.*
-import kotlin.math.abs
 
-class WeekHolder(
-    private val binding: ScheduleTabsBinding,
-    private val viewModel: ScheduleViewModel,
-    private val lifecycleScope: LifecycleCoroutineScope
-) : RecyclerView.ViewHolder(binding.root) {
+class WeekFragment : Fragment() {
 
     private val TAG = this.javaClass.simpleName
 
     private val todayPosition = 3
 
+    private val viewModel: ScheduleViewModel by activityViewModels()
+
+    private var _binding: ScheduleTabsBinding? = null
+    private val binding get() = _binding!!
+
+    private var _position: Int? = null
+    private val position get() = _position!!
+
+    private val startPosition get() = viewModel.startPosition
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+
+        _binding = ScheduleTabsBinding.inflate(
+            inflater,
+            container,
+            false
+        )
+
+        _position = requireArguments().getInt(WEEK_POSITION)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val daysAdapter = configureDaysPager()
+
+    }
+
+    private fun configureDaysPager(): DaysPagerAdapter {
+        val daysAdapter = DaysPagerAdapter(
+            this,
+            position
+        )
+
+        binding.daysPager.adapter = daysAdapter
+
+        binding.tabLayout.removeAllTabs()
+
+        for (i in 0 until binding.daysPager.adapter!!.itemCount) {
+            binding.tabLayout.addTab(getNewTab(position, startPosition, i))
+        }
+
+        binding.daysPager.showSideItems(
+            pageMarginPx = binding.daysPager.resources.getDimension(R.dimen.pageMargin).toInt(),
+            offsetPx = binding.daysPager.resources.getDimension(R.dimen.pagerOffset).toInt()
+        )
+
+        binding.daysPager.registerOnPageChangeCallback(onPageChangeCallback)
+
+        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
+
+        selectTab(startPosition)
+
+        return daysAdapter
+    }
+
     private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
-            if (layoutPosition != adapterPosition) {
+            /*if (layoutPosition != adapterPosition) {
                 Log.d(TAG, "return")
                 return
-            }
+            }*/
             binding.tabLayout.selectTab(binding.tabLayout.getTabAt(position))
             super.onPageSelected(position)
         }
@@ -58,42 +113,8 @@ class WeekHolder(
         }
     }
 
-    fun bind(layoutPosition: Int, startPosition: Int) {
-
-        val daysAdapter = DaysPagerAdapter(
-            viewModel,
-            lifecycleScope,
-        )
-
-        lifecycleScope.launchWhenStarted {
-            viewModel.date.collect {
-                daysAdapter.updateList(getWeek(layoutPosition, startPosition))
-            }
-        }
-
-        binding.daysPager.adapter = daysAdapter
-
-        binding.tabLayout.removeAllTabs()
-
-        for (i in 0 until binding.daysPager.adapter!!.itemCount) {
-            binding.tabLayout.addTab(getNewTab(layoutPosition, startPosition, i))
-        }
-
-        binding.daysPager.showSideItems(
-            pageMarginPx = binding.daysPager.resources.getDimension(R.dimen.pageMargin).toInt(),
-            offsetPx = binding.daysPager.resources.getDimension(R.dimen.pagerOffset).toInt()
-        )
-
-        binding.daysPager.registerOnPageChangeCallback(onPageChangeCallback)
-
-        binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
-
-        selectTab(startPosition)
-
-    }
-
     private fun selectTab(startPosition: Int) {
-        val diff = adapterPosition - startPosition
+        val diff = position - startPosition
 
         binding.daysPager.apply {
             when {
@@ -109,17 +130,10 @@ class WeekHolder(
 
         binding.daysPager.apply {
             when {
-                adapterPosition < selectedPosition -> currentItem = DaysPerWeek - 1
-                adapterPosition > selectedPosition -> currentItem = 0
+                position < selectedPosition -> currentItem = DaysPerWeek - 1
+                position > selectedPosition -> currentItem = 0
             }
         }
-    }
-
-    private suspend fun getWeek(requiredPosition: Int, startPosition: Int) : List<StateFlow<Resource<Day>>> {
-        val diff = requiredPosition - startPosition
-        val calendar = Calendar.getInstance().apply { add(Calendar.WEEK_OF_YEAR, diff) }
-
-        return viewModel.getWeek(calendar)
     }
 
     private fun getNewTab(
@@ -146,6 +160,7 @@ class WeekHolder(
     }
 
 }
+
 
 /*TabLayoutMediator(binding.tabLayout, daysPager) { tab, tabPosition ->
             var date = LocalDate.now().plusWeeks((layoutPosition - startPosition).toLong())

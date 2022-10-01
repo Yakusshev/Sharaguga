@@ -10,16 +10,14 @@ import com.google.firebase.Timestamp
 import com.yakushev.data.repository.TimePairRepository
 import com.yakushev.data.storage.firestore.ScheduleStorageImpl
 import com.yakushev.data.storage.firestore.TimePairStorage
-import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.domain.models.schedule.*
 import com.yakushev.domain.usecase.TimeScheduleUseCase
-import com.yakushev.sharaguga.utils.Resource
 import com.yakushev.sharaguga.utils.Message
+import com.yakushev.sharaguga.utils.Resource
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import kotlin.math.abs
 
 class ScheduleViewModel : ViewModel() {
@@ -44,6 +42,8 @@ class ScheduleViewModel : ViewModel() {
 
     private var _currentWeekNumber: Int? = null
     private val currentWeekNumber get() = _currentWeekNumber!!
+
+    val startPosition = 2
 
     private val timeScheduleUseCase = TimeScheduleUseCase(
         TimePairRepository(TimePairStorage())
@@ -114,7 +114,10 @@ class ScheduleViewModel : ViewModel() {
         Log.d(TAG, "liveDataValue Updated")
     }
 
-    suspend fun getWeek(calendar: Calendar) : List<StateFlow<Resource<Day>>> {
+    suspend fun getWeek(requiredPosition: Int) : List<StateFlow<Resource<Day>>> {
+        val diff = requiredPosition - startPosition
+        val calendar = Calendar.getInstance().apply { add(Calendar.WEEK_OF_YEAR, diff) }
+
         return scheduleFlow[getWeekNumber(calendar)]
     }
 

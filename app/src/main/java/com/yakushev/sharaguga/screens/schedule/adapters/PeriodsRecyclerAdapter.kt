@@ -4,18 +4,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.Day
+import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectEmptyBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectWindowBinding
-import com.yakushev.sharaguga.screens.schedule.holders.EmptyHolder
-import com.yakushev.sharaguga.screens.schedule.holders.PeriodHolder
-import com.yakushev.sharaguga.screens.schedule.holders.WindowHolder
+import com.yakushev.sharaguga.screens.schedule.holders.*
 
 class PeriodsRecyclerAdapter(
-    private val onItemClickListener: com.yakushev.sharaguga.screens.schedule.holders.OnItemClickListener
-) : RecyclerView.Adapter<com.yakushev.sharaguga.screens.schedule.holders.AbstractSubjectHolder>() {
+    private val onItemClickListener: OnItemClickListener
+) : RecyclerView.Adapter<AbstractSubjectHolder>() {
 
     private var timeList: ArrayList<TimeCustom> = ArrayList()
     private var periods: Day = Day("null")
@@ -24,10 +24,10 @@ class PeriodsRecyclerAdapter(
         Log.d("Adapter", "init")
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): com.yakushev.sharaguga.screens.schedule.holders.AbstractSubjectHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AbstractSubjectHolder {
         return when (viewType) {
-            com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Subject.ordinal -> createSubjectHolder(parent)
-            com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Empty.ordinal -> createEmptyHolder(parent)
+            ItemEnum.Subject.ordinal -> createSubjectHolder(parent)
+            ItemEnum.Empty.ordinal -> createEmptyHolder(parent)
             else -> createWindowHolder(parent)
         }
     }
@@ -41,7 +41,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnLongClickListener {
-                onItemClickListener.onClick(com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Subject, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Subject, adapterPosition, periods.path)
                 true
             }
         }
@@ -56,7 +56,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Empty, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Empty, adapterPosition, periods.path)
             }
         }
     }
@@ -70,18 +70,33 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Window, adapterPosition, periods.path)
+                onItemClickListener.onClick(ItemEnum.Window, adapterPosition, periods.path)
             }
         }
     }
 
-    override fun onBindViewHolder(holder: com.yakushev.sharaguga.screens.schedule.holders.AbstractSubjectHolder, position: Int) {
+    override fun onBindViewHolder(holder: AbstractSubjectHolder, position: Int) {
         when (getItemViewType(position)) {
-            com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Subject.ordinal -> {
+            ItemEnum.Subject.ordinal -> {
                 val subjectHolder = holder as PeriodHolder
-                subjectHolder.bind(periods[position], timeList[position])
+
+                var period: Period? = Period(
+                    subject = "Предмет",
+                    teacher = Teacher(
+                        null,"","Препод",""
+                    ),
+                    place = "Аудитория",
+                    null, null, null
+                )
+
+                var time: TimeCustom? = null
+
+                if (periods.isNotEmpty()) period = periods[position]
+                if (timeList.isNotEmpty()) time = timeList[position]
+
+                subjectHolder.bind(period, time)
             }
-            com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Empty.ordinal -> {
+            ItemEnum.Empty.ordinal -> {
             }
             else -> {
             }
@@ -89,14 +104,15 @@ class PeriodsRecyclerAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 4 //TODO rewrite if necessary
+        return if (periods.isEmpty()) 4
+        else periods.size
     }
 
     override fun getItemViewType(position: Int): Int {
-        if (periods.isEmpty()) return com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Empty.ordinal
+        if (periods.isEmpty()) return ItemEnum.Subject.ordinal
         when (periods[position]) {
-            null -> return com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Empty.ordinal
-            else -> return com.yakushev.sharaguga.screens.schedule.holders.ItemEnum.Subject.ordinal
+            null -> return ItemEnum.Empty.ordinal
+            else -> return ItemEnum.Subject.ordinal
         }
     }
 

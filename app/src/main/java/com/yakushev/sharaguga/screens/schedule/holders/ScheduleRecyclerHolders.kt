@@ -22,12 +22,19 @@ abstract class AbstractSubjectHolder(
     itemBinding: ViewBinding
 ) : RecyclerView.ViewHolder(itemBinding.root)
 
+
+
 internal class PeriodHolder(
     private val itemBinding: ScheduleItemSubjectBinding
 ) : com.yakushev.sharaguga.screens.schedule.holders.AbstractSubjectHolder(itemBinding) {
 
     fun bind(period: Period?, timePair: TimeCustom?) {
         itemBinding.apply {
+            if (timePair != null) {
+                shimmerFrameLayout.stopShimmer()
+                shimmerFrameLayout.hideShimmer()
+            }
+
             startTime.text = timePair?.getStartTime()
             endTime.text = timePair?.getEndTime()
 

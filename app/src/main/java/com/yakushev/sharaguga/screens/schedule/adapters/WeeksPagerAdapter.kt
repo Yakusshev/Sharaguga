@@ -1,54 +1,25 @@
 package com.yakushev.sharaguga.screens.schedule.adapters
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.sharaguga.databinding.ScheduleTabsBinding
-import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
-import com.yakushev.sharaguga.screens.schedule.holders.WeekHolder
-import kotlin.collections.HashSet
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.yakushev.sharaguga.screens.schedule.holders.WeekFragment
 
-class WeeksPagerAdapter(
-    private val viewModel: ScheduleViewModel,
-    private val lifecycleScope: LifecycleCoroutineScope
-) : RecyclerView.Adapter<WeekHolder>() {
+const val WEEK_POSITION = "week_position"
 
-    var count = 5
+class WeeksPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
 
-    var startPosition = 2
-    private val _holders: HashSet<WeekHolder> = HashSet()
-    val holders get() = _holders.toSet()
+    var count = 20
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekHolder {
-        val holder = WeekHolder(
-            binding = ScheduleTabsBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            ),
-            viewModel,
-            lifecycleScope
-        )
-
-        _holders.add(holder)
-
-        return holder
-    }
-
-    override fun onViewRecycled(holder: WeekHolder) {
-        _holders.remove(holder)
-    }
-
-    override fun onBindViewHolder(holder: WeekHolder, position: Int) {
-        holder.bind(position, startPosition)
-    }
-
-    fun onPageChange(selectedPosition: Int) {
-        holders.forEach {
-            it.onPageChange(selectedPosition)
+    override fun createFragment(position: Int): Fragment {
+        val fragment = WeekFragment()
+        fragment.arguments = Bundle().apply {
+            putInt(WEEK_POSITION, position)
         }
+
+        return fragment
     }
+
 
     override fun getItemCount(): Int {
         return count

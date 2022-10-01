@@ -42,6 +42,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        tools:context=".screens.schedule.holders.DayHolder"/>
+        tools:context=".screens.schedule.holders.DayFragment"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

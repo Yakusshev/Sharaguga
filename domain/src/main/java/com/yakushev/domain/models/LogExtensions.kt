@@ -47,6 +47,23 @@ fun Day.printLog(tag: String) {
 object Main {
     @JvmStatic
     fun main(args: Array<String>) {
+        val a = 1
+
+        for (i in 1..2) {
+            println("Vesna")
+            for (a in 1..2) {
+                println("Leto")
+            }
+        }
+    }
+}
+
+
+/*
+
+object Main {
+    @JvmStatic
+    fun main(args: Array<String>) {/*
         val firstSubjectStart = TimeOfDay.newBuilder()
             .setHours(9)
             .setMinutes(0)
@@ -54,6 +71,16 @@ object Main {
         val firstSubjectEnd = TimeOfDay.newBuilder()
             .setHours(10)
             .setMinutes(35)
-            .build()
+            .build()*/
+
+
+
+        for (i in 1..2) {
+            println("Vesna")
+            for (j in 1..2) {
+                println("Leto")
+            }
+        }
     }
 }
+ */
