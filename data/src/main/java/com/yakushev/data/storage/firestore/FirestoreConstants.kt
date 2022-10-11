@@ -29,7 +29,7 @@ internal const val WEEKS_COLLECTION_NAME = "weeks"
 internal const val FIRST_DAY = "firstDay"
 internal const val LAST_DAY = "lastDay"
 
-internal const val SCHEDULE_COLLECTION_NAME = "schedule"
+internal const val DAYS_COLLECTION_NAME = "schedule"
 
 internal const val INDEX = "index"
 

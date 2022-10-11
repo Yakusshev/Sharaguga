@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.schedule.holders
+package com.yakushev.sharaguga.screens.schedule.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.sharaguga.R
-import com.yakushev.sharaguga.databinding.ScheduleTabsBinding
+import com.yakushev.sharaguga.databinding.SchedulePageWeekBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.DaysPagerAdapter
 import com.yakushev.sharaguga.screens.schedule.adapters.WEEK_POSITION
@@ -28,7 +28,7 @@ class WeekFragment : Fragment() {
 
     private val viewModel: ScheduleViewModel by activityViewModels()
 
-    private var _binding: ScheduleTabsBinding? = null
+    private var _binding: SchedulePageWeekBinding? = null
     private val binding get() = _binding!!
 
     private var _position: Int? = null
@@ -42,7 +42,7 @@ class WeekFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = ScheduleTabsBinding.inflate(
+        _binding = SchedulePageWeekBinding.inflate(
             inflater,
             container,
             false

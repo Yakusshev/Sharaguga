@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.schedule.Period
+import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.databinding.ScheduleItemLoadingBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
@@ -14,7 +15,7 @@ import com.yakushev.sharaguga.databinding.ScheduleItemSubjectWindowBinding
 import com.yakushev.sharaguga.screens.schedule.holders.*
 
 class PeriodsRecyclerAdapter(
-    private val onItemClickListener: OnItemClickListener
+    var onItemClickListener: OnItemClickListener?
 ) : RecyclerView.Adapter<AbstractSubjectHolder>() {
 
     private var timeList: ArrayList<Resource<TimeCustom>> = arrayListOf(
@@ -55,7 +56,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnLongClickListener {
-                onItemClickListener.onClick(ItemEnum.Subject, adapterPosition, "TODO") //TODO
+                onItemClickListener?.onClick(ItemEnum.Subject, PeriodEnum.values()[adapterPosition]) //TODO
                 true
             }
         }
@@ -70,7 +71,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(ItemEnum.Empty, adapterPosition, "TODO") //TODO
+                onItemClickListener?.onClick(ItemEnum.Empty, PeriodEnum.values()[adapterPosition]) //TODO
             }
         }
     }
@@ -84,7 +85,7 @@ class PeriodsRecyclerAdapter(
             )
         ).apply {
             itemView.setOnClickListener {
-                onItemClickListener.onClick(ItemEnum.Window, adapterPosition, "TODO") //TODO
+                onItemClickListener?.onClick(ItemEnum.Window, PeriodEnum.values()[adapterPosition]) //TODO
             }
         }
     }

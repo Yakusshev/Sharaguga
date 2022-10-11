@@ -5,6 +5,7 @@ import androidx.viewbinding.ViewBinding
 import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.Period
+import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleItemLoadingBinding
@@ -20,7 +21,7 @@ enum class ItemEnum {
 }
 
 fun interface OnItemClickListener {
-    fun onClick(viewType: ItemEnum, position: Int, dayPath: String)
+    fun onClick(viewType: ItemEnum, period: PeriodEnum)
 }
 
 abstract class AbstractSubjectHolder(

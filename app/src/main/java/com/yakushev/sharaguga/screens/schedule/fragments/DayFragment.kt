@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.schedule.holders
+package com.yakushev.sharaguga.screens.schedule.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -13,12 +13,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.domain.models.schedule.DayEnum
-import com.yakushev.sharaguga.databinding.SchedulePageBinding
-import com.yakushev.sharaguga.screens.schedule.ScheduleFragmentDirections
+import com.yakushev.domain.models.schedule.WeekEnum
+import com.yakushev.sharaguga.databinding.SchedulePageDayBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.DAY_POSITION
 import com.yakushev.sharaguga.screens.schedule.adapters.PeriodsRecyclerAdapter
 import com.yakushev.sharaguga.screens.schedule.adapters.WEEK_POSITION
+import com.yakushev.sharaguga.screens.schedule.holders.ItemEnum
+import com.yakushev.sharaguga.screens.schedule.holders.OnItemClickListener
 import kotlinx.coroutines.launch
 
 class DayFragment : Fragment() {
@@ -27,14 +29,14 @@ class DayFragment : Fragment() {
 
     private val viewModel: ScheduleViewModel by activityViewModels()
 
-    private var _binding: SchedulePageBinding? = null
+    private var _binding: SchedulePageDayBinding? = null
     private val binding get() = _binding!!
 
-    private var _weekPosition: Int? = null
-    private val weekPosition get() = _weekPosition!!
+    private val weekPosition get() = requireArguments().getInt(WEEK_POSITION)
 
-    private var _dayPosition: DayEnum? = null
-    private val dayPosition get() = _dayPosition!!
+    private val dayEnum get() = DayEnum.values()[requireArguments().getInt(DAY_POSITION)]
+
+    private var weekEnum: WeekEnum? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,14 +44,11 @@ class DayFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        _binding = SchedulePageBinding.inflate(
+        _binding = SchedulePageDayBinding.inflate(
             inflater,
             container,
             false
         )
-
-        _weekPosition = requireArguments().getInt(WEEK_POSITION)
-        _dayPosition = DayEnum.values()[requireArguments().getInt(DAY_POSITION)]
 
         return binding.root
     }
@@ -59,7 +58,17 @@ class DayFragment : Fragment() {
 
         val adapter = initRecyclerView()
 
-        observeDays(adapter)
+        setupFragment(adapter)
+    }
+
+    private fun setupFragment(adapter: PeriodsRecyclerAdapter) = lifecycleScope.launch {
+        launch {
+            weekEnum = viewModel.getWeekNumber(weekPosition)
+        }.join()
+
+        adapter.onItemClickListener = getOnItemClickListener()
+
+        observePeriods(adapter)
 
         observeTime(adapter)
     }
@@ -67,43 +76,46 @@ class DayFragment : Fragment() {
     private fun initRecyclerView() : PeriodsRecyclerAdapter {
         binding.recyclerView.layoutManager = LinearLayoutManager(binding.root.context)
 
-        val onItemClickListener =
-            OnItemClickListener { viewType, pairPosition, dayPath ->
-                when (viewType) {
-                    ItemEnum.Subject -> {
-                        Navigation.findNavController(binding.root).navigate(
-                            ScheduleFragmentDirections.actionScheduleToEditFragment(
-                                pairPosition = pairPosition,
-                                dayPath = dayPath
-                            )
-                        )
-                    }
-                    ItemEnum.Empty -> {
-                        Navigation.findNavController(binding.root).navigate(
-                            ScheduleFragmentDirections.actionScheduleToAddFragment(
-                                pairPosition = pairPosition,
-                                dayPath = dayPath
-                            )
-                        )
-                    }
-                    else -> return@OnItemClickListener
-                }
-            }
+        val adapter = PeriodsRecyclerAdapter(null)
 
-        val adapter = PeriodsRecyclerAdapter(onItemClickListener)
         binding.recyclerView.adapter = adapter
+
         return adapter
     }
 
-    private fun observeDays(adapter: PeriodsRecyclerAdapter) = lifecycleScope.launch {
-        val periods = viewModel.getWeek(weekPosition)[dayPosition.ordinal]
+    private fun getOnItemClickListener() = OnItemClickListener { viewType, period ->
+        when (viewType) {
+            ItemEnum.Subject -> {
+                Navigation.findNavController(binding.root).navigate(
+                    ScheduleFragmentDirections.actionScheduleToEditFragment(
+                        period = period,
+                        day = dayEnum,
+                        week = weekEnum!!
+                    )
+                )
+            }
+            ItemEnum.Empty -> {
+                Navigation.findNavController(binding.root).navigate(
+                    ScheduleFragmentDirections.actionScheduleToAddFragment(
+                        period = period,
+                        day = dayEnum,
+                        week = weekEnum!!
+                    )
+                )
+            }
+            else -> return@OnItemClickListener
+        }
+    }
+
+    private fun observePeriods(adapter: PeriodsRecyclerAdapter) {
+        val periods = viewModel.getWeek(weekEnum!!)[dayEnum.ordinal]
 
         for (periodIndex in 0..3) {
-            launch {
+            lifecycleScope.launch {
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     periods[periodIndex].collect {
-                        adapter.updatePeriod(periodIndex, it)
                         Log.d(TAG, "$periodIndex, ${it::class}, ${it.data.toString()}")
+                        adapter.updatePeriod(periodIndex, it)
                     }
                 }
             }

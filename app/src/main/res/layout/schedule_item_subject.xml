@@ -18,7 +18,8 @@
         style="@style/subject_text_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         tools:text="09:00" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -26,18 +27,28 @@
         style="@style/subject_text_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="8dp"
         tools:text="10:35" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/subject"
         style="@style/subject_text_view"
-        android:layout_margin="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/startTime"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Автоматизированные системы управления" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/place"
+        style="@style/subject_text_view"
+        app:layout_constraintTop_toBottomOf="@id/subject"
+        app:layout_constraintStart_toStartOf="@id/subject"
+        android:layout_marginTop="8dp"
+        tools:text="ауд. 409"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/type"
@@ -50,22 +61,13 @@
         tools:text="Практика"/>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/place"
-        style="@style/subject_text_view"
-        app:layout_constraintTop_toBottomOf="@id/subject"
-        app:layout_constraintStart_toStartOf="@id/subject"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        tools:text="ауд. 409"/>
-
-    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/teacher"
         style="@style/subject_text_view"
         app:layout_constraintTop_toBottomOf="@id/place"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/subject"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         tools:text="Байгулов"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -30,9 +30,13 @@ class ScheduleDialogEdit : ScheduleDialogAdd() {
     }
 
     private fun observeData() = lifecycleScope.launchWhenStarted {
-        scheduleViewModel.getDay(args.dayPath).collect {
+        scheduleViewModel.getPeriod(
+            args.period,
+            args.day,
+            args.week
+        ).collect {
             if (it !is Resource.Success || it.data == null) return@collect
-            val period = it.data!![args.pairPosition] ?: return@collect
+            val period = it.data!!
             binding.apply {
                 subject.setText(period.subject)
                 teacher.setText(period.teacher.family)
@@ -55,7 +59,8 @@ class ScheduleDialogEdit : ScheduleDialogAdd() {
                 ) { _, _ ->
                     scheduleViewModel.deletePeriod(
                         periodEnum = PeriodEnum.values()[binding.spinner.selectedItemPosition],
-                        dayPath = args.dayPath
+                        dayEnum = args.day,
+                        weekEnum = args.week
                     )
                     this@ScheduleDialogEdit.dismiss()
                 }

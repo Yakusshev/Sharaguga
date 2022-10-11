@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/navigation_schedule"
-        android:name="com.yakushev.sharaguga.screens.schedule.ScheduleFragment"
+        android:name="com.yakushev.sharaguga.screens.schedule.fragments.ScheduleFragment"
         tools:layout="@layout/schedule_fragment">
 
         <argument
@@ -46,12 +46,16 @@
         tools:layout="@layout/schedule_dialog">
 
         <argument
-            android:name="pairPosition"
-            app:argType="integer"/>
+            android:name="period"
+            app:argType="com.yakushev.domain.models.schedule.PeriodEnum"/>
 
         <argument
-            android:name="dayPath"
-            app:argType="string"/>
+            android:name="day"
+            app:argType="com.yakushev.domain.models.schedule.DayEnum"/>
+
+        <argument
+            android:name="week"
+            app:argType="com.yakushev.domain.models.schedule.WeekEnum" />
 
     </dialog>
 
@@ -61,12 +65,16 @@
         tools:layout="@layout/schedule_dialog">
 
         <argument
-            android:name="pairPosition"
-            app:argType="integer"/>
+            android:name="period"
+            app:argType="com.yakushev.domain.models.schedule.PeriodEnum"/>
 
         <argument
-            android:name="dayPath"
-            app:argType="string"/>
+            android:name="day"
+            app:argType="com.yakushev.domain.models.schedule.DayEnum"/>
+
+        <argument
+            android:name="week"
+            app:argType="com.yakushev.domain.models.schedule.WeekEnum" />
 
     </dialog>
 

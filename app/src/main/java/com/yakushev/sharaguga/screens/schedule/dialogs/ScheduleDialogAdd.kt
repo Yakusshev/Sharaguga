@@ -43,7 +43,7 @@ open class ScheduleDialogAdd : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.subject.requestFocus()
-        binding.spinner.setSelection(args.pairPosition)
+        binding.spinner.setSelection(args.period.ordinal)
 
         setSwitchListener()
 
@@ -138,12 +138,11 @@ open class ScheduleDialogAdd : DialogFragment() {
                     null, null, null
                 )
 
-                val pairPosition = PeriodEnum.values()[spinner.selectedItemPosition]
-
                 scheduleViewModel.savePeriod(
                     period = period,
-                    pairPosition = pairPosition,
-                    dayPath = args.dayPath,
+                    periodEnum = PeriodEnum.values()[spinner.selectedItemPosition],
+                    dayEnum = args.day,
+                    weekEnum = args.week
                 )
                 dismiss()
             }

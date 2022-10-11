@@ -3,7 +3,7 @@ package com.yakushev.sharaguga.screens.schedule.adapters
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.yakushev.sharaguga.screens.schedule.holders.WeekFragment
+import com.yakushev.sharaguga.screens.schedule.fragments.WeekFragment
 
 const val WEEK_POSITION = "week_position"
 

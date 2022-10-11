@@ -1,3 +1,3 @@
 package com.yakushev.domain.models
 
-const val DaysPerWeek = 7
+const val DaysPerWeek = 6

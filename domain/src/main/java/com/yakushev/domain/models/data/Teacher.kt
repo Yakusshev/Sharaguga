@@ -5,8 +5,8 @@ package com.yakushev.domain.models.data
  */
 
 data class Teacher (
-    override val path: String?,
+    override val path: String? = null,
     val name: String = "",
-    val family: String = "Нет данных",
+    var family: String = "Нет данных",
     val patronymic: String = ""
 ) : Data(path = path)

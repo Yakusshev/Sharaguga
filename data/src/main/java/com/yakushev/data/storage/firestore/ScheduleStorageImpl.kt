@@ -6,15 +6,25 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.yakushev.data.storage.ScheduleStorage
 import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Teacher
-import com.yakushev.domain.models.schedule.*
+import com.yakushev.domain.models.schedule.DayEnum
+import com.yakushev.domain.models.schedule.Period
+import com.yakushev.domain.models.schedule.PeriodEnum
+import com.yakushev.domain.models.schedule.WeekEnum
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class ScheduleStorageImpl : ScheduleStorage {
+class ScheduleStorageImpl(
+    semesterPath: String = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V"
+) {
+
+    private val weeksReference = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
 
     //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
 
@@ -36,9 +46,19 @@ class ScheduleStorageImpl : ScheduleStorage {
         }
     }
 
-    override suspend fun save(period: Period, periodEnum: PeriodEnum, dayPath: String): Boolean {
+    /**
+     * TODO Achtung! Adding new semester has to automatically create weeks with Index, and days with Index.
+     */
 
-        val weeksPath = "universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks" //TODO remove
+    suspend fun save(
+        period: Period,
+        periodEnum: PeriodEnum,
+        dayEnum: DayEnum,
+        weekEnum: WeekEnum
+    ): Boolean {
+
+        val dayReference = weeksReference.document(weekEnum.name)
+            .collection(DAYS_COLLECTION_NAME).document(dayEnum.name)
 
         val subjectPath: String? = saveSubject(period)
         val teacherPath: String? = saveTeacher(period)
@@ -57,13 +77,13 @@ class ScheduleStorageImpl : ScheduleStorage {
         )
 
         val dayData = hashMapOf(
-            INDEX to getDayIndex(dayPath),
+            INDEX to dayEnum.ordinal,
             periodEnum.name to periodData
         )
 
         var result = false
-        Log.d(TAG, "save: dayPath = $dayPath")
-        Firebase.firestore.document(dayPath)
+        Log.d(TAG, "save: dayPath = $dayEnum")
+        dayReference
             .set(dayData, SetOptions.merge())
             .addOnSuccessListener {
                 result = true
@@ -174,7 +194,7 @@ class ScheduleStorageImpl : ScheduleStorage {
         data: String,
         collectionReference: CollectionReference
     ): DocumentSnapshot? {
-        Log.d(TAG, "save ${collectionReference.path}")
+        Log.d(TAG, "checkData ${collectionReference.path}")
 
         val query = collectionReference.whereEqualTo(field, data)
 
@@ -194,12 +214,12 @@ class ScheduleStorageImpl : ScheduleStorage {
         return document
     }
 
-    suspend fun deletePeriod(periodEnum: PeriodEnum, dayPath: String): Boolean {
+    suspend fun deletePeriod(period: PeriodEnum, day: DayEnum, week: WeekEnum): Boolean {
         var result = false
         val update = hashMapOf<String, Any>(
-            periodEnum.name to FieldValue.delete()
+            period.name to FieldValue.delete()
         )
-        Firebase.firestore.document(dayPath)
+        weeksReference.document(week.name).collection(DAYS_COLLECTION_NAME).document(day.name)
             .update(update)
             .addOnSuccessListener {
                 result = true
@@ -212,93 +232,93 @@ class ScheduleStorageImpl : ScheduleStorage {
         return result
     }
 
-    //TODO remove this method and addSnapshotListener
-    suspend fun getDay(dayPath: String): Day? {
-        val dayDocument = Firebase.firestore.document(dayPath)
-            .getDocumentSnapshot() ?: return null
-
-        dayDocument.data
-
-        val day = Day(dayPath)
-
-        for (pair in PeriodEnum.values()) {
-            day.add(getPairData(dayDocument, pair.name))
-        }
-
-        return day
-
-    }
-
     /**
      * function get takes a reference to a semester
      * return list of week (list of days (list of pairs))
      */
 
-    //TODO remove
-    private val firstWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/FirstWeek"
-    private val secondWeekPath = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V/weeks/SecondWeek"
+    suspend fun load() {
 
-    //TODO remove
-    override suspend fun get(semesterPath: String): Schedule? {
-
-        val schedule = Schedule()/*
-
-        val weeksQuery = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
+        val weeksDocuments = weeksReference
             .orderBy(INDEX)
-            .getCollection() ?: return null
+            .getQuerySnapshot()
+            ?.documents ?: return
 
-        for (weekDocument in weeksQuery.documents) {
-            val daysQuery = weekDocument.reference.collection(SCHEDULE_COLLECTION_NAME)
+        for (w in weeksDocuments.indices) {
+            val dayDocuments = weeksDocuments[w].reference.collection(DAYS_COLLECTION_NAME)
                 .orderBy(INDEX)
-                .getCollection() ?: return null
+                .getQuerySnapshot()
+                ?.documents ?: return
 
-            val week = Week()
+            //Log.d(TAG, "Listening week $w")
 
-            for (dayDocument in daysQuery) { //TODO path if dayPath is null
-                val day = Day(dayDocument.reference.path)
-                for (periodEnum in PeriodEnum.values()) {
-                    day.add(getPairData(dayDocument, periodEnum.name))
-                }
-                week[dayDocument.data[INDEX].toString().toInt()] = day
+            for (d in dayDocuments.indices) {
+
+                dayDocuments[d].listenPeriods(w, d, _scheduleFlow[w][d])
+
+                /*for (p in PeriodEnum.values().indices) {
+                    val flow = _scheduleFlow[w][d][p]
+
+                    flow.update {
+                        Resource.Success(
+                            dayDocuments[d].getPeriodData(
+                                PeriodEnum.values()[p],
+                            )
+                        )
+                    }
+
+                    //dayDocuments[d].listenPeriodData(PeriodEnum.values()[p], flow)
+                }*/
             }
-            schedule.add(week)
         }
 
-        schedule.printLog(TAG)*/
+        getDocumentSnapshotPrintLog()
+    }
 
-        return schedule
-   }
-
-    suspend fun load(semesterPath: String) {
-
-        val weeksQuery = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
+    /*
+    suspend fun startListening() {
+        val weeksDocuments = weeksReference
             .orderBy(INDEX)
-            .getQuerySnapshot() ?: return
+            .getQuerySnapshot()
+            ?.documents ?: return
 
-        val weekDocuments = weeksQuery.documents
-
-        for (w in weekDocuments.indices) {
-            val daysQuery = weekDocuments[w].reference.collection(SCHEDULE_COLLECTION_NAME)
+        for (w in weeksDocuments.indices) {
+            val dayQuery = weeksDocuments[w].reference.collection(DAYS_COLLECTION_NAME)
                 .orderBy(INDEX)
-                .getQuerySnapshot() ?: return
 
-            val dayDocuments = daysQuery.documents
+            dayQuery.addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    Log.w(TAG, "Schedule listening error.", error)
+                    return@addSnapshotListener
+                }
+                if (snapshot == null) return@addSnapshotListener
 
-            for (d in dayDocuments.indices) { //TODO path if dayPath is null
+                for (change in snapshot.documentChanges) {
+                    if (change.type != DocumentChange.Type.MODIFIED) return@addSnapshotListener
 
-                for (p in PeriodEnum.values().indices) {
-                    val dayIndex = (dayDocuments[d].data!![INDEX]!! as Long).toInt()
-                    _scheduleFlow[w][dayIndex][p].emit(
-                        Resource.Success(
-                        getPairData(dayDocuments[d], PeriodEnum.values()[p].name)
-                    ))
+                    for (p in PeriodEnum.values().indices) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            Log.d(TAG, "Listening ${change.newIndex}")
+
+                            delay(100)
+                            val oldPeriod = _scheduleFlow[w][change.newIndex][p].value.data
+                            val newPeriod: Period? = getPairData(change.document, PeriodEnum.values()[p].name)
+
+                            //if (oldPeriod == newPeriod) return@launch
+
+                            _scheduleFlow[w][change.newIndex][p].emit(
+                                Resource.Success(newPeriod)
+                            )
+                        }
+                    }
                 }
             }
         }
     }
+*/
 
     suspend fun getStartDate(): Timestamp {
-        val firstWeek = Firebase.firestore.document(firstWeekPath)
+        val firstWeek = weeksReference.document(WeekEnum.FirstWeek.name)
             .get()
             .await()
 
@@ -310,33 +330,215 @@ class ScheduleStorageImpl : ScheduleStorage {
      *  There is mustn't be any uncheckable casts.
      */
 
-    private suspend fun getPairData(day: DocumentSnapshot, pairId: String) : Period? {
-        val data = day.data!!
-        Log.d(TAG, "$pairId ${data[pairId] != null}")
+    private suspend fun DocumentSnapshot.listenPeriods(
+        w: Int,
+        d: Int,
+        day: ArrayList<MutableStateFlow<Resource<Period?>>>
+    )/* = CoroutineScope(Dispatchers.IO).launch */{
 
-        @Suppress("UNCHECKED_CAST")
-        return if (data[pairId] != null)
-            (data[pairId] as HashMap<String, DocumentReference>)
-                .parseFromFirestore()
+        reference.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.w(TAG, "Schedule listening error.", error)
+                return@addSnapshotListener
+            }
+            if (snapshot == null) return@addSnapshotListener
+
+            val job = CoroutineScope(Dispatchers.IO).launch {
+                for (p in PeriodEnum.values().indices) {
+
+                    Log.d(TAG, "Listening week = $w, day = $d, period = $p")
+
+                    val flow = day[p]
+
+                    flow.emit(
+                        Resource.Success(
+                            snapshot.getPeriodData(PeriodEnum.values()[p])?.parseFromFirestore()
+                        )
+                    )
+
+                    Log.d(TAG, "Emitted week = $w, day = $d, period = $p")
+
+                    /*flow.update {
+                        val oldPeriod = it.data
+
+                        val newPeriodMap = snapshot.getPeriodData(PeriodEnum.values()[p])
+                            ?: return@update Resource.Success(null)
+
+                        val newPeriod = newPeriodMap.parseFromFirestore()
+
+                        if (oldPeriod.isLoadedToFirebase()) {
+                            snapshot.listenPeriodData(PeriodEnum.values()[p], flow)
+                            return@update Resource.Success(newPeriod)
+                        }
+
+                        if (oldPeriod?.subjectPath == null && newPeriod.subjectPath != null)
+                            newPeriodMap[SUBJECT]!!.listenSubject(flow)
+
+                        if (oldPeriod?.teacherPath == null && newPeriod.teacherPath != null)
+                            newPeriodMap[TEACHER]!!.listenTeacher(flow)
+
+                        if (oldPeriod?.placePath == null && newPeriod.placePath != null)
+                            newPeriodMap[PLACE]!!.listenPlace(flow)
+
+                        Resource.Success(snapshot.getPeriodData(PeriodEnum.values()[p])?.parseFromFirestore())
+                    }*/
+                }
+            }
+
+            loadingJobList.add(job)
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun DocumentSnapshot.getPeriodData(
+        periodEnum: PeriodEnum
+    ) : HashMap<String, DocumentReference>? {
+        val data = data!!
+
+        Log.d(TAG, "getPairData ${periodEnum.name} ${data[periodEnum.name] != null}")
+
+        return if (data[periodEnum.name] != null)
+            data[periodEnum.name] as HashMap<String, DocumentReference>
         else null
     }
 
+    private fun Period?.isLoadedToFirebase() : Boolean {
+        if (this == null) return false
+        return subjectPath != null && teacherPath != null && placePath != null
+    }
+
     private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Period {
-        val subject: String
-        this[SUBJECT]!!.getDocumentSnapshot()?.data.apply {
-            subject = if (this != null) this[NAME].toString() else "Нет данных"
+        Log.d(TAG, "parseFromFirestore started")
+
+        var subject: String? = null
+        var teacher = Teacher()
+        var place: String? = null
+
+        val subjectJob = CoroutineScope(Dispatchers.IO).launch {
+            subject = this@parseFromFirestore[SUBJECT]!!
+                .getDocumentSnapshot()
+                ?.data
+                ?.get(NAME).toString()
         }
 
-        return Period(
-            subject = subject,
+        val teacherJob = CoroutineScope(Dispatchers.IO).launch {
             teacher = Teacher(
-                family = this[TEACHER]!!.getDocumentSnapshot()?.data?.get(FAMILY).toString(),
+                family = this@parseFromFirestore[TEACHER]!!
+                    .getDocumentSnapshot()
+                    ?.data
+                    ?.get(FAMILY).toString(),
                 path = null
-            ),
-            place = this[PLACE]!!.getDocumentSnapshot()?.data?.get(NAME).toString(),
+            )
+        }
+
+        val placeJob = CoroutineScope(Dispatchers.IO).launch {
+            place = this@parseFromFirestore[PLACE]!!
+                .getDocumentSnapshot()
+                ?.data
+                ?.get(NAME).toString()
+        }
+
+        subjectJob.join()
+        teacherJob.join()
+        placeJob.join()
+
+        val period =  Period(
+            subject = subject.toString(),
+            teacher = teacher,
+            place = place.toString(),
             subjectPath = this[SUBJECT]!!.path,
             teacherPath = this[TEACHER]!!.path,
             placePath = this[PLACE]!!.path
         )
+
+        Log.d(TAG, "parseFromFirestore $period" )
+        return period
+    }
+
+    private fun DocumentSnapshot.listenPeriodData(
+        periodEnum: PeriodEnum,
+        flow: MutableStateFlow<Resource<Period?>>
+    ) {
+        val data = data!!
+
+        if (data[periodEnum.name] == null) return
+
+        getDocumentReference(SUBJECT)?.listenSubject(flow)
+
+        getDocumentReference(TEACHER)?.listenTeacher(flow)
+
+        getDocumentReference(PLACE)?.listenPlace(flow)
+    }
+
+    private fun DocumentReference.listenSubject(
+        flow: MutableStateFlow<Resource<Period?>>
+    ) {
+        var index = -1
+        addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.w(TAG, "Subject listening error.", error)
+                return@addSnapshotListener
+            }
+            if (snapshot == null) return@addSnapshotListener
+            index++
+            if (index == 0) return@addSnapshotListener
+
+            flow.update {
+                Resource.Success(it.data?.copy(
+                    subject = snapshot.data?.get(NAME).toString()
+                ))
+            }
+        }
+    }
+
+    private fun DocumentReference.listenTeacher(
+        flow: MutableStateFlow<Resource<Period?>>
+    ) {
+        var index = -1
+        addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.w(TAG, "Teacher listening error.", error)
+                return@addSnapshotListener
+            }
+            if (snapshot == null) return@addSnapshotListener
+            index++
+            if (index == 0) return@addSnapshotListener
+
+            flow.update {
+                Resource.Success(it.data?.copy(
+                    teacher = Teacher(
+                        family = snapshot.data?.get(FAMILY).toString(),
+                        path = it.data.teacherPath
+                    )
+                ))
+            }
+        }
+    }
+
+    private fun DocumentReference.listenPlace(
+        flow: MutableStateFlow<Resource<Period?>>
+    ) {
+        var index = -1
+        addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                Log.w(TAG, "Place listening error.", error)
+                return@addSnapshotListener
+            }
+            if (snapshot == null) return@addSnapshotListener
+            index++
+            if (index == 0) return@addSnapshotListener
+
+            flow.update {
+                Resource.Success(it.data?.copy(
+                   place = snapshot.data?.get(NAME).toString()
+                ))
+            }
+
+            /*val period = flow.value.data
+            val place = snapshot.data?.get(NAME).toString()
+
+            period?.place = place
+            flow.value = Resource.Success(period)*/
+        }
     }
 }

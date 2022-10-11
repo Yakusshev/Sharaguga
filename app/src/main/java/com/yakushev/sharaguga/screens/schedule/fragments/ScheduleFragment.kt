@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.schedule
+package com.yakushev.sharaguga.screens.schedule.fragments
 
 import android.content.Context
 import android.content.res.Resources.getSystem
@@ -17,11 +17,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
+import com.yakushev.data.utils.Message
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
+import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.WeeksPagerAdapter
-import com.yakushev.data.utils.Message
 import java.time.LocalDate
 import kotlin.math.abs
 

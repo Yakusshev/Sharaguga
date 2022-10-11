@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.yakushev.domain.models.DaysPerWeek
-import com.yakushev.sharaguga.screens.schedule.holders.DayFragment
+import com.yakushev.sharaguga.screens.schedule.fragments.DayFragment
 
 const val DAY_POSITION = "day_position"
 
