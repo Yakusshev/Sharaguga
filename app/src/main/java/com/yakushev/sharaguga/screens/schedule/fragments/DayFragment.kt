@@ -18,8 +18,8 @@ import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.DAY_POSITION
 import com.yakushev.sharaguga.screens.schedule.adapters.PeriodsRecyclerAdapter
 import com.yakushev.sharaguga.screens.schedule.adapters.WEEK_POSITION
-import com.yakushev.sharaguga.screens.schedule.holders.ItemEnum
-import com.yakushev.sharaguga.screens.schedule.holders.OnItemClickListener
+import com.yakushev.sharaguga.screens.schedule.adapters.ItemEnum
+import com.yakushev.sharaguga.screens.schedule.adapters.OnItemClickListener
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 

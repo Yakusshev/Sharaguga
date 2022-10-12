@@ -38,7 +38,7 @@ fun Week.printLog(tag: String) {
 fun Day.printLog(tag: String) {
     for (pair in this) {
         pair?.apply {
-            Log.d(tag, "$subject, $place, ${teacher.family}")
+            Log.d(tag, "$subject, $place, ${teacher?.family}")
         }
     }
 }

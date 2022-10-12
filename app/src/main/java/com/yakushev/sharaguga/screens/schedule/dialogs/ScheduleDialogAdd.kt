@@ -10,6 +10,8 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.navArgs
 import com.yakushev.data.utils.Resource
+import com.yakushev.domain.models.data.Place
+import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.PeriodEnum
@@ -128,15 +130,14 @@ open class ScheduleDialogAdd : DialogFragment() {
         binding.apply {
             save.setOnClickListener {
                 val period = Period(
-                    subject = subject.text.toString().trim(),
+                    subject = Subject(null, subject.text.toString().trim()),
                     teacher = Teacher(
                         family = teacher.text.toString().trim(),
                         name = "",
                         patronymic = "",
                         path = null
                     ),
-                    place = place.text.toString().trim(),
-                    null, null, null
+                    place = Place(null, place.text.toString().trim())
                 )
 
                 scheduleViewModel.savePeriod(

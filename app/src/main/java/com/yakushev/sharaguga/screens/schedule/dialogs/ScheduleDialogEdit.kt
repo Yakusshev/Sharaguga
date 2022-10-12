@@ -38,12 +38,12 @@ class ScheduleDialogEdit : ScheduleDialogAdd() {
             if (it !is Resource.Success || it.data == null) return@collect
             val period = it.data!!
             binding.apply {
-                subject.setText(period.subject)
-                teacher.setText(period.teacher.family)
-                place.setText(period.place)
-                subjectPath = period.subjectPath
-                teacherPath = period.teacherPath
-                placePath = period.placePath
+                subject.setText(period.subject?.name)
+                teacher.setText(period.teacher?.family)
+                place.setText(period.place?.name)
+                subjectPath = period.subject?.path
+                teacherPath = period.teacher?.path
+                placePath = period.place?.path
             }
         }
     }

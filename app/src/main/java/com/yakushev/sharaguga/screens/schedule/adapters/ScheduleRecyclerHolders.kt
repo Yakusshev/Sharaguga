@@ -1,13 +1,11 @@
-package com.yakushev.sharaguga.screens.schedule.holders
+package com.yakushev.sharaguga.screens.schedule.adapters
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.domain.models.schedule.TimeCustom
-import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleItemLoadingBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectEmptyBinding
@@ -43,7 +41,7 @@ internal class PeriodHolder(
                 period = periodResource.data
                 time = timeResource.data
             }
-            is Resource.Error -> getPeriodInstance(binding.root.resources.getString(R.string.error))
+            //is Resource.Error -> getPeriodInstance(binding.root.resources.getString(R.string.error))
             else -> {}
         }
 
@@ -51,8 +49,8 @@ internal class PeriodHolder(
             startTime.text = time?.getStartTime()
             endTime.text = time?.getEndTime()
 
-            subject.text = period?.subject
-            place.text = period?.place
+            subject.text = period?.subject?.name
+            place.text = period?.place?.name
             teacher.text = period?.teacher?.family
         }
     }
@@ -60,29 +58,17 @@ internal class PeriodHolder(
 
 internal class LoadingHolder(
     private val binding: ScheduleItemLoadingBinding
-) : AbstractSubjectHolder(binding) {
-
-}
-
-
-fun getPeriodInstance(string: String) = Period(
-    string,
-    Teacher(null, string, string, string),
-    string,
-    null, null, null
-)
-
-
+) : AbstractSubjectHolder(binding)
 
 internal class EmptyHolder(
     binding: ScheduleItemSubjectEmptyBinding
-) : com.yakushev.sharaguga.screens.schedule.holders.AbstractSubjectHolder(binding) {
+) : AbstractSubjectHolder(binding) {
 
 }
 
 internal class WindowHolder(
     binding: ScheduleItemSubjectWindowBinding
-) : com.yakushev.sharaguga.screens.schedule.holders.AbstractSubjectHolder(binding) {
+) : AbstractSubjectHolder(binding) {
 
     fun bind() {
 

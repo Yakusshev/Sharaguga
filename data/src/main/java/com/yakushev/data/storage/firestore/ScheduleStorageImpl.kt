@@ -7,7 +7,6 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.DayEnum
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.PeriodEnum
@@ -16,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -97,67 +97,48 @@ class ScheduleStorageImpl(
         return result
     }
 
-    private fun getDayIndex(dayPath: String): Int {
-        val list = dayPath.split("/")
-        Log.d(TAG, dayPath)
-
-        val dayEnum = DayEnum.valueOf(list[11]) //TODO java.lang.IndexOutOfBoundsException: Index: 11, Size: 1 (the problem in storage)
-        val weekEnum = WeekEnum.valueOf(list[9])
-
-        return dayEnum.ordinal
-    }
-
     private suspend fun saveSubject(period: Period): String? {
-
         val data = hashMapOf(
-            NAME to period.subject
+            NAME to period.subject!!.name
         )
 
         return savePeriodData(
-            field = NAME,
-            periodData = period.subject,
-            dataPath = period.subjectPath,
+            data = data,
+            dataPath = period.subject?.path,
             collectionReference = subjectsCollection
         )
     }
 
     private suspend fun saveTeacher(period: Period): String? {
         val data = hashMapOf(
-            FAMILY to period.teacher.family
+            FAMILY to period.teacher!!.family //Family is first
         )
 
         return savePeriodData(
-            field = FAMILY,
-            periodData = period.teacher.family,
-            dataPath = period.teacherPath,
+            data = data,
+            dataPath = period.teacher?.path,
             collectionReference = teachersCollection
         )
     }
 
     private suspend fun savePlace(period: Period): String? {
         val data = hashMapOf(
-            NAME to period.place
+            NAME to period.place!!.name
         )
 
         return savePeriodData(
-            field = NAME,
-            periodData = period.place,
-            dataPath = period.placePath,
+            data = data,
+            dataPath = period.place?.path,
             collectionReference = placesCollection
         )
     }
 
     private suspend fun savePeriodData(
-        field: String,
-        periodData: String,
+        data: Map<String, String>,
         dataPath: String?,
         collectionReference: CollectionReference
     ) : String? {
         Log.d(TAG, "save ${collectionReference.path}")
-
-        val data = hashMapOf(
-            field to periodData
-        ) // TODO вынести в базовый метод
 
         var resultPath: String? = null
         val task: Task<out Any>?
@@ -169,14 +150,14 @@ class ScheduleStorageImpl(
                     resultPath = dataPath
                 }
         } else {
-            val doc = checkData(field, periodData, collectionReference)
+            val doc = checkData(data, collectionReference)
             if (doc != null) {
                 return doc.reference.path
             } else {
-                task = collectionReference.document(periodData)
+                task = collectionReference.document(data.toList()[0].second)
                     .set(data)
                     .addOnSuccessListener {
-                        resultPath = collectionReference.document(periodData).path
+                        resultPath = collectionReference.document(data.toList()[0].second).path
                     }
             }
         }
@@ -191,17 +172,21 @@ class ScheduleStorageImpl(
      */
 
     private suspend fun checkData(
-        field: String,
-        data: String,
+        data: Map<String, String>,
         collectionReference: CollectionReference
     ): DocumentSnapshot? {
         Log.d(TAG, "checkData ${collectionReference.path}")
 
-        val query = collectionReference.whereEqualTo(field, data)
+        var query: Query? = null
+
+        for (pair in data) {
+            //if (query == null) query = collectionReference.whereEqualTo(pair.key, pair.value)
+            query = query?.whereEqualTo(pair.key, pair.value) ?: collectionReference.whereEqualTo(pair.key, pair.value)
+        }
 
         var document: DocumentSnapshot? = null
 
-        query.get().addOnCompleteListener { task ->
+        query?.get()?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 task.result.documents.also {
                     for (i in it.indices) {
@@ -210,7 +195,7 @@ class ScheduleStorageImpl(
                     }
                 }
             }
-        }.await()
+        }?.await()
 
         return document
     }
@@ -272,62 +257,26 @@ class ScheduleStorageImpl(
      *  There is mustn't be any uncheckable casts.
      */
 
-    private suspend fun DocumentSnapshot.listenPeriods(
+    private fun DocumentSnapshot.listenPeriods(
         w: Int,
         d: Int,
         day: ArrayList<MutableStateFlow<Resource<Period?>>>
-    ) {
+    ) = reference.addSnapshotListener { snapshot, error ->
+        if (error != null) {
+            Log.w(TAG, "Schedule listening error.", error)
+            return@addSnapshotListener
+        }
+        if (snapshot == null) return@addSnapshotListener
 
-        reference.addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Schedule listening error.", error)
-                return@addSnapshotListener
-            }
-            if (snapshot == null) return@addSnapshotListener
+        for (p in PeriodEnum.values().indices) {
 
-            val job = CoroutineScope(Dispatchers.IO).launch {
-                for (p in PeriodEnum.values().indices) {
+            Log.d(TAG, "Listening week = $w, day = $d, period = $p")
 
-                    Log.d(TAG, "Listening week = $w, day = $d, period = $p")
+            val flow = day[p]
 
-                    val flow = day[p]
+            snapshot.getPeriodData(PeriodEnum.values()[p])?.listenData(flow)
 
-                    flow.emit(
-                        Resource.Success(
-                            snapshot.getPeriodData(PeriodEnum.values()[p])?.parseFromFirestore()
-                        )
-                    )
-
-                    Log.d(TAG, "Emitted week = $w, day = $d, period = $p")
-
-                    /*flow.update {
-                        val oldPeriod = it.data
-
-                        val newPeriodMap = snapshot.getPeriodData(PeriodEnum.values()[p])
-                            ?: return@update Resource.Success(null)
-
-                        val newPeriod = newPeriodMap.parseFromFirestore()
-
-                        if (oldPeriod.isLoadedToFirebase()) {
-                            snapshot.listenPeriodData(PeriodEnum.values()[p], flow)
-                            return@update Resource.Success(newPeriod)
-                        }
-
-                        if (oldPeriod?.subjectPath == null && newPeriod.subjectPath != null)
-                            newPeriodMap[SUBJECT]!!.listenSubject(flow)
-
-                        if (oldPeriod?.teacherPath == null && newPeriod.teacherPath != null)
-                            newPeriodMap[TEACHER]!!.listenTeacher(flow)
-
-                        if (oldPeriod?.placePath == null && newPeriod.placePath != null)
-                            newPeriodMap[PLACE]!!.listenPlace(flow)
-
-                        Resource.Success(snapshot.getPeriodData(PeriodEnum.values()[p])?.parseFromFirestore())
-                    }*/
-                }
-            }
-
-            loadingJobList.add(job)
+            Log.d(TAG, "Emitted week = $w, day = $d, period = $p")
         }
     }
 
@@ -344,143 +293,71 @@ class ScheduleStorageImpl(
         else null
     }
 
-    private fun Period?.isLoadedToFirebase() : Boolean {
-        if (this == null) return false
-        return subjectPath != null && teacherPath != null && placePath != null
-    }
-
-    private suspend fun HashMap<String, DocumentReference>.parseFromFirestore(): Period {
-        Log.d(TAG, "parseFromFirestore started")
-
-        var subject: String? = null
-        var teacher = Teacher()
-        var place: String? = null
-
-        val subjectJob = CoroutineScope(Dispatchers.IO).launch {
-            subject = this@parseFromFirestore[SUBJECT]!!
-                .getDocumentSnapshot()
-                ?.data
-                ?.get(NAME).toString()
-        }
-
-        val teacherJob = CoroutineScope(Dispatchers.IO).launch {
-            teacher = Teacher(
-                family = this@parseFromFirestore[TEACHER]!!
-                    .getDocumentSnapshot()
-                    ?.data
-                    ?.get(FAMILY).toString(),
-                path = null
-            )
-        }
-
-        val placeJob = CoroutineScope(Dispatchers.IO).launch {
-            place = this@parseFromFirestore[PLACE]!!
-                .getDocumentSnapshot()
-                ?.data
-                ?.get(NAME).toString()
-        }
-
-        subjectJob.join()
-        teacherJob.join()
-        placeJob.join()
-
-        val period =  Period(
-            subject = subject.toString(),
-            teacher = teacher,
-            place = place.toString(),
-            subjectPath = this[SUBJECT]!!.path,
-            teacherPath = this[TEACHER]!!.path,
-            placePath = this[PLACE]!!.path
-        )
-
-        Log.d(TAG, "parseFromFirestore $period" )
-        return period
-    }
-
-    private fun DocumentSnapshot.listenPeriodData(
-        periodEnum: PeriodEnum,
+    private fun HashMap<String, DocumentReference>.listenData(
         flow: MutableStateFlow<Resource<Period?>>
-    ) {
-        val data = data!!
+    ) = CoroutineScope(Dispatchers.IO).launch {
 
-        if (data[periodEnum.name] == null) return
+        launch {
+            dataStorage.subjects.collect {
+                if (it !is Resource.Success) return@collect
+                if (it.data == null) return@collect
 
-        getDocumentReference(SUBJECT)?.listenSubject(flow)
 
-        getDocumentReference(TEACHER)?.listenTeacher(flow)
-
-        getDocumentReference(PLACE)?.listenPlace(flow)
-    }
-
-    private fun DocumentReference.listenSubject(
-        flow: MutableStateFlow<Resource<Period?>>
-    ) {
-        var index = -1
-        addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Subject listening error.", error)
-                return@addSnapshotListener
+                for (subject in it.data) {
+                    if (subject.path == this@listenData[SUBJECT]!!.path) {
+                        flow.update { resource ->
+                            val period = resource.data?.copy(subject = subject)
+                                ?: Period(subject = subject)
+                            Resource.Success(period)
+                        }
+                        return@collect
+                    }
+                }
+                flow.update {
+                    Resource.Success(null)
+                }
             }
-            if (snapshot == null) return@addSnapshotListener
-            index++
-            if (index == 0) return@addSnapshotListener
+        }
 
-            flow.update {
-                Resource.Success(it.data?.copy(
-                    subject = snapshot.data?.get(NAME).toString()
-                ))
+        launch {
+            dataStorage.teachers.collect {
+                if (it !is Resource.Success) return@collect
+                if (it.data == null) return@collect
+
+                for (teacher in it.data) {
+                    if (teacher.path == this@listenData[TEACHER]!!.path) {
+                        flow.update { resource ->
+                            val period = resource.data?.copy(teacher = teacher) ?: Period(teacher = teacher)
+                            Resource.Success(period)
+                        }
+                        return@collect
+                    }
+                }
+                flow.update {
+                    Resource.Success(null)
+                }
+            }
+        }
+
+        launch {
+            dataStorage.places.collect {
+                if (it !is Resource.Success) return@collect
+                if (it.data == null) return@collect
+
+                for (place in it.data) {
+                    if (place.path == this@listenData[PLACE]!!.path) {
+                        flow.update { resource ->
+                            val period = resource.data?.copy(place = place) ?: Period(place = place)
+                            Resource.Success(period)
+                        }
+                        return@collect
+                    }
+                }
+                flow.update {
+                    Resource.Success(null)
+                }
             }
         }
     }
 
-    private fun DocumentReference.listenTeacher(
-        flow: MutableStateFlow<Resource<Period?>>
-    ) {
-        var index = -1
-        addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Teacher listening error.", error)
-                return@addSnapshotListener
-            }
-            if (snapshot == null) return@addSnapshotListener
-            index++
-            if (index == 0) return@addSnapshotListener
-
-            flow.update {
-                Resource.Success(it.data?.copy(
-                    teacher = Teacher(
-                        family = snapshot.data?.get(FAMILY).toString(),
-                        path = it.data.teacherPath
-                    )
-                ))
-            }
-        }
-    }
-
-    private fun DocumentReference.listenPlace(
-        flow: MutableStateFlow<Resource<Period?>>
-    ) {
-        var index = -1
-        addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Place listening error.", error)
-                return@addSnapshotListener
-            }
-            if (snapshot == null) return@addSnapshotListener
-            index++
-            if (index == 0) return@addSnapshotListener
-
-            flow.update {
-                Resource.Success(it.data?.copy(
-                   place = snapshot.data?.get(NAME).toString()
-                ))
-            }
-
-            /*val period = flow.value.data
-            val place = snapshot.data?.get(NAME).toString()
-
-            period?.place = place
-            flow.value = Resource.Success(period)*/
-        }
-    }
 }

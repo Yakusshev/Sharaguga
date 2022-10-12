@@ -12,7 +12,6 @@ import com.yakushev.sharaguga.databinding.ScheduleItemLoadingBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectEmptyBinding
 import com.yakushev.sharaguga.databinding.ScheduleItemSubjectWindowBinding
-import com.yakushev.sharaguga.screens.schedule.holders.*
 
 class PeriodsRecyclerAdapter(
     var onItemClickListener: OnItemClickListener?
