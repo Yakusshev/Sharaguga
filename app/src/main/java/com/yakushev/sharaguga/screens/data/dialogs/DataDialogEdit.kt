@@ -3,10 +3,18 @@ package com.yakushev.sharaguga.screens.data.dialogs
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Data
+import com.yakushev.domain.models.data.Place
+import com.yakushev.domain.models.data.Subject
+import com.yakushev.domain.models.data.Teacher
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.utils.DataPagesEnum
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class DataDialogEdit : DataDialog() {
 
@@ -15,42 +23,36 @@ class DataDialogEdit : DataDialog() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        when (args.page) {
-            DataPagesEnum.Subjects.ordinal -> observeSubjects()
-            DataPagesEnum.Teachers.ordinal -> observeTeachers()
-            DataPagesEnum.Places.ordinal -> observePlaces()
+        val stateFlow = when (args.page) {
+            DataPagesEnum.Subjects.ordinal -> dataViewModel.subjects
+            DataPagesEnum.Teachers.ordinal -> dataViewModel.teachers
+            DataPagesEnum.Places.ordinal -> dataViewModel.places
+            else -> throw Exception("Wrong DataPagesEnum")
+        }
+
+        lifecycleScope.launch {
+            observeData(stateFlow)
         }
 
         setDeleteButtonListener()
-
     }
 
-    private fun observeSubjects() {
-        dataViewModel.subjects.observe(viewLifecycleOwner) {
-            if (it !is Resource.Success || it.data == null) return@observe
-            data = it.data!![args.position]
-            binding.data.setText(
-                it.data!![args.position].name
-            )
-        }
-    }
+    private suspend fun observeData(
+        stateFlow: StateFlow<Resource<out MutableList<out Data>>>
+    ) = lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-    private fun observeTeachers() {
-        dataViewModel.teachers.observe(viewLifecycleOwner) {
-            if (it !is Resource.Success || it.data == null) return@observe
+        stateFlow.collect {
+            if (it !is Resource.Success || it.data == null) return@collect
             data = it.data!![args.position]
-            binding.data.setText(
-                it.data!![args.position].family
-            )
-        }
-    }
+            path = data!!.path
 
-    private fun observePlaces() {
-        dataViewModel.places.observe(viewLifecycleOwner) {
-            if (it !is Resource.Success || it.data == null) return@observe
-            data = it.data!![args.position]
             binding.data.setText(
-                it.data!![args.position].name
+                when (data) {
+                    is Subject -> (data as Subject).name
+                    is Teacher -> (data as Teacher).family
+                    is Place -> (data as Place).name
+                    else -> throw Exception("wrong type")
+                }
             )
         }
     }

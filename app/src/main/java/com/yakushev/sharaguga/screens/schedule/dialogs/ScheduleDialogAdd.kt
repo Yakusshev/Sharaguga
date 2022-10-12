@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.navArgs
 import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Teacher
@@ -53,7 +54,7 @@ open class ScheduleDialogAdd : DialogFragment() {
     }
 
     private fun setAutoCompleteTextViewAdapters(context: Context) {
-        dataViewModel.subjects.observe(viewLifecycleOwner) {
+        dataViewModel.subjects.asLiveData().observe(viewLifecycleOwner) {
             if (it !is Resource.Success) return@observe
             if (it.data == null) return@observe
 
@@ -70,7 +71,7 @@ open class ScheduleDialogAdd : DialogFragment() {
             )
         }
 
-        dataViewModel.teachers.observe(viewLifecycleOwner) {
+        dataViewModel.teachers.asLiveData().observe(viewLifecycleOwner) {
             if (it !is Resource.Success) return@observe
             if (it.data == null) return@observe
 
@@ -87,7 +88,7 @@ open class ScheduleDialogAdd : DialogFragment() {
             )
         }
 
-        dataViewModel.places.observe(viewLifecycleOwner) {
+        dataViewModel.places.asLiveData().observe(viewLifecycleOwner) {
             if (it !is Resource.Success) return@observe
             if (it.data == null) return@observe
 

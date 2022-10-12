@@ -8,22 +8,31 @@ import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.yakushev.data.utils.Change
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.data.Data
 import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class DataStorageImpl(
-    private val scope: CoroutineScope,
-    private val subjectsCallback: SubjectsCallback,
-    private val teachersCallback: TeachersCallback,
-    private val placesCallback: PlacesCallback
-) {
+class DataStorageImpl {
 
     private companion object { const val TAG = "DataStorageImpl" }
+
+    private val _subjects: MutableStateFlow<Resource<MutableList<Subject>>> = MutableStateFlow(Resource.Loading())
+    val subjects get(): StateFlow<Resource<MutableList<Subject>>> = _subjects
+
+    private val _teachers: MutableStateFlow<Resource<MutableList<Teacher>>>  = MutableStateFlow(Resource.Loading())
+    val teachers get(): StateFlow<Resource<MutableList<Teacher>>> = _teachers
+
+    private val _places: MutableStateFlow<Resource<MutableList<Place>>> = MutableStateFlow(Resource.Loading())
+    val places get(): StateFlow<Resource<MutableList<Place>>> = _places
 
     /**
      * SnapshotListeners
@@ -33,93 +42,161 @@ class DataStorageImpl(
     var teachersListener: ListenerRegistration? = null
     var placesListener: ListenerRegistration? = null
 
-    fun listenSubjects() {
-        subjectsListener = subjectsCollection.orderBy(NAME).addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Subjects listen failed.", error)
-                return@addSnapshotListener
-            }
-            if (snapshot == null) return@addSnapshotListener
-
-            scope.launch {
-                for (change in snapshot.documentChanges) {
-                    when (change.type) {
-                        DocumentChange.Type.ADDED -> {
-                            subjectsCallback.added(
-                                change.newIndex,
-                                change.document.parseSubject()
-                            )
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            subjectsCallback.modified(
-                                change.newIndex,
-                                change.document.parseSubject()
-                            )
-                        }
-                        DocumentChange.Type.REMOVED ->
-                            subjectsCallback.removed(change.oldIndex)
-                    }
-                }
-            }
+    init {
+        //load()
+        listenSubjects()
+        listenTeachers()
+        listenPlaces()
+    }
+/*
+    private fun load() = CoroutineScope(Dispatchers.IO).launch {
+        launch {
+            loadSubjects()
         }
+        launch {
+            loadTeachers()
+        }
+        launch {
+            loadPlaces()
+        }
+    }*/
+
+    /**
+     * Get data once methods
+     */
+/*
+    suspend fun loadSubjects() {
+        var exception: Exception? = null
+        val itemsSnapshot = subjectsCollection.orderBy(NAME).get()
+            .addOnFailureListener {
+                _subjects.value = Resource.Error(Message.LoadingError)
+                exception = it
+            }
+            .await()
+
+        if (exception != null) {
+            Log.d(TAG, "getSubjects Exception '\n' ${exception?.stackTraceToString()}")
+            _subjects.value = Resource.Error(Message.LoadingError)
+            return
+        }
+
+        val items = ArrayList<Subject>(itemsSnapshot.size())
+        for (document in itemsSnapshot.documents) {
+            items.add(
+                document.parseSubject()
+            )
+        }
+
+        _subjects.emit(Resource.Success(items))
+    }
+
+    suspend fun loadTeachers() {
+        var exception: Exception? = null
+        val itemsSnapshot = teachersCollection.orderBy(FAMILY).get()
+            .addOnFailureListener {
+                _teachers.value = Resource.Error(Message.LoadingError)
+                exception = it
+            }
+            .await()
+
+        if (exception != null) {
+            Log.d(TAG, "getTeachers Exception '\n' ${exception?.stackTraceToString()}")
+            _teachers.value = Resource.Error(Message.LoadingError)
+            return
+        }
+
+        val items = ArrayList<Teacher>(itemsSnapshot.size())
+        for (document in itemsSnapshot.documents) {
+            items.add(
+                document.parseTeacher()
+            )
+        }
+
+        _teachers.emit(Resource.Success(items))
+    }
+
+    suspend fun loadPlaces() {
+        var exception: Exception? = null
+        val itemsSnapshot = placesCollection.orderBy(NAME).get()
+            .addOnFailureListener {
+                _places.value = Resource.Error(Message.LoadingError)
+                exception = it
+            }
+            .await()
+
+        if (exception != null) {
+            Log.d(TAG, "getPlaces Exception '\n' ${exception?.stackTraceToString()}")
+            _places.value = Resource.Error(Message.LoadingError)
+            return
+        }
+
+        val items = ArrayList<Place>(itemsSnapshot.size())
+        for (document in itemsSnapshot.documents) {
+            items.add(
+                document.parsePlace()
+            )
+        }
+
+        _places.emit(Resource.Success(items))
+    }*/
+
+    /**
+     * Listening Firestore
+     */
+
+    fun listenSubjects() {
+        subjectsListener = listenData(
+            subjectsCollection,
+            NAME,
+            _subjects
+        )
     }
 
     fun listenTeachers() {
-        teachersListener = teachersCollection.orderBy(FAMILY).addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Teachers listen failed.", error)
-                return@addSnapshotListener
-            }
-            if (snapshot == null) return@addSnapshotListener
-
-            scope.launch {
-                for (change in snapshot.documentChanges) {
-                    when (change.type) {
-                        DocumentChange.Type.ADDED -> {
-                            teachersCallback.added(
-                                change.newIndex,
-                                change.document.parseTeacher()
-                            )
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            teachersCallback.modified(
-                                change.newIndex,
-                                change.document.parseTeacher()
-                            )
-                        }
-                        DocumentChange.Type.REMOVED ->
-                            teachersCallback.removed(change.oldIndex)
-                    }
-                }
-            }
-        }
+        teachersListener = listenData(
+            teachersCollection,
+            FAMILY,
+            _teachers
+        )
     }
 
     fun listenPlaces() {
-        placesListener = placesCollection.orderBy(NAME).addSnapshotListener { snapshot, error ->
-            if (error != null) {
-                Log.w(TAG, "Teachers listen failed.", error)
-                return@addSnapshotListener
-            }
-            if (snapshot == null) return@addSnapshotListener
+        placesListener = listenData(
+            placesCollection,
+            NAME,
+            _places
+        )
+    }
 
-            scope.launch {
-                for (change in snapshot.documentChanges) {
-                    when (change.type) {
-                        DocumentChange.Type.ADDED -> {
-                            placesCallback.added(
-                                change.newIndex,
-                                change.document.parsePlace()
-                            )
-                        }
-                        DocumentChange.Type.MODIFIED -> {
-                            placesCallback.modified(
-                                change.newIndex,
-                                change.document.parsePlace()
-                            )
-                        }
-                        DocumentChange.Type.REMOVED ->
-                            placesCallback.removed(change.oldIndex)
+    private inline fun <reified D: Data> listenData(
+        collectionReference: CollectionReference,
+        orderField: String,
+        mutableStateFlow: MutableStateFlow<Resource<MutableList<D>>>
+    ) = collectionReference.orderBy(orderField).addSnapshotListener { snapshot, error ->
+
+        if (error != null) {
+            Log.w(this::class.simpleName, "Listen failed.", error)
+            return@addSnapshotListener
+        }
+        if (snapshot == null) return@addSnapshotListener
+
+        CoroutineScope(Dispatchers.Main).launch {
+            for (change in snapshot.documentChanges) {
+                val list = mutableStateFlow.value.data ?: ArrayList()
+                when (change.type) {
+                    DocumentChange.Type.ADDED -> {
+                        if (list.lastIndex < change.newIndex) list.add(change.document.parseData())
+                        else list.add(change.newIndex, change.document.parseData())
+                        mutableStateFlow.emit(Resource.Success(list, Change.Added(change.newIndex)))
+                        Log.d(TAG, "listenData/ADD ${list[change.newIndex].path}")
+                    }
+                    DocumentChange.Type.MODIFIED -> {
+                        list[change.newIndex] = change.document.parseData()
+                        mutableStateFlow.emit(Resource.Success(list, Change.Modified(change.newIndex)))
+                    }
+                    DocumentChange.Type.REMOVED -> {
+                        list.removeAt(change.oldIndex)
+                        mutableStateFlow.emit(Resource.Success(list, Change.Removed(change.oldIndex)))
                     }
                 }
             }
@@ -138,28 +215,30 @@ class DataStorageImpl(
         placesListener!!.remove()
     }
 
+
+
     interface SubjectsCallback {
-        suspend fun added(index: Int, subject: Subject)
+        fun added(index: Int, subject: Subject)
 
-        suspend fun modified(index: Int, subject: Subject)
+        fun modified(index: Int, subject: Subject)
 
-        suspend fun removed(index: Int)
+        fun removed(index: Int)
     }
 
     interface TeachersCallback {
-        suspend fun added(index: Int, teacher: Teacher)
+        fun added(index: Int, teacher: Teacher)
 
-        suspend fun modified(index: Int, teacher: Teacher)
+        fun modified(index: Int, teacher: Teacher)
 
-        suspend fun removed(index: Int)
+        fun removed(index: Int)
     }
 
     interface PlacesCallback {
-        suspend fun added(index: Int, place: Place)
+        fun added(index: Int, place: Place)
 
-        suspend fun modified(index: Int, place: Place)
+        fun modified(index: Int, place: Place)
 
-        suspend fun removed(index: Int)
+        fun removed(index: Int)
     }
 
     /**
@@ -208,7 +287,8 @@ class DataStorageImpl(
         dataPath: String?,
         collectionReference: CollectionReference
     ) : String? {
-        Log.d(TAG, "save ${collectionReference.path}")
+        Log.d(TAG, "savePeriodData ${collectionReference.path}")
+        Log.d(TAG, "savePeriodData $dataPath, ${data.toList()[0].second}")
 
         var resultPath: String? = null
         val task: Task<out Any>?
@@ -224,6 +304,7 @@ class DataStorageImpl(
             if (doc != null) {
                 return doc.reference.path
             } else {
+                Log.d(TAG, "savePeriodData: checkData answer is null")
                 task = collectionReference.document(data.toList()[0].second)
                     .set(data)
                     .addOnSuccessListener {
@@ -241,7 +322,7 @@ class DataStorageImpl(
         data: HashMap<String, String>,
         collectionReference: CollectionReference
     ): DocumentSnapshot? {
-        Log.d(TAG, "save ${collectionReference.path}")
+        Log.d(TAG, "checkData ${collectionReference.path}")
 
         val pair = data.toList()[0]
 
@@ -259,6 +340,8 @@ class DataStorageImpl(
                 }
             }
         }.await()
+
+        //if (document == null) return checkData(data, collectionReference)
 
         return document
     }
@@ -282,90 +365,18 @@ class DataStorageImpl(
     }
 
     /**
-     * Get data once methods
-     */
-
-    suspend fun getSubjects() : List<Subject>? {
-        var exception: Exception? = null
-        val itemsSnapshot = subjectsCollection.orderBy(NAME).get()
-            .addOnSuccessListener {
-
-            }
-            .addOnFailureListener {
-                exception = it
-            }
-            .await()
-
-        if (exception != null) {
-            Log.d(TAG, "getSubjects Exception '\n' ${exception?.stackTraceToString()}")
-            return null
-        }
-
-        val items = ArrayList<Subject>(itemsSnapshot.size())
-        for (document in itemsSnapshot.documents) {
-            items.add(
-                document.parseSubject()
-            )
-        }
-
-        return items.toList()
-    }
-
-    suspend fun getTeachers() : List<Teacher>? {
-        var exception: Exception? = null
-        val itemsSnapshot = teachersCollection.orderBy(FAMILY).get()
-            .addOnSuccessListener {
-
-            }
-            .addOnFailureListener {
-                exception = it
-            }
-            .await()
-
-        if (exception != null) {
-            Log.d(TAG, "getTeachers Exception '\n' ${exception?.stackTraceToString()}")
-            return null
-        }
-
-        val items = ArrayList<Teacher>(itemsSnapshot.size())
-        for (document in itemsSnapshot.documents) {
-            items.add(
-                document.parseTeacher()
-            )
-        }
-
-        return items.toList()
-    }
-
-    suspend fun getPlaces() : List<Place>? {
-        var exception: Exception? = null
-        val itemsSnapshot = placesCollection.orderBy(NAME).get()
-            .addOnSuccessListener {
-
-            }
-            .addOnFailureListener {
-                exception = it
-            }
-            .await()
-
-        if (exception != null) {
-            Log.d(TAG, "getPlaces Exception '\n' ${exception?.stackTraceToString()}")
-            return null
-        }
-
-        val items = ArrayList<Place>(itemsSnapshot.size())
-        for (document in itemsSnapshot.documents) {
-            items.add(
-                document.parsePlace()
-            )
-        }
-
-        return items.toList()
-    }
-
-    /**
      * These methods parse data from Firestore
      */
+
+    private inline fun <reified D: Data> DocumentSnapshot.parseData() : D {
+        return when (D::class) {
+            Subject::class -> parseSubject() as D
+            Teacher::class -> parseTeacher() as D
+            Place::class -> parsePlace() as D
+            else -> throw Exception("wrong type")
+        }
+    }
+
 
     private fun DocumentSnapshot.parseSubject() = Subject(
         path = this.reference.path,

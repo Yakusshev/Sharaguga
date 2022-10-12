@@ -157,6 +157,7 @@ class ScheduleFragment : Fragment() {
                 Message.DeleteSuccess -> Toast.makeText(context, getString(R.string.period_delete_success), Toast.LENGTH_SHORT).show()
                 Message.DeleteError -> Toast.makeText(context, getString(R.string.period_delete_error), Toast.LENGTH_LONG).show()
                 null -> Log.d(TAG, "Message is null")
+                else -> {}
             }
         }
     }

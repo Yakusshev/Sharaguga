@@ -112,6 +112,7 @@ class DayFragment : Fragment() {
 
         for (periodIndex in 0..3) {
             lifecycleScope.launch {
+                view ?: return@launch //TODO: Resolve "Can't access the Fragment View's LifecycleOwner when getView() is null i.e., before onCreateView() or after onDestroyView()"
                 viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                     periods[periodIndex].collect {
                         Log.d(TAG, "$periodIndex, ${it::class}, ${it.data.toString()}")

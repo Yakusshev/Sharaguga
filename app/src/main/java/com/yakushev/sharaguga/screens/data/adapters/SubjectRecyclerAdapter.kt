@@ -33,30 +33,5 @@ class SubjectRecyclerAdapter(
 
     override fun onBindViewHolder(holder: DataHolder<Subject>, position: Int) {
         holder.bind(items[position])
-    }/*
-
-    override fun updateItems(
-        items: MutableList<Subject>?
-    ) {
-        if (items == null) return
-
-        this.items = items
-
-        notifyItemRangeChanged(0, this.items.size)
     }
-
-    fun addItem(index: Int, subject: Subject) {
-        items.add(index, subject)
-        notifyItemInserted(index)
-    }
-
-    fun modifyItem(index: Int, subject: Subject) {
-        items[index] = subject
-        notifyItemChanged(index)
-    }
-
-    fun deleteItem(index: Int) {
-        items.removeAt(index)
-        notifyItemRemoved(index)
-    }*/
 }

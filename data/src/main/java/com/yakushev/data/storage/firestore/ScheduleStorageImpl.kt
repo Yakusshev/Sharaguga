@@ -250,72 +250,13 @@ class ScheduleStorageImpl(
                 .getQuerySnapshot()
                 ?.documents ?: return
 
-            //Log.d(TAG, "Listening week $w")
-
             for (d in dayDocuments.indices) {
-
                 dayDocuments[d].listenPeriods(w, d, _scheduleFlow[w][d])
-
-                /*for (p in PeriodEnum.values().indices) {
-                    val flow = _scheduleFlow[w][d][p]
-
-                    flow.update {
-                        Resource.Success(
-                            dayDocuments[d].getPeriodData(
-                                PeriodEnum.values()[p],
-                            )
-                        )
-                    }
-
-                    //dayDocuments[d].listenPeriodData(PeriodEnum.values()[p], flow)
-                }*/
             }
         }
 
         getDocumentSnapshotPrintLog()
     }
-
-    /*
-    suspend fun startListening() {
-        val weeksDocuments = weeksReference
-            .orderBy(INDEX)
-            .getQuerySnapshot()
-            ?.documents ?: return
-
-        for (w in weeksDocuments.indices) {
-            val dayQuery = weeksDocuments[w].reference.collection(DAYS_COLLECTION_NAME)
-                .orderBy(INDEX)
-
-            dayQuery.addSnapshotListener { snapshot, error ->
-                if (error != null) {
-                    Log.w(TAG, "Schedule listening error.", error)
-                    return@addSnapshotListener
-                }
-                if (snapshot == null) return@addSnapshotListener
-
-                for (change in snapshot.documentChanges) {
-                    if (change.type != DocumentChange.Type.MODIFIED) return@addSnapshotListener
-
-                    for (p in PeriodEnum.values().indices) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            Log.d(TAG, "Listening ${change.newIndex}")
-
-                            delay(100)
-                            val oldPeriod = _scheduleFlow[w][change.newIndex][p].value.data
-                            val newPeriod: Period? = getPairData(change.document, PeriodEnum.values()[p].name)
-
-                            //if (oldPeriod == newPeriod) return@launch
-
-                            _scheduleFlow[w][change.newIndex][p].emit(
-                                Resource.Success(newPeriod)
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-*/
 
     suspend fun getStartDate(): Timestamp {
         val firstWeek = weeksReference.document(WeekEnum.FirstWeek.name)
@@ -334,7 +275,7 @@ class ScheduleStorageImpl(
         w: Int,
         d: Int,
         day: ArrayList<MutableStateFlow<Resource<Period?>>>
-    )/* = CoroutineScope(Dispatchers.IO).launch */{
+    ) {
 
         reference.addSnapshotListener { snapshot, error ->
             if (error != null) {

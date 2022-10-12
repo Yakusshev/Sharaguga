@@ -23,19 +23,21 @@ abstract class DataRecyclerAdapter<out D : Data>(
         items: MutableList<@UnsafeVariance D>?
     ) {
         if (items == null) return
+        if (items.size == this.itemCount) return
 
         this.items = items
 
         notifyItemRangeChanged(0, itemCount)
     }
 
-    fun addItem(index: Int, subject: @UnsafeVariance D) {
-        items.add(index, subject)
-        notifyItemInserted(index)
+    fun addItem(index: Int, item: @UnsafeVariance D) {
+        if (index <= items.lastIndex) items.add(index, item)
+        else items.add(item)
+        notifyItemInserted(items.indexOf(item))
     }
 
-    fun modifyItem(index: Int, subject: @UnsafeVariance D) {
-        items[index] = subject
+    fun modifyItem(index: Int, item: @UnsafeVariance D) {
+        items[index] = item
         notifyItemChanged(index)
     }
 

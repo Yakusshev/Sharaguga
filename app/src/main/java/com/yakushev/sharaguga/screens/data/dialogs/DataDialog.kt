@@ -1,6 +1,7 @@
 package com.yakushev.sharaguga.screens.data.dialogs
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,11 +42,11 @@ open class DataDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setSaveButtonListener()
-
     }
 
 
     private fun setSaveButtonListener() {
+        Log.d("DataDialog", "listenData/ADD $path")
         binding.apply {
             save.setOnClickListener {
                 when (args.page) {

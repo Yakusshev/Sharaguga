@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.data.utils.Change
@@ -20,6 +22,8 @@ import com.yakushev.sharaguga.screens.data.adapters.PlaceRecyclerAdapter
 import com.yakushev.sharaguga.screens.data.adapters.SubjectRecyclerAdapter
 import com.yakushev.sharaguga.screens.data.adapters.TeacherRecyclerAdapter
 import com.yakushev.sharaguga.utils.DataPagesSealed
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class DataPageFragment : Fragment() {
 
@@ -63,31 +67,30 @@ class DataPageFragment : Fragment() {
         page = DataPagesSealed.get(requireArguments().getInt(DataPagesSealed.name))
 
         val adapter: DataRecyclerAdapter<Data>
-        val liveData: LiveData<out Resource<out MutableList<out Data>>>
+        val stateFlow: StateFlow<Resource<out MutableList<out Data>>>
 
         when (page!!) {
             is DataPagesSealed.Subjects -> {
                 adapter = SubjectRecyclerAdapter(onItemClickListener)
-                liveData = viewModel.subjects
-                viewModel.getSubjects()
+                stateFlow = viewModel.subjects
                 viewModel.listenSubjects()
             }
             is DataPagesSealed.Teachers -> {
                 adapter = TeacherRecyclerAdapter(onItemClickListener)
-                liveData = viewModel.teachers
-                viewModel.getTeachers()
+                stateFlow = viewModel.teachers
                 viewModel.listenTeachers()
             }
             is DataPagesSealed.Places -> {
                 adapter = PlaceRecyclerAdapter(onItemClickListener)
-                liveData = viewModel.places
-                viewModel.getPlaces()
+                stateFlow = viewModel.places
                 viewModel.listenPlaces()
             }
         }
 
         initRecyclerView(adapter)
-        observeData(liveData, adapter)
+        lifecycleScope.launch {
+            observeData(stateFlow, adapter)
+        }
     }
 
     private fun initRecyclerView(adapter: DataRecyclerAdapter<Data>) {
@@ -95,11 +98,12 @@ class DataPageFragment : Fragment() {
         binding.recyclerView.adapter = adapter
     }
 
-    private fun observeData(
-        liveData: LiveData<out Resource<out MutableList<out Data>>>,
+    private suspend fun observeData(
+        stateFlow: StateFlow<Resource<out MutableList<out Data>>>,
         adapter: DataRecyclerAdapter<Data>
-    ) {
-        liveData.observe(viewLifecycleOwner) {
+    ) = lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+        stateFlow.collect {
             Log.d(TAG, "observe subjects $page")
             when (it) {
                 is Resource.Loading -> {
@@ -110,21 +114,21 @@ class DataPageFragment : Fragment() {
                 is Resource.Error -> {
                     binding.noDataView.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
-                    binding.noDataView.text = getString(R.string.period_save_error)
+                    binding.noDataView.text = getString(R.string.error)
                 }
                 is Resource.Success -> {
-                    if (it.data == null) return@observe
+                    if (it.data == null) return@collect
                     val data = it.data!!
 
-                    val change = if (it.change.observed) Change.Get
-                        else it.change
+                    //val change = if (it.change.observed) Change.Get
+                    //else it.change
 
-                    when (change) {
+                    binding.noDataView.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+
+                    when (it.change) {
                         Change.Get -> {
-                            binding.noDataView.visibility = View.GONE
-                            binding.recyclerView.visibility = View.VISIBLE
 
-                            adapter.updateItems(items = data.toMutableList())
                         }
                         is Change.Added -> adapter.addItem(
                             it.change.index,
@@ -138,7 +142,8 @@ class DataPageFragment : Fragment() {
                             it.change.index
                         )
                     }
-                    it.change.observed = true
+                    //it.change.observed = true
+                    adapter.updateItems(items = data.toMutableList())
                 }
             }
         }

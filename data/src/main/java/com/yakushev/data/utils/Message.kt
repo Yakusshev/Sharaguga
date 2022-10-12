@@ -5,4 +5,5 @@ enum class Message {
     SaveError,
     DeleteSuccess,
     DeleteError,
+    LoadingError
 }
