@@ -21,9 +21,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class DataStorageImpl {
+class DataStorageImpl() {
 
-    private companion object { const val TAG = "DataStorageImpl" }
+    companion object {
+        private const val TAG = "DataStorageImpl"
+    }
 
     private val _subjects: MutableStateFlow<Resource<MutableList<Subject>>> = MutableStateFlow(Resource.Loading())
     val subjects get(): StateFlow<Resource<MutableList<Subject>>> = _subjects
@@ -43,108 +45,16 @@ class DataStorageImpl {
     var placesListener: ListenerRegistration? = null
 
     init {
-        //load()
         listenSubjects()
         listenTeachers()
         listenPlaces()
     }
-/*
-    private fun load() = CoroutineScope(Dispatchers.IO).launch {
-        launch {
-            loadSubjects()
-        }
-        launch {
-            loadTeachers()
-        }
-        launch {
-            loadPlaces()
-        }
-    }*/
-
-    /**
-     * Get data once methods
-     */
-/*
-    suspend fun loadSubjects() {
-        var exception: Exception? = null
-        val itemsSnapshot = subjectsCollection.orderBy(NAME).get()
-            .addOnFailureListener {
-                _subjects.value = Resource.Error(Message.LoadingError)
-                exception = it
-            }
-            .await()
-
-        if (exception != null) {
-            Log.d(TAG, "getSubjects Exception '\n' ${exception?.stackTraceToString()}")
-            _subjects.value = Resource.Error(Message.LoadingError)
-            return
-        }
-
-        val items = ArrayList<Subject>(itemsSnapshot.size())
-        for (document in itemsSnapshot.documents) {
-            items.add(
-                document.parseSubject()
-            )
-        }
-
-        _subjects.emit(Resource.Success(items))
-    }
-
-    suspend fun loadTeachers() {
-        var exception: Exception? = null
-        val itemsSnapshot = teachersCollection.orderBy(FAMILY).get()
-            .addOnFailureListener {
-                _teachers.value = Resource.Error(Message.LoadingError)
-                exception = it
-            }
-            .await()
-
-        if (exception != null) {
-            Log.d(TAG, "getTeachers Exception '\n' ${exception?.stackTraceToString()}")
-            _teachers.value = Resource.Error(Message.LoadingError)
-            return
-        }
-
-        val items = ArrayList<Teacher>(itemsSnapshot.size())
-        for (document in itemsSnapshot.documents) {
-            items.add(
-                document.parseTeacher()
-            )
-        }
-
-        _teachers.emit(Resource.Success(items))
-    }
-
-    suspend fun loadPlaces() {
-        var exception: Exception? = null
-        val itemsSnapshot = placesCollection.orderBy(NAME).get()
-            .addOnFailureListener {
-                _places.value = Resource.Error(Message.LoadingError)
-                exception = it
-            }
-            .await()
-
-        if (exception != null) {
-            Log.d(TAG, "getPlaces Exception '\n' ${exception?.stackTraceToString()}")
-            _places.value = Resource.Error(Message.LoadingError)
-            return
-        }
-
-        val items = ArrayList<Place>(itemsSnapshot.size())
-        for (document in itemsSnapshot.documents) {
-            items.add(
-                document.parsePlace()
-            )
-        }
-
-        _places.emit(Resource.Success(items))
-    }*/
 
     /**
      * Listening Firestore
      */
 
-    fun listenSubjects() {
+    private fun listenSubjects() {
         subjectsListener = listenData(
             subjectsCollection,
             NAME,
@@ -152,7 +62,7 @@ class DataStorageImpl {
         )
     }
 
-    fun listenTeachers() {
+    private fun listenTeachers() {
         teachersListener = listenData(
             teachersCollection,
             FAMILY,
@@ -160,7 +70,7 @@ class DataStorageImpl {
         )
     }
 
-    fun listenPlaces() {
+    private fun listenPlaces() {
         placesListener = listenData(
             placesCollection,
             NAME,
@@ -201,44 +111,6 @@ class DataStorageImpl {
                 }
             }
         }
-    }
-
-    fun stopListenSubjects() {
-        subjectsListener!!.remove()
-    }
-
-    fun stopListenTeachers() {
-        teachersListener!!.remove()
-    }
-
-    fun stopListenPlaces() {
-        placesListener!!.remove()
-    }
-
-
-
-    interface SubjectsCallback {
-        fun added(index: Int, subject: Subject)
-
-        fun modified(index: Int, subject: Subject)
-
-        fun removed(index: Int)
-    }
-
-    interface TeachersCallback {
-        fun added(index: Int, teacher: Teacher)
-
-        fun modified(index: Int, teacher: Teacher)
-
-        fun removed(index: Int)
-    }
-
-    interface PlacesCallback {
-        fun added(index: Int, place: Place)
-
-        fun modified(index: Int, place: Place)
-
-        fun removed(index: Int)
     }
 
     /**
@@ -341,19 +213,12 @@ class DataStorageImpl {
             }
         }.await()
 
-        //if (document == null) return checkData(data, collectionReference)
-
         return document
     }
 
 
     suspend fun deleteData(data: Data): Boolean {
         var result = false
-        val collection: CollectionReference = when (data) {
-            is Subject -> subjectsCollection
-            is Teacher -> teachersCollection
-            is Place -> placesCollection
-        }
 
         Firebase.firestore.document(data.path!!)
             .delete()

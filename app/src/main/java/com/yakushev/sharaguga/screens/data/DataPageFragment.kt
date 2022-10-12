@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -24,6 +23,7 @@ import com.yakushev.sharaguga.screens.data.adapters.TeacherRecyclerAdapter
 import com.yakushev.sharaguga.utils.DataPagesSealed
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class DataPageFragment : Fragment() {
 
@@ -31,7 +31,7 @@ class DataPageFragment : Fragment() {
 
     private var _binding: DataFragmentPageBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: DataViewModel by activityViewModels()
+    private val viewModel: DataViewModel by sharedViewModel()
 
     val onItemClickListener =
         DataRecyclerAdapter.OnItemClickListener { position, page ->

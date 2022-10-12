@@ -14,7 +14,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.yakushev.data.utils.Message
@@ -23,6 +22,7 @@ import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.WeeksPagerAdapter
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.time.LocalDate
 import kotlin.math.abs
 
@@ -33,7 +33,7 @@ class ScheduleFragment : Fragment() {
     private var _binding: ScheduleFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ScheduleViewModel by activityViewModels()
+    private val viewModel: ScheduleViewModel by sharedViewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater,

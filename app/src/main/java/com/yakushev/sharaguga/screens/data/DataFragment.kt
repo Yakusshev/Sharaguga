@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayoutMediator
-import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.DataFragmentBinding
 import com.yakushev.sharaguga.screens.data.adapters.DataPagerAdapter
@@ -17,8 +15,6 @@ class DataFragment : Fragment() {
 
     private var _binding: DataFragmentBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: DataViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,

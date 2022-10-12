@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.yakushev.domain.models.DaysPerWeek
@@ -15,6 +14,7 @@ import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.DaysPagerAdapter
 import com.yakushev.sharaguga.screens.schedule.adapters.WEEK_POSITION
 import com.yakushev.sharaguga.views.showSideItems
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import java.time.LocalDate
 import java.time.temporal.TemporalField
 import java.time.temporal.WeekFields
@@ -26,7 +26,7 @@ class WeekFragment : Fragment() {
 
     private val todayPosition = 3
 
-    private val viewModel: ScheduleViewModel by activityViewModels()
+    private val viewModel: ScheduleViewModel by sharedViewModel()
 
     private var _binding: SchedulePageWeekBinding? = null
     private val binding get() = _binding!!

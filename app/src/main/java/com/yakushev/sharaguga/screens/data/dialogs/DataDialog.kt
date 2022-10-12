@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
@@ -14,13 +13,14 @@ import com.yakushev.domain.models.data.Teacher
 import com.yakushev.sharaguga.databinding.DataDialogBinding
 import com.yakushev.sharaguga.screens.data.DataViewModel
 import com.yakushev.sharaguga.utils.DataPagesEnum
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 open class DataDialog : DialogFragment() {
 
     private var _binding: DataDialogBinding? = null
     internal val binding get() = _binding!!
 
-    internal val dataViewModel: DataViewModel by activityViewModels()
+    internal val dataViewModel: DataViewModel by sharedViewModel()
 
     internal val args: DataDialogArgs by navArgs()
 

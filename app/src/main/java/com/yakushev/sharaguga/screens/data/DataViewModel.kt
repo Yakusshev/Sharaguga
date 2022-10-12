@@ -9,15 +9,11 @@ import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
 import kotlinx.coroutines.launch
 
-class DataViewModel : ViewModel() {
-
-    private val storage = DataStorageImpl()
+class DataViewModel(private val storage: DataStorageImpl) : ViewModel() {
 
     val subjects get() = storage.subjects
     val teachers get() = storage.teachers
     val places get() = storage.places
-
-
 
     fun saveSubject(subject: Subject) = viewModelScope.launch {
         storage.saveSubject(subject)

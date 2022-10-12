@@ -17,12 +17,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-class ScheduleViewModel : ViewModel() {
+class ScheduleViewModel(private val scheduleStorage: ScheduleStorageImpl) : ViewModel() {
 
     companion object { private const val TAG = "ScheduleViewModel" }
 
     private val timeStorage = TimeStorage()
-    private val scheduleStorage = ScheduleStorageImpl()
 
     val timeFlow get(): List<StateFlow<Resource<TimeCustom>>> = timeStorage.timeFlow
     private val scheduleFlow get(): List<List<List<StateFlow<Resource<Period?>>>>> = scheduleStorage.scheduleFlow
@@ -47,8 +46,6 @@ class ScheduleViewModel : ViewModel() {
             timeStorage.load(testPathTime)
 
             scheduleStorage.load()
-
-            //scheduleStorage.startListening()
         }
     }
 

@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -22,12 +21,13 @@ import com.yakushev.sharaguga.screens.schedule.adapters.WEEK_POSITION
 import com.yakushev.sharaguga.screens.schedule.holders.ItemEnum
 import com.yakushev.sharaguga.screens.schedule.holders.OnItemClickListener
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class DayFragment : Fragment() {
 
     private val TAG = this::class.simpleName
 
-    private val viewModel: ScheduleViewModel by activityViewModels()
+    private val viewModel: ScheduleViewModel by sharedViewModel()
 
     private var _binding: SchedulePageDayBinding? = null
     private val binding get() = _binding!!

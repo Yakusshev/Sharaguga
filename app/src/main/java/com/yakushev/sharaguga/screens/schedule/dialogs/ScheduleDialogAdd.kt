@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.navArgs
 import com.yakushev.data.utils.Resource
@@ -17,14 +16,15 @@ import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.sharaguga.databinding.ScheduleDialogBinding
 import com.yakushev.sharaguga.screens.data.DataViewModel
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 open class ScheduleDialogAdd : DialogFragment() {
 
     private var _binding: ScheduleDialogBinding? = null
     internal val binding get() = _binding!!
 
-    internal val scheduleViewModel: ScheduleViewModel by activityViewModels()
-    private val dataViewModel: DataViewModel by activityViewModels()
+    internal val scheduleViewModel: ScheduleViewModel by sharedViewModel()
+    private val dataViewModel: DataViewModel by sharedViewModel()
 
     internal val args: ScheduleDialogAddArgs by navArgs()
 

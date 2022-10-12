@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class ScheduleStorageImpl(
+    private val dataStorage: DataStorageImpl,
     semesterPath: String = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V"
 ) {
 
