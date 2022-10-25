@@ -1,5 +1,4 @@
 # Расписание пар в СПБГУГА
 
-
-https://user-images.githubusercontent.com/35076472/197875634-17c3fc7c-f07b-4813-9097-08d4630c1820.mp4
+https://user-images.githubusercontent.com/35076472/197880315-d0f44930-ba3c-4285-897d-c11651c6d21c.mp4
 
