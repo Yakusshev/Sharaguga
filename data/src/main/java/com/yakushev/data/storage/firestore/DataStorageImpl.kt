@@ -118,7 +118,6 @@ class DataStorageImpl {
      */
 
     suspend fun saveSubject(subject: Subject): String? {
-
         val data = hashMapOf(
             NAME to subject.name
         )
@@ -181,7 +180,7 @@ class DataStorageImpl {
                 task = collectionReference.document(data.toList()[0].second)
                     .set(data)
                     .addOnSuccessListener {
-                        resultPath = dataPath
+                        resultPath = collectionReference.document(data.toList()[0].second).path
                     }
             }
         }
