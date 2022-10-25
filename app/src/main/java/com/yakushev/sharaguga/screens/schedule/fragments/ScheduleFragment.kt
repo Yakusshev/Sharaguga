@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.yakushev.data.utils.Message
@@ -23,6 +24,7 @@ import com.yakushev.sharaguga.databinding.ScheduleFragmentBinding
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import com.yakushev.sharaguga.screens.schedule.adapters.WeeksPagerAdapter
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.core.parameter.parametersOf
 import java.time.LocalDate
 import kotlin.math.abs
 
@@ -33,7 +35,9 @@ class ScheduleFragment : Fragment() {
     private var _binding: ScheduleFragmentBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ScheduleViewModel by sharedViewModel()
+    private val viewModel: ScheduleViewModel by sharedViewModel { parametersOf(
+        PreferenceManager.getDefaultSharedPreferences(requireView().context).getString(getString(R.string.key_group), "null")
+    )}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,23 +57,19 @@ class ScheduleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        //TODO (activity as MainActivity).setActionBarTitle(getString(R.string.title_schedule))
-
         val weeksPagerAdapter = WeeksPagerAdapter(this)
 
-        setActionBarTitle(viewModel.startPosition, weeksPagerAdapter)
+        setActionBarTitle(viewModel.startWeek, weeksPagerAdapter)
 
         binding.weeksPager.apply {
             adapter = weeksPagerAdapter
-            currentItem = viewModel.startPosition
+            currentItem = viewModel.startWeek
+            setPageTransformer(customTransformer)
 
             registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
                     setActionBarTitle(position, weeksPagerAdapter)
-
-                    //val calendar = Calendar.getInstance().apply { add(Calendar.WEEK_OF_YEAR, diff) }
-                    //val asd = calendar[Calendar.MONTH]
                 }
             })
         }
@@ -80,7 +80,7 @@ class ScheduleFragment : Fragment() {
         position: Int,
         weeksPagerAdapter: WeeksPagerAdapter
     ) {
-        val diff = position - viewModel.startPosition
+        val diff = position - viewModel.startWeek
         val now = LocalDate.now().plusWeeks(diff.toLong())
 
         (requireActivity() as MainActivity).supportActionBar?.title =
@@ -183,6 +183,46 @@ class ScheduleFragment : Fragment() {
                 position <= 0 -> { // [-1,0]
                     // Use the default slide transition when moving to the left page
                     alpha = 1f
+                    translationX = 0f
+                    translationZ = 0f
+                    scaleX = 1f
+                    scaleY = 1f
+                }
+                position <= 1 -> { // (0,1]
+                    // Fade the page out.
+                    alpha = 1 - position
+
+                    // Counteract the default slide transition
+                    translationX = pageWidth * -position
+                    // Move it behind the left page
+                    translationZ = -1f
+
+                    // Scale the page down (between MIN_SCALE and 1)
+                    val scaleFactor = (minScale + (1 - minScale) * (1 - abs(position)))
+                    scaleX = scaleFactor
+                    scaleY = scaleFactor
+                }
+                else -> { // (1,+Infinity]
+                    // This page is way off-screen to the right.
+                    alpha = 0f
+                }
+            }
+        }
+    }
+
+    private val customTransformer = ViewPager2.PageTransformer { page, position ->
+        val minScale = 0.75f
+
+        page.apply {
+            val pageWidth = width
+            when {
+                position < -1 -> { // [-Infinity,-1)
+                    // This page is way off-screen to the left.
+                    alpha = 0f
+                }
+                position <= 0 -> { // [-1,0]
+                    // Use the default slide transition when moving to the left page
+                    alpha = 1f + position
                     translationX = 0f
                     translationZ = 0f
                     scaleX = 1f

@@ -110,9 +110,16 @@ class PeriodsRecyclerAdapter(
 
     override fun getItemViewType(position: Int): Int {
         val resource = periods[position]
+        val data = resource.data
         return when {
             resource is Resource.Loading -> ItemEnum.Loading.ordinal
-            resource.data == null -> ItemEnum.Empty.ordinal
+            data == null -> ItemEnum.Empty.ordinal
+            resource is Resource.Success -> {
+                if (data.place == null && data.subject == null && data.teacher == null)
+                    ItemEnum.Empty.ordinal
+                else
+                    ItemEnum.Subject.ordinal
+            }
             else -> ItemEnum.Subject.ordinal
         }
     }

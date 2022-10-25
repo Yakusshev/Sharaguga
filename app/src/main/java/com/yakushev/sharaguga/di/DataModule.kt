@@ -10,7 +10,7 @@ val dataModule = module {
         DataStorageImpl()
     }
 
-    single {
-        ScheduleStorageImpl(dataStorage = get())
+    factory { parameters ->
+        ScheduleStorageImpl(dataStorage = get(), groupPath = parameters.get(), semesterDiff = parameters.get())
     }
 }

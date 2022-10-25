@@ -1,8 +1,6 @@
 package com.yakushev.sharaguga
 
 import android.os.Bundle
-import android.view.View
-import android.view.animation.AnimationUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
@@ -28,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_universities, R.id.navigation_schedule, R.id.navigation_data
+                R.id.navigation_preferences, R.id.navigation_schedule, R.id.navigation_data
             )
         )
 

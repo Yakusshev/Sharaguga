@@ -7,42 +7,136 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.utils.Resource
+import com.yakushev.domain.models.data.Data
+import com.yakushev.domain.models.data.Place
+import com.yakushev.domain.models.data.Subject
+import com.yakushev.domain.models.data.Teacher
 import com.yakushev.domain.models.schedule.DayEnum
 import com.yakushev.domain.models.schedule.Period
 import com.yakushev.domain.models.schedule.PeriodEnum
 import com.yakushev.domain.models.schedule.WeekEnum
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.util.*
 
 class ScheduleStorageImpl(
     private val dataStorage: DataStorageImpl,
-    semesterPath: String = "/universities/SPGUGA/faculties/FLE/groups/103/semester/V"
+    groupPath: String,
+    semesterDiff: Int
 ) {
 
-    private val weeksReference = Firebase.firestore.document(semesterPath).collection(WEEKS_COLLECTION_NAME)
-
-    //TODO resolve com.google.firebase.firestore.FirebaseFirestoreException: Failed to get document because the client is offline.
+    private var _weeksReference: CollectionReference? = null
+    private val weeksReference get() = _weeksReference!!
 
     private companion object { const val TAG = "ScheduleStorageImpl" }
 
     private val _scheduleFlow = ArrayList<ArrayList<ArrayList<MutableStateFlow<Resource<Period?>>>>>()
     val scheduleFlow: List<List<List<StateFlow<Resource<Period?>>>>> get() = _scheduleFlow
 
-    init {
+    private var snapshotListeners = ArrayList<ArrayList<ListenerRegistration>>()
+
+    private val initJob = init(groupPath, semesterDiff)
+
+    private fun init(groupPath: String, semesterDiff: Int): Job = CoroutineScope(Dispatchers.IO).launch {
+        fillFlow(Resource.Loading())
+
+        val semesters = Firebase.firestore
+            .document(groupPath).collection(SEMESTER_COLLECTION_NAME)
+            .orderBy(INDEX)
+            .getQuerySnapshot()
+            ?.documents ?: run {
+            Log.d(TAG, "initJob, semesters documents are null"); return@launch
+        }
+
+        if (semesters.isEmpty()) {
+            Log.d(TAG, "init empty")
+            createNewGroup(groupPath)
+            fillFlow(Resource.Success(null))
+            //init(groupPath, semesterDiff).join()
+            cancel()
+            return@launch
+        }
+
+        val actualSemester = getActualSemesterIndex(semesters)
+        var requiredSemester = actualSemester + semesterDiff
+
+        when {
+            requiredSemester < 0 -> requiredSemester = 0
+            requiredSemester > semesters.lastIndex -> requiredSemester = semesters.lastIndex
+        }
+
+        _weeksReference = semesters[requiredSemester]
+            .reference.collection(WEEKS_COLLECTION_NAME)
+
+        Log.d(TAG, _weeksReference!!.path)
+
+        load()
+    }
+
+    private suspend fun createNewGroup(groupPath: String) {
+        //Firebase.firestore.document(groupPath).
+    }
+
+    private fun getActualSemesterIndex(semesters: List<DocumentSnapshot>): Int {
+        val list = ArrayList<Pair<Date, Date>>()
+
+        for (s in semesters) {
+            list.add(
+                Pair((s.data!!["start"] as Timestamp).toDate(), (s.data!!["end"] as Timestamp).toDate())
+            )
+        }
+
+        val today = Date()
+        var semester: Int? = null
+
+        for (p in list.indices) {
+            if (list[p].first.before(today) && list[p].second.after(today)) {
+                semester = p
+                break
+            }
+            if (today.before(list[p].first)) {
+                semester = p
+            }
+        }
+
+        if (semester == null) semester = list.lastIndex
+
+        return semester
+    }
+
+    private fun fillFlow(resource: Resource<Period?>) {
         for (w in 0 until 2) {
             _scheduleFlow.add(ArrayList())
             for (d in 0 until 7) {
                 _scheduleFlow[w].add(ArrayList())
                 for (p in 0 until 4) {
-                    _scheduleFlow[w][d].add(MutableStateFlow(Resource.Loading()))
-                    Log.d(TAG, "$w.$d.$p Loading")
+                    if (_scheduleFlow[w][d].size <= p) _scheduleFlow[w][d].add(MutableStateFlow(resource))
+                    else _scheduleFlow[w][d][p] = MutableStateFlow(resource)
                 }
+            }
+        }
+    }
+
+    private fun clearFlow() {
+        for (w in 0 until 2) {
+            _scheduleFlow[w] = ArrayList()
+            for (d in 0 until 7) {
+                _scheduleFlow[w][d] = ArrayList()
+                for (p in 0 until 4) {
+                    _scheduleFlow[w][d][p] = MutableStateFlow(Resource.Loading())
+                }
+            }
+        }
+    }
+
+    fun removeListenerRegistrations() {
+        for (w in snapshotListeners.indices) {
+            for (listenerRegistration in snapshotListeners[w]) {
+                listenerRegistration.remove()
             }
         }
     }
@@ -223,21 +317,30 @@ class ScheduleStorageImpl(
      * return list of week (list of days (list of pairs))
      */
 
-    suspend fun load() {
+    private suspend fun load() {
+        snapshotListeners.clear()
+
+        Log.d(TAG, "load 0")
 
         val weeksDocuments = weeksReference
             .orderBy(INDEX)
             .getQuerySnapshot()
             ?.documents ?: return
 
+        Log.d(TAG, "load 1")
+
         for (w in weeksDocuments.indices) {
             val dayDocuments = weeksDocuments[w].reference.collection(DAYS_COLLECTION_NAME)
                 .orderBy(INDEX)
                 .getQuerySnapshot()
                 ?.documents ?: return
+            Log.d(TAG, "load 2")
+
+            snapshotListeners.add(ArrayList())
 
             for (d in dayDocuments.indices) {
-                dayDocuments[d].listenPeriods(w, d, _scheduleFlow[w][d])
+                Log.d(TAG, "load 3")
+                snapshotListeners[w].add(dayDocuments[d].listenPeriods(w, d, _scheduleFlow[w][d]))
             }
         }
 
@@ -245,9 +348,13 @@ class ScheduleStorageImpl(
     }
 
     suspend fun getStartDate(): Timestamp {
+        initJob.join()
+        if (initJob.isCancelled) return Timestamp(Date())
         val firstWeek = weeksReference.document(WeekEnum.FirstWeek.name)
             .get()
             .await()
+
+        Log.d(TAG, "getStartDate 0")
 
         return firstWeek.data!![FIRST_DAY] as Timestamp
     }
@@ -269,14 +376,10 @@ class ScheduleStorageImpl(
         if (snapshot == null) return@addSnapshotListener
 
         for (p in PeriodEnum.values().indices) {
-
-            Log.d(TAG, "Listening week = $w, day = $d, period = $p")
-
-            val flow = day[p]
-
-            snapshot.getPeriodData(PeriodEnum.values()[p])?.listenData(flow)
-
-            Log.d(TAG, "Emitted week = $w, day = $d, period = $p")
+            snapshot.getPeriodData(PeriodEnum.values()[p])?.listenData(day[p])
+                ?: CoroutineScope(Dispatchers.IO).launch {
+                    day[p].emit(Resource.Success(null))
+                }
         }
     }
 
@@ -295,69 +398,51 @@ class ScheduleStorageImpl(
 
     private fun HashMap<String, DocumentReference>.listenData(
         flow: MutableStateFlow<Resource<Period?>>
+    ) {
+        listen(flow, dataStorage.subjects, this[SUBJECT]!!.path)
+        listen(flow, dataStorage.teachers, this[TEACHER]!!.path)
+        listen(flow, dataStorage.places, this[PLACE]!!.path)
+    }
+
+    private inline fun <reified D: Data> listen(
+        flow: MutableStateFlow<Resource<Period?>>,
+        flowList: StateFlow<Resource<MutableList<D>>>,
+        path: String,
     ) = CoroutineScope(Dispatchers.IO).launch {
 
-        launch {
-            dataStorage.subjects.collect {
-                if (it !is Resource.Success) return@collect
-                if (it.data == null) return@collect
+        flowList.collect {
+            if (it !is Resource.Success) return@collect
+            if (it.data == null) return@collect
 
-
-                for (subject in it.data) {
-                    if (subject.path == this@listenData[SUBJECT]!!.path) {
-                        flow.update { resource ->
-                            val period = resource.data?.copy(subject = subject)
-                                ?: Period(subject = subject)
-                            Resource.Success(period)
-                        }
-                        return@collect
-                    }
-                }
-                flow.update {
-                    Resource.Success(null)
-                }
+            val data = it.data.find { data ->
+                data.path == path
             }
-        }
 
-        launch {
-            dataStorage.teachers.collect {
-                if (it !is Resource.Success) return@collect
-                if (it.data == null) return@collect
-
-                for (teacher in it.data) {
-                    if (teacher.path == this@listenData[TEACHER]!!.path) {
-                        flow.update { resource ->
-                            val period = resource.data?.copy(teacher = teacher) ?: Period(teacher = teacher)
-                            Resource.Success(period)
-                        }
-                        return@collect
+            flow.update { resource ->
+                val period = if (data == null) {
+                    when (D::class) {
+                        Subject::class -> resource.data?.copy(subject = null)
+                            ?: Period(subject = null)
+                        Teacher::class -> resource.data?.copy(teacher = null)
+                            ?: Period(teacher = null)
+                        Place::class -> resource.data?.copy(place = null)
+                            ?: Period(place = null)
+                        else -> return@collect
                     }
-                }
-                flow.update {
-                    Resource.Success(null)
-                }
-            }
-        }
-
-        launch {
-            dataStorage.places.collect {
-                if (it !is Resource.Success) return@collect
-                if (it.data == null) return@collect
-
-                for (place in it.data) {
-                    if (place.path == this@listenData[PLACE]!!.path) {
-                        flow.update { resource ->
-                            val period = resource.data?.copy(place = place) ?: Period(place = place)
-                            Resource.Success(period)
-                        }
-                        return@collect
+                } else {
+                    when (D::class) {
+                        Subject::class -> resource.data?.copy(subject = data as Subject)
+                            ?: Period(subject = data as Subject)
+                        Teacher::class -> resource.data?.copy(teacher = data as Teacher)
+                            ?: Period(teacher = data as Teacher)
+                        Place::class -> resource.data?.copy(place = data as Place)
+                            ?: Period(place = data as Place)
+                        else -> return@collect
                     }
+
                 }
-                flow.update {
-                    Resource.Success(null)
-                }
+                Resource.Success(period)
             }
         }
     }
-
 }

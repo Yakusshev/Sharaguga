@@ -1,0 +1,35 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/messages_header"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            app:key="@string/key_university_fragment"
+            app:title="@string/title_universities"
+            app:isPreferenceVisible="false"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:title="@string/title_universities"
+            app:key="@string/key_university"
+            app:summary="%s"
+            app:iconSpaceReserved="false"/>
+
+        <ListPreference
+            app:title="@string/title_faculties"
+            app:key="@string/key_faculty"
+            app:summary="%s"
+            app:dependency="@string/key_university"
+            app:iconSpaceReserved="false"/>
+
+        <ListPreference
+            app:title="@string/title_groups"
+            app:key="@string/key_group"
+            app:summary="%s"
+            app:dependency="@string/key_faculty"
+            app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

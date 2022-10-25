@@ -2,8 +2,6 @@ package com.yakushev.sharaguga.views
 
 import androidx.core.view.ViewCompat
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import java.time.LocalDate
 
 fun ViewPager2.showSideItems(pageMarginPx : Int, offsetPx : Int) {
 

@@ -1,22 +1,10 @@
 package com.yakushev.sharaguga.screens.choice.universities
 
-import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.yakushev.domain.models.choice.UniverUnit
-import com.yakushev.sharaguga.databinding.ChoiceFragmentUniversitiesBinding
-import com.yakushev.sharaguga.screens.choice.adapters.UniverUnitRecyclerAdapter
-import com.yakushev.data.utils.Resource
 
 
 class UniversitiesFragment : Fragment() {
-
+/*
     private val TAG = "HomeFragmentTag"
 
     private var _binding: ChoiceFragmentUniversitiesBinding? = null
@@ -66,5 +54,5 @@ class UniversitiesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
+    }*/
 }

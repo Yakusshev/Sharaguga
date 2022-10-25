@@ -15,12 +15,13 @@ internal val teachersCollection = Firebase.firestore.collection(TEACHERS_COLLECT
 internal val placesCollection = Firebase.firestore.collection(PLACES_COLLECTION_PATH)
 
 internal const val UNIVERSITIES_COLLECTION_NAME = "universities"
+
 internal const val NAME = "name" //this constants is used in different documents
 internal const val CITY = "city"
 
 internal const val FACULTIES_COLLECTION_NAME = "faculties"
-
 internal const val GROUPS_COLLECTION_NAME = "groups"
+internal const val SEMESTER_COLLECTION_NAME = "semester"
 
 internal const val TIME_TABLE = "timeTable"
 

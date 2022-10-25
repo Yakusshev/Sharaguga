@@ -15,13 +15,20 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.koin.core.parameter.parametersOf
+import org.koin.java.KoinJavaComponent.get
 import kotlin.math.abs
 
-class ScheduleViewModel(private val scheduleStorage: ScheduleStorageImpl) : ViewModel() {
+class ScheduleViewModel(
+    private val testPathTime: String = "/universities/SPGUGA",
+    private var groupPath: String
+) : ViewModel() {
 
     companion object { private const val TAG = "ScheduleViewModel" }
 
     private val timeStorage = TimeStorage()
+
+    private var scheduleStorage: ScheduleStorageImpl
 
     val timeFlow get(): List<StateFlow<Resource<TimeCustom>>> = timeStorage.timeFlow
     private val scheduleFlow get(): List<List<List<StateFlow<Resource<Period?>>>>> = scheduleStorage.scheduleFlow
@@ -29,25 +36,43 @@ class ScheduleViewModel(private val scheduleStorage: ScheduleStorageImpl) : View
     private val _toastLiveData = MutableLiveData<Message?>()
     val toastLiveData get(): LiveData<Message?> = _toastLiveData
 
-    //TODO remove testPaths
-    private val testPathTime = "/universities/SPGUGA"
-
-    val startPosition = 2
+    val startWeek = 2
+    var currentSemester = 0
 
     private val _date = MutableStateFlow<Resource<Timestamp>>(Resource.Loading())
     private val date get(): StateFlow<Resource<Timestamp>> = _date
+
+    init {
+        viewModelScope.launch {
+            timeStorage.load(testPathTime)
+        }
+
+        scheduleStorage = get(clazz = ScheduleStorageImpl::class.java, parameters = { parametersOf(groupPath, currentSemester) })
+    }
 
     private val getStartDateJob: Job = viewModelScope.launch {
         _date.emit(Resource.Success(scheduleStorage.getStartDate()))
     }
 
-    init {
-        viewModelScope.launch {
-            timeStorage.load(testPathTime)
+    fun changeGroup(groupPath: String) {
+        if (this.groupPath == groupPath) return
 
-            scheduleStorage.load()
-        }
+        this.groupPath = groupPath
+        currentSemester = 0
+        resetStorage()
     }
+
+    fun pickSemester(diff: Int) {
+        currentSemester += diff
+        resetStorage()
+    }
+
+    private fun resetStorage() {
+        scheduleStorage.removeListenerRegistrations()
+        scheduleStorage = get(clazz = ScheduleStorageImpl::class.java, parameters = { parametersOf(groupPath, currentSemester) })
+    }
+
+
 
     fun getPeriod(periodEnum: PeriodEnum, dayEnum: DayEnum, weekEnum: WeekEnum): StateFlow<Resource<Period?>> {
         return scheduleFlow[weekEnum.ordinal][dayEnum.ordinal][periodEnum.ordinal]
@@ -58,7 +83,7 @@ class ScheduleViewModel(private val scheduleStorage: ScheduleStorageImpl) : View
     }
 
     suspend fun getWeekNumber(requiredPosition: Int): WeekEnum {
-        val diff = requiredPosition - startPosition
+        val diff = requiredPosition - startWeek
         val calendar = Calendar.getInstance().apply { add(Calendar.WEEK_OF_YEAR, diff) }
 
         getStartDateJob.join()

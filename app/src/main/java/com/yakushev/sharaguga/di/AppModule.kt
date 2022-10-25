@@ -11,8 +11,8 @@ val appModule = module {
         DataViewModel(storage = get())
     }
 
-    viewModel {
-        ScheduleViewModel(scheduleStorage = get())
+    viewModel { parameters ->
+        ScheduleViewModel(groupPath = parameters.get())
     }
 
 }

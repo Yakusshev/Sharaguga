@@ -25,23 +25,33 @@ abstract class DataRecyclerAdapter<out D : Data>(
         if (items == null) return
         if (items.size == this.itemCount) return
 
-        this.items = items
+        this.items = items.toMutableList()
 
         notifyItemRangeChanged(0, itemCount)
     }
 
-    fun addItem(index: Int, item: @UnsafeVariance D) {
+    @Suppress("UNCHECKED_CAST")
+    fun addItem(index: Int, item1: @UnsafeVariance D) {
+        val item = (item1 as Data).sealedCopy<Data>() as D
+
         if (index <= items.lastIndex) items.add(index, item)
         else items.add(item)
         notifyItemInserted(items.indexOf(item))
     }
 
-    fun modifyItem(index: Int, item: @UnsafeVariance D) {
+    @Suppress("UNCHECKED_CAST")
+    fun modifyItem(index: Int, item1: @UnsafeVariance D) {
+        if (index > items.lastIndex) return
+
+        val item = (item1 as Data).sealedCopy<Data>() as D
+
         items[index] = item
         notifyItemChanged(index)
     }
 
     fun deleteItem(index: Int) {
+        if (index > items.lastIndex) return
+
         items.removeAt(index)
         notifyItemRemoved(index)
     }

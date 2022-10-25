@@ -35,18 +35,14 @@ internal suspend fun waitEndLoading() {
 }
 
 internal suspend fun DocumentReference.getDocumentSnapshot(attempt: Int = 0): DocumentSnapshot? {
-    var doc: DocumentSnapshot? = null
+    val doc: DocumentSnapshot? = try {
+         get().await()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 
     attempts[attempt]++
-
-    get().addOnSuccessListener {
-            doc = it
-        }
-        .addOnFailureListener {
-            Log.d("getDocumentSnapshot", "Error get ${this.path}")
-            it.printStackTrace()
-        }
-        .await()
 
     if (doc == null && attempt < attempts.lastIndex) {
         Log.d("getDocumentSnapshot", "Document is null $attempt. Path: ${this.path}")
@@ -58,17 +54,12 @@ internal suspend fun DocumentReference.getDocumentSnapshot(attempt: Int = 0): Do
 }
 
 internal suspend fun Query.getQuerySnapshot(): QuerySnapshot? {
-    var querySnapshot: QuerySnapshot? = null
-    this
-        .get()
-        .addOnSuccessListener {
-            querySnapshot = it
-        }
-        .addOnFailureListener {
-            Log.d("getQuerySnapshot", "Error get query snapshot")
-            it.printStackTrace()
-        }
-        .await()
+    val querySnapshot: QuerySnapshot? = try {
+        get().await()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
 
     return querySnapshot
 }

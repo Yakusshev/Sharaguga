@@ -120,16 +120,11 @@ class DataPageFragment : Fragment() {
                     if (it.data == null) return@collect
                     val data = it.data!!
 
-                    //val change = if (it.change.observed) Change.Get
-                    //else it.change
-
                     binding.noDataView.visibility = View.GONE
                     binding.recyclerView.visibility = View.VISIBLE
 
                     when (it.change) {
-                        Change.Get -> {
-
-                        }
+                        Change.Get -> { }
                         is Change.Added -> adapter.addItem(
                             it.change.index,
                             data[it.change.index]
@@ -142,7 +137,7 @@ class DataPageFragment : Fragment() {
                             it.change.index
                         )
                     }
-                    //it.change.observed = true
+
                     adapter.updateItems(items = data.toMutableList())
                 }
             }
