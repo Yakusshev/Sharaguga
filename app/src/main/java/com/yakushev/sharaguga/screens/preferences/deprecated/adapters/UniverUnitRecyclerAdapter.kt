@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.choice.adapters
+package com.yakushev.sharaguga.screens.preferences.deprecated.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.domain.models.choice.UniverUnit
 import com.yakushev.sharaguga.databinding.ChoiceItemBinding
 
+@Deprecated("no more used")
 class UniverUnitRecyclerAdapter(
     var univerUnits: MutableList<UniverUnit>,
     private val onItemClickListener: View.OnClickListener

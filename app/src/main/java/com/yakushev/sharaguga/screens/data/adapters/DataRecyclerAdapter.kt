@@ -2,7 +2,7 @@ package com.yakushev.sharaguga.screens.data.adapters
 
 import androidx.recyclerview.widget.RecyclerView
 import com.yakushev.domain.models.data.Data
-import com.yakushev.sharaguga.screens.choice.adapters.data.recycler.DataHolder
+import com.yakushev.sharaguga.screens.preferences.adapters.data.recycler.DataHolder
 import com.yakushev.sharaguga.utils.DataPagesEnum
 
 abstract class DataRecyclerAdapter<out D : Data>(

@@ -138,7 +138,7 @@
 
     <fragment
         android:id="@+id/navigation_preferences"
-        android:name="com.yakushev.sharaguga.screens.choice.preferences.RootPreferencesFragment"
+        android:name="com.yakushev.sharaguga.screens.preferences.RootPreferencesFragment"
         android:label="@string/title_preferences"
         tools:layout="@layout/choice_fragment_universities" >
 
@@ -154,7 +154,7 @@
 
     <fragment
         android:id="@+id/navigation_universities"
-        android:name="com.yakushev.sharaguga.screens.choice.preferences.UniversitiesFragment"
+        android:name="com.yakushev.sharaguga.screens.preferences.deprecated.preferences.UniversitiesFragment"
         android:label="@string/title_universities"
         tools:layout="@layout/choice_fragment_universities" >
 
@@ -170,7 +170,7 @@
 
     <fragment
         android:id="@+id/navigation_faculties"
-        android:name="com.yakushev.sharaguga.screens.choice.preferences.FacultiesFragment"
+        android:name="com.yakushev.sharaguga.screens.preferences.deprecated.preferences.FacultiesFragment"
         android:label="@string/title_faculties"
         tools:layout="@layout/choice_fragment_faculties">
 
@@ -196,7 +196,7 @@
 
     <fragment
         android:id="@+id/navigation_groups"
-        android:name="com.yakushev.sharaguga.screens.choice.preferences.GroupsFragment"
+        android:name="com.yakushev.sharaguga.screens.preferences.deprecated.preferences.GroupsFragment"
         android:label="@string/title_groups"
         tools:layout="@layout/choice_fragment_groups">
 
@@ -226,7 +226,7 @@
 
     <fragment
         android:id="@+id/navigation_universities_oldnw"
-        android:name="com.yakushev.sharaguga.screens.choice.universities.UniversitiesFragment"
+        android:name="com.yakushev.sharaguga.screens.preferences.deprecated.universities.UniversitiesFragment"
         android:label="@string/title_universities"
         tools:layout="@layout/choice_fragment_universities" >
 
@@ -242,7 +242,7 @@
 
     <fragment
         android:id="@+id/navigation_faculties_old"
-        android:name="com.yakushev.sharaguga.screens.choice.faculties.FacultiesFragment"
+        android:name="com.yakushev.sharaguga.screens.preferences.deprecated.faculties.FacultiesFragment"
         android:label="@string/title_faculties"
         tools:layout="@layout/choice_fragment_faculties">
 
@@ -268,7 +268,7 @@
 
     <fragment
         android:id="@+id/navigation_groups_old"
-        android:name="com.yakushev.sharaguga.screens.choice.groups.GroupsFragment"
+        android:name="com.yakushev.sharaguga.screens.preferences.deprecated.groups.GroupsFragment"
         android:label="@string/title_groups"
         tools:layout="@layout/choice_fragment_groups">
 

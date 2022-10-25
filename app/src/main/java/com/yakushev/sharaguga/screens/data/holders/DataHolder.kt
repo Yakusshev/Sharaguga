@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.choice.adapters.data.recycler
+package com.yakushev.sharaguga.screens.preferences.adapters.data.recycler
 
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView

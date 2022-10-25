@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.choice.faculties
+package com.yakushev.sharaguga.screens.preferences.deprecated.faculties
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,12 +9,14 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.choice.UniverUnit
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.databinding.ChoiceFragmentFacultiesBinding
-import com.yakushev.sharaguga.screens.choice.adapters.UniverUnitRecyclerAdapter
-import com.yakushev.data.utils.Resource
+import com.yakushev.sharaguga.screens.preferences.FacultiesViewModel
+import com.yakushev.sharaguga.screens.preferences.deprecated.adapters.UniverUnitRecyclerAdapter
 
+@Deprecated("no more used")
 class FacultiesFragment : Fragment() {
 
     private var _binding: ChoiceFragmentFacultiesBinding? = null

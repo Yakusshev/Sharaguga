@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.choice.groups
+package com.yakushev.sharaguga.screens.preferences.deprecated.groups
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,12 +8,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yakushev.data.utils.Resource
 import com.yakushev.domain.models.choice.UniverUnit
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.databinding.ChoiceFragmentGroupsBinding
-import com.yakushev.sharaguga.screens.choice.adapters.UniverUnitRecyclerAdapter
-import com.yakushev.data.utils.Resource
+import com.yakushev.sharaguga.screens.preferences.GroupsViewModel
+import com.yakushev.sharaguga.screens.preferences.deprecated.adapters.UniverUnitRecyclerAdapter
 
+@Deprecated("no more used")
 class GroupsFragment : Fragment() {
 
     private var _binding: ChoiceFragmentGroupsBinding? = null

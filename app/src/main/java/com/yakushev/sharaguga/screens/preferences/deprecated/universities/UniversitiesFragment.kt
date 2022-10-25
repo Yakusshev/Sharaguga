@@ -1,8 +1,8 @@
-package com.yakushev.sharaguga.screens.choice.universities
+package com.yakushev.sharaguga.screens.preferences.deprecated.universities
 
 import androidx.fragment.app.Fragment
 
-
+@Deprecated("no more used")
 class UniversitiesFragment : Fragment() {
 /*
     private val TAG = "HomeFragmentTag"

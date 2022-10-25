@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.choice.preferences
+package com.yakushev.sharaguga.screens.preferences.deprecated.preferences
 
 import android.os.Bundle
 import android.view.View
@@ -9,8 +9,9 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceScreen
 import com.yakushev.data.utils.Resource
-import com.yakushev.sharaguga.screens.choice.faculties.FacultiesViewModel
+import com.yakushev.sharaguga.screens.preferences.FacultiesViewModel
 
+@Deprecated("no more used")
 class FacultiesFragment : PreferenceFragmentCompat() {
 
     private val viewModel: FacultiesViewModel by viewModels()

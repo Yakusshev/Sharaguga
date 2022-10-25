@@ -1,11 +1,9 @@
-package com.yakushev.sharaguga.screens.choice.groups
+package com.yakushev.sharaguga.screens.preferences
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.yakushev.data.repository.GroupRepository
 import com.yakushev.data.storage.firestore.choice.GroupStorage
 import com.yakushev.data.utils.Resource
@@ -25,9 +23,8 @@ class GroupsViewModel : ViewModel() {
     fun getGroups(path: String) {
         viewModelScope.launch {
             _liveData.postValue(
-                Resource.Success(groupUseCase.get(
-                Firebase.firestore.document(path)
-            )))
+                Resource.Success(groupUseCase.get(path))
+            )
         }
     }
 }

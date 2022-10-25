@@ -24,12 +24,12 @@ class TimeStorage : Storage<TimeCustom> {
         }
     }
 
-    override suspend fun save(unit: TimeCustom, reference: DocumentReference?): Boolean {
+    override suspend fun save(unit: TimeCustom, path: String?): Boolean {
         TODO("Not yet implemented")
     }
 
-    override suspend fun get(reference: DocumentReference?): List<TimeCustom> {
-        val documentSnapshot = reference!!
+    override suspend fun get(path: String): List<TimeCustom> {
+        val documentSnapshot = path!!
             .getWithoutErrors()
             .data!![TIME_TABLE] ?: return listOf()
 

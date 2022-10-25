@@ -2,26 +2,23 @@ package com.yakushev.data.storage.firestore.choice
 
 import android.util.Log
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.firestore.CITY
 import com.yakushev.data.storage.firestore.NAME
+import com.yakushev.data.storage.firestore.UNIVERSITIES_COLLECTION_NAME
 import com.yakushev.domain.models.choice.UniverUnit.University
 
 class UniversitiesStorage : AbstractFireStorage<University>() {
 
+    private val universityReference: CollectionReference =
+        Firebase.firestore.collection(UNIVERSITIES_COLLECTION_NAME)
+
     private val TAG = "FirestoreUniversityStorage"
 
-    override suspend fun save(unit: University, reference: DocumentReference?): Boolean {
+    override suspend fun save(unit: University, path: String?): Boolean {
         TODO("rewrite")
-        universityReference.add(unit)
-            .addOnSuccessListener { documentReference ->
-                Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
-            }
-            .addOnFailureListener { e ->
-                Log.w(TAG, "Error adding document", e)
-            }
-        return true
     }
 
     override fun DocumentSnapshot.toRequiredDataModel(): University {
@@ -34,7 +31,7 @@ class UniversitiesStorage : AbstractFireStorage<University>() {
         )
     }
 
-    override fun getReference(reference: DocumentReference?): CollectionReference {
+    override fun getReference(path: String): CollectionReference {
         return universityReference
     }
 }

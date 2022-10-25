@@ -1,11 +1,9 @@
-package com.yakushev.sharaguga.screens.choice.faculties
+package com.yakushev.sharaguga.screens.preferences
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.yakushev.data.repository.FacultyRepository
 import com.yakushev.data.storage.firestore.choice.FacultiesStorage
 import com.yakushev.data.utils.Resource
@@ -21,11 +19,10 @@ class FacultiesViewModel : ViewModel() {
     private val facultiesRepository = FacultyRepository(FacultiesStorage())
     private val facultiesUseCase = FacultiesUseCase(facultiesRepository)
 
-    fun getFaculties(universityId: String) {
+    fun getFaculties(path: String) {
         viewModelScope.launch {
             _liveData.postValue(
-                Resource.Success(facultiesUseCase.get(
-                Firebase.firestore.document(universityId)))
+                Resource.Success(facultiesUseCase.get(path))
             )
         }
     }

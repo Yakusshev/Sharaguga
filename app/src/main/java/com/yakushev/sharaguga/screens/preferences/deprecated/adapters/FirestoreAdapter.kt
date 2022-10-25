@@ -1,10 +1,10 @@
-package com.yakushev.sharaguga.screens.choice.adapters
+package com.yakushev.sharaguga.screens.preferences.deprecated.adapters
 
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.*
 
-
+@Deprecated("no more used")
 abstract class FirestoreAdapter<SubjectHolder : RecyclerView.ViewHolder> :
     RecyclerView.Adapter<SubjectHolder>(), EventListener<QuerySnapshot> {
 

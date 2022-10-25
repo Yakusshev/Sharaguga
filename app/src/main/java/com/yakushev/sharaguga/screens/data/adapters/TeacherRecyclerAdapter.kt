@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.sharaguga.databinding.DataItemBinding
-import com.yakushev.sharaguga.screens.choice.adapters.data.recycler.DataHolder
-import com.yakushev.sharaguga.screens.choice.adapters.data.recycler.TeacherHolder
+import com.yakushev.sharaguga.screens.preferences.adapters.data.recycler.DataHolder
+import com.yakushev.sharaguga.screens.preferences.adapters.data.recycler.TeacherHolder
 import com.yakushev.sharaguga.utils.DataPagesEnum
 
 class TeacherRecyclerAdapter(

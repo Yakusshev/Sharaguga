@@ -1,11 +1,9 @@
 package com.yakushev.data.storage
 
-import com.google.firebase.firestore.DocumentReference
-
 interface Storage<D> {
 
-    suspend fun save(unit: D, reference: DocumentReference?): Boolean
+    suspend fun save(unit: D, path: String?): Boolean
 
-    suspend fun get(reference: DocumentReference?): List<D>
+    suspend fun get(path: String): List<D>
 
 }

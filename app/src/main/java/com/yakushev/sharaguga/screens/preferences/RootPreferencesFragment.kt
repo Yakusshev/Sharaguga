@@ -1,4 +1,4 @@
-package com.yakushev.sharaguga.screens.choice.preferences
+package com.yakushev.sharaguga.screens.preferences
 
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +8,6 @@ import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.yakushev.data.utils.Resource
 import com.yakushev.sharaguga.R
-import com.yakushev.sharaguga.screens.choice.faculties.FacultiesViewModel
-import com.yakushev.sharaguga.screens.choice.groups.GroupsViewModel
-import com.yakushev.sharaguga.screens.choice.universities.UniversitiesViewModel
 import com.yakushev.sharaguga.screens.schedule.ScheduleViewModel
 import org.koin.androidx.viewmodel.ext.android.getSharedViewModel
 
