@@ -16,17 +16,10 @@ sealed class Resource<T>(
 
 }
 
-/*sealed class ResourcePeriod(
-
-) {
-    class Loading
-}*/
-
 sealed class Change(
-    val index: Int,
-    var observed: Boolean = false
+    val index: Int
 ) {
-    object Get : Change(-1, true)
+    object Get : Change(-1)
 
     class Added(
         index: Int

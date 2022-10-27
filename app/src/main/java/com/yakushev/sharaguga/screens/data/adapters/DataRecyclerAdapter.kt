@@ -1,11 +1,11 @@
 package com.yakushev.sharaguga.screens.data.adapters
 
 import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.domain.models.data.Data
-import com.yakushev.sharaguga.screens.preferences.adapters.data.recycler.DataHolder
+import com.yakushev.domain.models.data.PeriodData
+import com.yakushev.sharaguga.screens.data.holders.DataHolder
 import com.yakushev.sharaguga.utils.DataPagesEnum
 
-abstract class DataRecyclerAdapter<out D : Data>(
+abstract class DataRecyclerAdapter<out D : PeriodData>(
     val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<DataHolder<@UnsafeVariance D>>() {
 
@@ -32,7 +32,7 @@ abstract class DataRecyclerAdapter<out D : Data>(
 
     @Suppress("UNCHECKED_CAST")
     fun addItem(index: Int, item1: @UnsafeVariance D) {
-        val item = (item1 as Data).sealedCopy<Data>() as D
+        val item = (item1 as PeriodData).sealedCopy<PeriodData>() as D
 
         if (index <= items.lastIndex) items.add(index, item)
         else items.add(item)
@@ -43,7 +43,7 @@ abstract class DataRecyclerAdapter<out D : Data>(
     fun modifyItem(index: Int, item1: @UnsafeVariance D) {
         if (index > items.lastIndex) return
 
-        val item = (item1 as Data).sealedCopy<Data>() as D
+        val item = (item1 as PeriodData).sealedCopy<PeriodData>() as D
 
         items[index] = item
         notifyItemChanged(index)

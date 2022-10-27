@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yakushev.data.repository.GroupRepository
-import com.yakushev.data.storage.firestore.choice.GroupStorage
+import com.yakushev.data.storage.firestore.preferences.GroupStorage
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.choice.UniverUnit.Group
+import com.yakushev.domain.models.preferences.UniverUnit.Group
 import com.yakushev.domain.usecase.GroupUseCase
 import kotlinx.coroutines.launch
 

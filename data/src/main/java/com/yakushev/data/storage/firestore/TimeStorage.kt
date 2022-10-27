@@ -1,7 +1,5 @@
 package com.yakushev.data.storage.firestore
 
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.type.TimeOfDay
@@ -11,7 +9,6 @@ import com.yakushev.domain.models.printLog
 import com.yakushev.domain.models.schedule.TimeCustom
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.tasks.await
 
 class TimeStorage : Storage<TimeCustom> {
 
@@ -29,9 +26,9 @@ class TimeStorage : Storage<TimeCustom> {
     }
 
     override suspend fun get(path: String): List<TimeCustom> {
-        val documentSnapshot = path!!
-            .getWithoutErrors()
-            .data!![TIME_TABLE] ?: return listOf()
+        val documentSnapshot = Firebase.firestore.document(path)
+            .getDocumentSnapshot()
+            ?.data!![TIME_TABLE] ?: return listOf()
 
         val list = documentSnapshot as ArrayList<*>
 
@@ -55,20 +52,6 @@ class TimeStorage : Storage<TimeCustom> {
         for (t in list.indices) {
             _timeFlow[t].emit(Resource.Success(parseFromFireStore(list[t] as String)))
         }
-    }
-
-
-    @Deprecated("this method produces errors", ReplaceWith("getDocumentSnapshot()")) //TODO remove
-    private suspend fun DocumentReference.getWithoutErrors(): DocumentSnapshot {
-        return get()
-            .addOnSuccessListener {
-            }
-            .addOnFailureListener {
-                /*if (context != null)
-                    Toast.makeText(context, "Ошибка загрузки данных", Toast.LENGTH_LONG)
-                        .show()*/
-            }
-            .await()
     }
 
     private fun parseFromFireStore(data: String) : TimeCustom {

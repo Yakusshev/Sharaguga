@@ -9,7 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.choice.UniverUnit
+import com.yakushev.domain.models.preferences.UniverUnit
 import com.yakushev.sharaguga.MainActivity
 import com.yakushev.sharaguga.databinding.ChoiceFragmentGroupsBinding
 import com.yakushev.sharaguga.screens.preferences.GroupsViewModel

@@ -52,8 +52,6 @@ class ScheduleFragment : Fragment() {
         return binding.root
     }
 
-    //private val onTabSelectedListener =
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -86,30 +84,6 @@ class ScheduleFragment : Fragment() {
         (requireActivity() as MainActivity).supportActionBar?.title =
             resources.getStringArray(R.array.months)[now.month.ordinal]
     }
-
-    /*private fun attachTabLayoutMediator(adapter: SchedulePagerAdapter) {
-
-        val initialPosition = binding.tabLayout.tabCount / 2 + 1
-
-        binding.viewPager.currentItem = initialPosition
-
-        val today = LocalDate.now()
-
-        val currentDayTextColor = getColor(com.google.android.material.R.attr.colorError)
-        val weekendTextColor = getColor(com.google.android.material.R.attr.colorOnTertiaryContainer)
-
-        val mediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
-
-            when (position % DaysPerWeek) {
-                5 -> tab.changeAppearance(weekendTextColor)
-                6 -> tab.changeAppearance(weekendTextColor)
-            }
-
-            if (position == initialPosition) tab.changeAppearance(currentDayTextColor, true)
-        }
-
-        //mediator.attach()
-    }*/
 
     private fun getColor(attr: Int): Int {
         val backgroundColor = TypedValue()

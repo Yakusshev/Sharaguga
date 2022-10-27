@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yakushev.data.repository.FacultyRepository
-import com.yakushev.data.storage.firestore.choice.FacultiesStorage
+import com.yakushev.data.storage.firestore.preferences.FacultiesStorage
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.choice.UniverUnit.Faculty
+import com.yakushev.domain.models.preferences.UniverUnit.Faculty
 import com.yakushev.domain.usecase.FacultiesUseCase
 import kotlinx.coroutines.launch
 

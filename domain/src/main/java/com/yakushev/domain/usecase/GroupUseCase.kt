@@ -1,6 +1,6 @@
 package com.yakushev.domain.usecase
 
-import com.yakushev.domain.models.choice.UniverUnit.Group
+import com.yakushev.domain.models.preferences.UniverUnit.Group
 import com.yakushev.domain.repository.Repository
 
 class GroupUseCase(private val groupsRepository: Repository<Group>) {

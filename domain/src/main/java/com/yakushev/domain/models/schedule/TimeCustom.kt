@@ -38,11 +38,10 @@ data class TimeCustom(
     }
 
     private fun TimeOfDay.stringToFirestore() : String {
-        var output: String
-        if (hours < 10)
-            output = "0$hours"
+        var output: String = if (hours < 10)
+            "0$hours"
         else
-            output = hours.toString()
+            hours.toString()
 
         if (minutes < 10)
             output += "0$minutes"

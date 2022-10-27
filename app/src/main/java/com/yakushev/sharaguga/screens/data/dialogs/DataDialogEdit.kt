@@ -7,7 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.data.Data
+import com.yakushev.domain.models.data.PeriodData
 import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class DataDialogEdit : DataDialog() {
 
-    var data: Data? = null
+    var data: PeriodData? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +38,7 @@ class DataDialogEdit : DataDialog() {
     }
 
     private suspend fun observeData(
-        stateFlow: StateFlow<Resource<out MutableList<out Data>>>
+        stateFlow: StateFlow<Resource<out MutableList<out PeriodData>>>
     ) = lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
         stateFlow.collect {
@@ -62,24 +62,17 @@ class DataDialogEdit : DataDialog() {
         binding.delete.setOnClickListener {
             AlertDialog.Builder(binding.delete.context)
                 .setTitle(
-                    getString(R.string.data_dialog_confirmation_title) +
-                            " " + binding.data.text.toString()
+                    "${getString(R.string.data_dialog_confirmation_title)} ${binding.data.text}"
                 )
                 .setMessage(
-                    getString(R.string.data_dialog_confirmation_message) +
-                            " " + binding.data.text.toString() + "?"
+                    "${getString(R.string.data_dialog_confirmation_message)} ${binding.data.text}?"
                 )
                 .setIcon(android.R.drawable.ic_menu_delete)
-                .setPositiveButton(
-                    R.string.edit_dialog_confirmation_delete
-                ) { _, _ ->
+                .setPositiveButton(R.string.edit_dialog_confirmation_delete) { _, _ ->
                     if (data != null) dataViewModel.deleteData(data!!)
                     this@DataDialogEdit.dismiss()
                 }
-                .setNegativeButton(
-                    R.string.edit_dialog_confirmation_cancel,
-                    null
-                )
+                .setNegativeButton(R.string.edit_dialog_confirmation_cancel, null)
                 .show()
         }
     }

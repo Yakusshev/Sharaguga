@@ -7,7 +7,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.data.Data
+import com.yakushev.domain.models.data.PeriodData
 import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
@@ -78,6 +78,7 @@ class ScheduleStorageImpl(
     }
 
     private suspend fun createNewGroup(groupPath: String) {
+        TODO("not yet implemented")
         //Firebase.firestore.document(groupPath).
     }
 
@@ -340,11 +341,11 @@ class ScheduleStorageImpl(
 
             for (d in dayDocuments.indices) {
                 Log.d(TAG, "load 3")
-                snapshotListeners[w].add(dayDocuments[d].listenPeriods(w, d, _scheduleFlow[w][d]))
+                snapshotListeners[w].add(dayDocuments[d].listenPeriods(_scheduleFlow[w][d]))
             }
         }
 
-        getDocumentSnapshotPrintLog()
+        documentSnapshotPrintLog()
     }
 
     suspend fun getStartDate(): Timestamp {
@@ -365,8 +366,6 @@ class ScheduleStorageImpl(
      */
 
     private fun DocumentSnapshot.listenPeriods(
-        w: Int,
-        d: Int,
         day: ArrayList<MutableStateFlow<Resource<Period?>>>
     ) = reference.addSnapshotListener { snapshot, error ->
         if (error != null) {
@@ -399,12 +398,13 @@ class ScheduleStorageImpl(
     private fun HashMap<String, DocumentReference>.listenData(
         flow: MutableStateFlow<Resource<Period?>>
     ) {
-        listen(flow, dataStorage.subjects, this[SUBJECT]!!.path)
-        listen(flow, dataStorage.teachers, this[TEACHER]!!.path)
-        listen(flow, dataStorage.places, this[PLACE]!!.path)
+        listenData(flow, dataStorage.subjects, this[SUBJECT]!!.path)
+        listenData(flow, dataStorage.teachers, this[TEACHER]!!.path)
+        listenData(flow, dataStorage.places, this[PLACE]!!.path)
     }
 
-    private inline fun <reified D: Data> listen(
+    //TODO test 28.10
+    private inline fun <reified D: PeriodData> listenData(
         flow: MutableStateFlow<Resource<Period?>>,
         flowList: StateFlow<Resource<MutableList<D>>>,
         path: String,
@@ -419,27 +419,14 @@ class ScheduleStorageImpl(
             }
 
             flow.update { resource ->
-                val period = if (data == null) {
-                    when (D::class) {
-                        Subject::class -> resource.data?.copy(subject = null)
-                            ?: Period(subject = null)
-                        Teacher::class -> resource.data?.copy(teacher = null)
-                            ?: Period(teacher = null)
-                        Place::class -> resource.data?.copy(place = null)
-                            ?: Period(place = null)
-                        else -> return@collect
-                    }
-                } else {
-                    when (D::class) {
-                        Subject::class -> resource.data?.copy(subject = data as Subject)
-                            ?: Period(subject = data as Subject)
-                        Teacher::class -> resource.data?.copy(teacher = data as Teacher)
-                            ?: Period(teacher = data as Teacher)
-                        Place::class -> resource.data?.copy(place = data as Place)
-                            ?: Period(place = data as Place)
-                        else -> return@collect
-                    }
-
+                val period = when (D::class) {
+                    Subject::class -> resource.data?.copy(subject = data as? Subject)
+                        ?: Period(subject = data as Subject)
+                    Teacher::class -> resource.data?.copy(teacher = data as? Teacher)
+                        ?: Period(teacher = data as Teacher)
+                    Place::class -> resource.data?.copy(place = data as? Place)
+                        ?: Period(place = data as Place)
+                    else -> return@collect
                 }
                 Resource.Success(period)
             }

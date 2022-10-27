@@ -1,7 +1,7 @@
 package com.yakushev.data.repository
 
 import com.yakushev.data.storage.Storage
-import com.yakushev.domain.models.choice.UniverUnit.*
+import com.yakushev.domain.models.preferences.UniverUnit.*
 import com.yakushev.domain.models.schedule.TimeCustom
 import com.yakushev.domain.repository.Repository
 
@@ -27,7 +27,8 @@ class FacultyRepository(storage: Storage<Faculty>)
 class GroupRepository(storage: Storage<Group>)
     : AbstractRepository<Group>(storage = storage)
 
-class TimePairRepository(storage: Storage<TimeCustom>)
+//TODO implement
+class TimeRepository(storage: Storage<TimeCustom>)
     : AbstractRepository<TimeCustom>(storage = storage)
 
 

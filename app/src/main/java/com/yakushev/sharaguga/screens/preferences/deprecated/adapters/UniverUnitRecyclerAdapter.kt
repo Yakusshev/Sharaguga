@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
-import com.yakushev.domain.models.choice.UniverUnit
+import com.yakushev.domain.models.preferences.UniverUnit
 import com.yakushev.sharaguga.databinding.ChoiceItemBinding
 
 @Deprecated("no more used")

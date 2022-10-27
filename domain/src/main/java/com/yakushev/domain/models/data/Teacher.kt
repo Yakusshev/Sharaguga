@@ -9,4 +9,4 @@ data class Teacher (
     val name: String = "",
     var family: String = "Нет данных",
     val patronymic: String = ""
-) : Data(path = path)
+) : PeriodData(path = path)

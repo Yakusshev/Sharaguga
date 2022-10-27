@@ -30,14 +30,10 @@ class DataFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // TODO (activity as MainActivity).setActionBarTitle(getString(R.string.title_data))
-
         val adapter = DataPagerAdapter(this)
         binding.viewPager.adapter = adapter
 
         attachTabLayoutMediator()
-
-
     }
 
     private fun attachTabLayoutMediator() {
@@ -47,7 +43,6 @@ class DataFragment : Fragment() {
                 DataPagesSealed.Teachers.ordinal -> tab.text = getString(R.string.teachers)
                 DataPagesSealed.Places.ordinal -> tab.text = getString(R.string.places)
             }
-
         }.attach()
     }
 

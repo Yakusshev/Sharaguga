@@ -13,8 +13,6 @@ class DaysPagerAdapter(
     private val weekPosition: Int
 ) : FragmentStateAdapter(fragment) {
 
-    private val TAG = DaysPagerAdapter::class.java.simpleName
-
     override fun getItemCount(): Int {
         return DaysPerWeek
     }

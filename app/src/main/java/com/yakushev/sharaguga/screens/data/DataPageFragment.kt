@@ -13,7 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.yakushev.data.utils.Change
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.data.Data
+import com.yakushev.domain.models.data.PeriodData
 import com.yakushev.sharaguga.R
 import com.yakushev.sharaguga.databinding.DataFragmentPageBinding
 import com.yakushev.sharaguga.screens.data.adapters.DataRecyclerAdapter
@@ -66,41 +66,39 @@ class DataPageFragment : Fragment() {
 
         page = DataPagesSealed.get(requireArguments().getInt(DataPagesSealed.name))
 
-        val adapter: DataRecyclerAdapter<Data>
-        val stateFlow: StateFlow<Resource<out MutableList<out Data>>>
+        val adapter: DataRecyclerAdapter<PeriodData>
+        val stateFlow: StateFlow<Resource<out MutableList<out PeriodData>>>
 
         when (page!!) {
             is DataPagesSealed.Subjects -> {
                 adapter = SubjectRecyclerAdapter(onItemClickListener)
                 stateFlow = viewModel.subjects
-                viewModel.listenSubjects()
             }
             is DataPagesSealed.Teachers -> {
                 adapter = TeacherRecyclerAdapter(onItemClickListener)
                 stateFlow = viewModel.teachers
-                viewModel.listenTeachers()
             }
             is DataPagesSealed.Places -> {
                 adapter = PlaceRecyclerAdapter(onItemClickListener)
                 stateFlow = viewModel.places
-                viewModel.listenPlaces()
             }
         }
 
         initRecyclerView(adapter)
+
         lifecycleScope.launch {
             observeData(stateFlow, adapter)
         }
     }
 
-    private fun initRecyclerView(adapter: DataRecyclerAdapter<Data>) {
+    private fun initRecyclerView(adapter: DataRecyclerAdapter<PeriodData>) {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
     }
 
     private suspend fun observeData(
-        stateFlow: StateFlow<Resource<out MutableList<out Data>>>,
-        adapter: DataRecyclerAdapter<Data>
+        stateFlow: StateFlow<Resource<out MutableList<out PeriodData>>>,
+        adapter: DataRecyclerAdapter<PeriodData>
     ) = lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
         stateFlow.collect {
@@ -146,11 +144,6 @@ class DataPageFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        when (page!!) {
-            DataPagesSealed.Subjects -> viewModel.stopListenSubjects()
-            DataPagesSealed.Teachers -> viewModel.stopListenTeachers()
-            DataPagesSealed.Places -> viewModel.stopListenPlaces()
-        }
         _binding = null
     }
 }

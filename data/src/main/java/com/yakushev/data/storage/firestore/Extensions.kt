@@ -11,19 +11,20 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+//TODO remove
 val attempts = IntArray(1000)
 
 internal val loadingJobList = ArrayList<Job>()
 
-internal fun getDocumentSnapshotPrintLog() = CoroutineScope(Dispatchers.IO).launch {
+internal fun documentSnapshotPrintLog() = CoroutineScope(Dispatchers.IO).launch {
     waitEndLoading()
     attempts.toList().forEachIndexed { index, item ->
-        Log.d("getDocumentSnapshotTotal", "$index: $item")
+        Log.d("documentSnapshotTotal", "$index: $item")
         if (item == 0) return@launch
     }
 }
 
-internal suspend fun waitEndLoading() {
+private suspend fun waitEndLoading() {
     try {
         loadingJobList.forEach {
             it.join()
@@ -42,8 +43,8 @@ internal suspend fun DocumentReference.getDocumentSnapshot(attempt: Int = 0): Do
         null
     }
 
+    //TODO remove
     attempts[attempt]++
-
     if (doc == null && attempt < attempts.lastIndex) {
         Log.d("getDocumentSnapshot", "Document is null $attempt. Path: ${this.path}")
         //delay((10 * (1)).toLong())

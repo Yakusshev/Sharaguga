@@ -5,8 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yakushev.domain.models.DaysPerWeek
 import com.yakushev.sharaguga.R
@@ -22,10 +20,6 @@ import java.time.temporal.WeekFields
 import java.util.*
 
 class WeekFragment : Fragment() {
-
-    private val TAG = this.javaClass.simpleName
-
-    private val todayPosition = 3
 
     private val viewModel: ScheduleViewModel by sharedViewModel()
 
@@ -57,31 +51,19 @@ class WeekFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val daysAdapter = configureDaysPager()
-
+        configureDaysPager()
     }
 
     private fun configureDaysPager(): DaysPagerAdapter {
-        val daysAdapter = DaysPagerAdapter(
-            this,
-            position
-        )
+        val daysAdapter = DaysPagerAdapter(this, position)
 
         binding.daysPager.adapter = daysAdapter
-
-        /*binding.tabLayout.removeAllTabs()
-
-        for (i in 0 until binding.daysPager.adapter!!.itemCount) {
-            binding.tabLayout.addTab(getNewTab(position, startPosition, i))
-        }*/
 
         binding.daysPager.showSideItems(
             pageMarginPx = binding.daysPager.resources.getDimension(R.dimen.pageMargin).toInt(),
             offsetPx = binding.daysPager.resources.getDimension(R.dimen.pagerOffset).toInt()
         )
 
-        //binding.daysPager.registerOnPageChangeCallback(onPageChangeCallback)
-        //binding.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
         attachTabLayoutMediator(position)
 
         selectTab(startPosition)
@@ -98,7 +80,6 @@ class WeekFragment : Fragment() {
             val fieldISO: TemporalField = WeekFields.of(Locale.FRANCE).dayOfWeek()
             now = now.with(fieldISO, 1)
 
-            //val tab = binding.tabLayout.newTab()
             var date = now.plusWeeks((layoutPosition - startPosition).toLong())
 
             date = date.plusDays((tabPosition).toLong())
@@ -108,40 +89,7 @@ class WeekFragment : Fragment() {
                 .getStringArray(R.array.tab_layout)[date.dayOfWeek.ordinal]
 
             tab.text = dayOfMonth + "\n" + dayOfWeek
-
-            /*
-            var date = LocalDate.now().plusWeeks((layoutPosition - startPosition).toLong())
-
-            date = date.plusDays((tabPosition - todayPosition).toLong())
-
-            val dayOfMonth = date.dayOfMonth.toString()
-            val dayOfWeek = binding.tabLayout.context.resources
-                .getStringArray(R.array.tab_layout)[date.dayOfWeek.ordinal]
-
-            tab.text = dayOfMonth + "\n" + dayOfWeek
-             */
         }.attach()
-    }
-
-    private val onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
-        override fun onPageSelected(position: Int) {
-            binding.tabLayout.selectTab(binding.tabLayout.getTabAt(position))
-            super.onPageSelected(position)
-        }
-    }
-
-    private val onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
-        override fun onTabSelected(tab: TabLayout.Tab?) {
-            tab?.let { binding.daysPager.currentItem = tab.position }
-        }
-
-        override fun onTabUnselected(tab: TabLayout.Tab?) {
-
-        }
-
-        override fun onTabReselected(tab: TabLayout.Tab?) {
-
-        }
     }
 
     private fun selectTab(startPosition: Int) {
@@ -155,39 +103,4 @@ class WeekFragment : Fragment() {
             }
         }
     }
-
-    fun onPageChange(selectedPosition: Int) {
-        //if (abs(adapterPosition - selectedPosition) > 1) return
-
-        binding.daysPager.apply {
-            when {
-                position < selectedPosition -> currentItem = DaysPerWeek - 1
-                position > selectedPosition -> currentItem = 0
-            }
-        }
-    }
-
-    private fun getNewTab(
-        layoutPosition: Int,
-        startPosition: Int,
-        tabPosition: Int
-    ): TabLayout.Tab {
-
-        var now = LocalDate.now()
-        val fieldISO: TemporalField = WeekFields.of(Locale.FRANCE).dayOfWeek()
-        now = now.with(fieldISO, 1)
-
-        val tab = binding.tabLayout.newTab()
-        var date = now.plusWeeks((layoutPosition - startPosition).toLong())
-
-        date = date.plusDays((tabPosition).toLong())
-
-        val dayOfMonth = date.dayOfMonth.toString()
-        val dayOfWeek = binding.daysPager.context.resources
-            .getStringArray(R.array.tab_layout)[date.dayOfWeek.ordinal]
-
-        tab.text = dayOfMonth + "\n" + dayOfWeek
-        return tab
-    }
-
 }

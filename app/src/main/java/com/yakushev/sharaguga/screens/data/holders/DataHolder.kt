@@ -1,15 +1,15 @@
-package com.yakushev.sharaguga.screens.preferences.adapters.data.recycler
+package com.yakushev.sharaguga.screens.data.holders
 
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.yakushev.domain.models.data.Data
+import com.yakushev.domain.models.data.PeriodData
 import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
 import com.yakushev.sharaguga.databinding.DataItemBinding
 
-sealed class DataHolder<out D : Data>(
+sealed class DataHolder<out D : PeriodData>(
     itemBinding: ViewBinding
 ) : RecyclerView.ViewHolder(itemBinding.root) {
 
@@ -24,7 +24,6 @@ class SubjectHolder(
         Log.d("SubjectHolder", "bind ${data.name}")
         itemBinding.data.text = data.name
     }
-
 }
 
 class TeacherHolder(
@@ -35,7 +34,6 @@ class TeacherHolder(
         Log.d("TeacherHolder", "bind ${data.family}")
         itemBinding.data.text = data.family
     }
-
 }
 
 
@@ -47,5 +45,4 @@ class PlaceHolder(
         Log.d("PlaceHolder", "bind ${data.name}")
         itemBinding.data.text = data.name
     }
-
 }

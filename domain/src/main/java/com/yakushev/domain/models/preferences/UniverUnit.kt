@@ -1,4 +1,4 @@
-package com.yakushev.domain.models.choice
+package com.yakushev.domain.models.preferences
 
 import com.google.firebase.firestore.DocumentReference
 

@@ -21,7 +21,6 @@ class DataPagerAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
                 DataPagesEnum.values()[position].ordinal
             )
         }
-
         return fragment
     }
 }

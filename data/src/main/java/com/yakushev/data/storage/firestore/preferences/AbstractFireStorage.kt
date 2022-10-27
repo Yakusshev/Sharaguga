@@ -1,12 +1,9 @@
-package com.yakushev.data.storage.firestore.choice
+package com.yakushev.data.storage.firestore.preferences
 
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
 import com.yakushev.data.storage.Storage
-import com.yakushev.data.storage.firestore.UNIVERSITIES_COLLECTION_NAME
-import com.yakushev.domain.models.choice.UniverUnit
+import com.yakushev.domain.models.preferences.UniverUnit
 import kotlinx.coroutines.tasks.await
 
 abstract class AbstractFireStorage<T : UniverUnit> : Storage<T> {

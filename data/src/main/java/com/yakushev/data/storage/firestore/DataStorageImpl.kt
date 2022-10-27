@@ -10,7 +10,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.yakushev.data.utils.Change
 import com.yakushev.data.utils.Resource
-import com.yakushev.domain.models.data.Data
+import com.yakushev.domain.models.data.PeriodData
 import com.yakushev.domain.models.data.Place
 import com.yakushev.domain.models.data.Subject
 import com.yakushev.domain.models.data.Teacher
@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class DataStorageImpl() {
+class DataStorageImpl {
 
     companion object {
         private const val TAG = "DataStorageImpl"
@@ -40,9 +40,9 @@ class DataStorageImpl() {
      * SnapshotListeners
      */
 
-    var subjectsListener: ListenerRegistration? = null
-    var teachersListener: ListenerRegistration? = null
-    var placesListener: ListenerRegistration? = null
+    private var subjectsListener: ListenerRegistration? = null
+    private var teachersListener: ListenerRegistration? = null
+    private var placesListener: ListenerRegistration? = null
 
     init {
         listenSubjects()
@@ -78,7 +78,7 @@ class DataStorageImpl() {
         )
     }
 
-    private inline fun <reified D: Data> listenData(
+    private inline fun <reified D: PeriodData> listenData(
         collectionReference: CollectionReference,
         orderField: String,
         mutableStateFlow: MutableStateFlow<Resource<MutableList<D>>>
@@ -154,6 +154,7 @@ class DataStorageImpl() {
         )
     }
 
+    //TODO rewrite
     private suspend fun savePeriodData(
         data: HashMap<String, String>,
         dataPath: String?,
@@ -217,7 +218,7 @@ class DataStorageImpl() {
     }
 
 
-    suspend fun deleteData(data: Data): Boolean {
+    suspend fun deleteData(data: PeriodData): Boolean {
         var result = false
 
         Firebase.firestore.document(data.path!!)
@@ -233,7 +234,7 @@ class DataStorageImpl() {
      * These methods parse data from Firestore
      */
 
-    private inline fun <reified D: Data> DocumentSnapshot.parseData() : D {
+    private inline fun <reified D: PeriodData> DocumentSnapshot.parseData() : D {
         return when (D::class) {
             Subject::class -> parseSubject() as D
             Teacher::class -> parseTeacher() as D

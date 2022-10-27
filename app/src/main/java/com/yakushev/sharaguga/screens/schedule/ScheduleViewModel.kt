@@ -24,8 +24,6 @@ class ScheduleViewModel(
     private var groupPath: String
 ) : ViewModel() {
 
-    companion object { private const val TAG = "ScheduleViewModel" }
-
     private val timeStorage = TimeStorage()
 
     private var scheduleStorage: ScheduleStorageImpl
